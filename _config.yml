@@ -60,6 +60,9 @@ author:
   avatar : "/assets/images/bio-photo.jpg"
   bio    : 我明白了，老师。<br>可是，那些没有天赋的人呢？<br>他们的人生从一开始就浪费了吗？
   links:
+    - label: "Beijing, China"
+      icon: "fas fa-fw fa-map-marker-alt"
+
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Flowers-for-Tuesday"

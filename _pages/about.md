@@ -13,6 +13,6 @@ title: "Here I stand"
 
 那么现在，共勉吧。
 
-<div style="text-align: right; font-size: 1em; opacity: 1;">
+<div style="text-align: right; font-size: 0.9em; opacity: 1;">
 25/12/7，夜，北京
 </div>
