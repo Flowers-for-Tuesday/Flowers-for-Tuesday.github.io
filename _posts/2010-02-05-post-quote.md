@@ -3,8 +3,7 @@ title: "Post: Quote"
 categories:
   - Blog
 tags:
-  - Post Formats
-  - quote
+  - unimportant
 ---
 
 > Only one thing is impossible for God: To find any sense in any copyright law on the planet.
