@@ -2,7 +2,7 @@
 permalink: /about/
 title: "Here I stand"
 ---
-<div style="font-size: 0.9em; opacity: 1;">
+
 哇哦，居然能找到这个地方嘛，真有你的。\
 正如你所见，这是一个记录我个人学习笔记和一些乱七八糟想法的地方。\
 （不过考虑到自己的写作风格，强烈不建议任何人将这些笔记作为学习参考资料）
@@ -12,7 +12,6 @@ title: "Here I stand"
 >什么也无法舍弃的人，什么也无法改变。
 
 那么现在，共勉吧。
-</div>
 
 <div style="text-align: right; font-size: 0.8em; opacity: 0.8;">
 25/12/7，夜，北京
