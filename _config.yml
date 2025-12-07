@@ -59,16 +59,18 @@ author:
   name   : "礼拜二的花束"
   avatar : "/assets/images/bio-photo.jpg"
   bio    : |
+            我明白了，老师。
+      
+            可是，那些没有天赋的人呢？
 
-            可是老师，那些没有天赋的人呢？
             他们的人生从一开始就浪费了吗？
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Flowers-for-Tuesday"
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter"
-      url: "https://twitter.com"
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope"
+      url: "mailto:flowers_for_tuesday@gmail.com"
 
 footer:
   links:
