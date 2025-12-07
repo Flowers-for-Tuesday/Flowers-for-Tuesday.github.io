@@ -58,17 +58,17 @@ plugins:
 author:
   name   : "礼拜二的花束"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "在这里分享一些个人学习的想法和思考，
-            希望未来能成为优秀的生物物理学家。"
+  bio    : "分享一些个人学习的想法和思考\n
+            希望未来能成为优秀的生物物理学家"
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Flowers-for-Tuesday"
     - label: "bilibili"
-      icon: "/assets/icons/bilibili-color.svg"
+      icon: "bilibili"
       url: "https://space.bilibili.com/393925947"
     - label: "zhihu"
-      icon: "/assets/icons/zhihu-logo.svg"
+      icon: "zhihu"
       url: "https://www.zhihu.com/people/amadeus-34-9"
 
 footer:
