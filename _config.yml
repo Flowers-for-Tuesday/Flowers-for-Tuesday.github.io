@@ -63,7 +63,6 @@ author:
     - label: "Beijing, China"
       icon: "fas fa-fw fa-map-marker-alt"
       url: "#"
-
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Flowers-for-Tuesday"
