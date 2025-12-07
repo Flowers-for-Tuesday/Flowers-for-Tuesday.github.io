@@ -58,12 +58,7 @@ plugins:
 author:
   name   : "礼拜二的花束"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : |
-            我明白了，老师。
-      
-            可是，那些没有天赋的人呢？
-
-            他们的人生从一开始就浪费了吗？
+  bio    : 我明白了，老师。<br>可是，那些没有天赋的人呢？<br>他们的人生从一开始就浪费了吗？
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
