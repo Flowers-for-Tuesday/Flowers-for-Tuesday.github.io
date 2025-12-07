@@ -58,14 +58,11 @@ plugins:
 author:
   name   : "礼拜二的花束"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "可是老师，那些没有天赋的人呢？他们的人生从一开始就浪费了吗？"
+  bio    : "可是老师，那些没有天赋的人呢？ 他们的人生从一开始就浪费了吗？"
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Flowers-for-Tuesday"
-    - label: "知乎"
-      icon: zhihu
-      url: "https://www.zhihu.com/people/amadeus-34-9"
 
 footer:
   links:
