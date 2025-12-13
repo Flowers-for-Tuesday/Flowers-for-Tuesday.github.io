@@ -1,5 +1,5 @@
 ---
-title: "论文笔记:β模型的Phantom模型"
+title: "论文笔记:β细胞的Phantom模型"
 date: 2025-12-12T15:40:00+08:00
 categories:
   - Blog
@@ -10,7 +10,7 @@ tags:
 
 2000年论文的工作，这是不是自己第一次接触本世纪的科研课题呢（
 
-[β模型的Phantom模型]( /assets/documents/beta细胞的phantom模型.pdf )
+[β细胞的Phantom模型]( /assets/documents/beta细胞的phantom模型.pdf )
 
 论文所用代码已更新至[SciLab](https://github.com/Flowers-for-Tuesday/SciLab) 。
 
