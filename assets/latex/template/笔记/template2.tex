@@ -1,0 +1,148 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{ctex}
+\usepackage{musixtex}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{光镊实验中测量光井刚度的原理总结}
+\author{Flowers for Tuesday}
+
+
+\begin{document}
+\maketitle
+
+类比弹簧的劲度系数，光镊实验中的刚度指的就是微粒在光井中受到恢复力关于其位移的线性项的系数。实验测量的主要为水平方向的刚度。
+
+\section{流体力学法及相位差法}
+
+这两种方法都通过外部移动微粒所在的液体环境，通过运动流体对微粒的粘滞阻力来驱动微粒，并通过显微镜观察微粒的运动行为来确定恢复系数。
+
+\subsection{流体力学法}
+
+设带运动功能的载物台以$x_r(t)$运动（相对平面平行），而微粒以$x_p(t)$运动。则可写出如下微粒受粘滞力和回复力运动的方程，注意回复力仅与$x_p$相关。
+
+\begin{align}
+m\ddot{x_p}=-\eta(\dot{x_p}-\dot{x_r})-kx_p
+\end{align}
+
+其中m为微粒质量，k为光阱的恢复系数，$\eta=6\pi\eta_0r$，$\eta_0$为液体的粘滞系数，r为微
+粒半径。在本实验中，微粒半径为 3um 左右，密度与环境水的密度相近，$k\approx10^{-6}$ ，位
+移量范围为 mm 至 um 级，$\frac{\eta}{m}\sim5\times 10^5,\frac{k}{m}\sim10^7$。
+
+若取平移台位移为$x_r(t)=v_0t$（实验中体现为三角波驱动，取周期$T\sim1s$），则方程（1）为阻尼振动方程（弛豫时间$\tau\ll T$），其平衡位置$x_{p0}$满足
+\[
+\eta v_0=kx_{p0}
+\]
+
+\begin{figure}[h] % [h] 表示“here”，即尽可能在当前位置插入
+    \centering
+    \includegraphics[width=0.5\textwidth]{1.png} % 设定图片宽度
+\end{figure}
+
+故可通过测量$x_{p0}$来测得刚度$k$。由于$x_{p0}$测量依赖相机定标，因此相机分辨率是关键的误差来源。
+
+\subsection{相位差法}
+
+若取$x_r(t)=A_0\cos\omega t$，则方程（1）的稳定解为
+\[
+x_p=A_1\sin(\omega t+\phi)
+\]
+
+其中
+
+\[
+A_1=A_0\cos\phi \ , \ \tan\phi=\frac{k-m\omega^2}{\eta\omega}
+\]
+
+故通过测量相位差$\phi$（非要说的话测量$A_1$也行，但当$\phi$较小时误差较大），同样可得到刚度
+\[
+k=m\omega^2+\eta \omega\tan\phi\approx\eta \omega\tan\phi\
+\]
+
+\section{热运动法和功率谱法}
+
+这两种方法不使用外力驱动，而使用热力学和统计的角度分析得到刚度。cal
+
+\subsection{热运动法}
+
+认为无驱动的微粒的运动为受限布朗运动，列出修改后的郎之万方程
+
+\begin{align}
+m\ddot{x}_p=-\eta\dot{x}_p-kx_p+\mathcal{F}
+\end{align}
+
+与布朗运动类似的，我们在方程两边同乘$x_p$再取平均（布朗运动的平均是系综的平均而不应该视作是时间的平均），利用
+
+\[
+\frac{1}{2}\frac{d}{dt}x^2=x\dot{x} \ , \ \frac{1}{2}\frac{d^2}{dt^2}x^2=\dot{x}^2+x\ddot{x} 
+\]
+
+可得
+
+\begin{align*}
+\frac{1}{2}m\frac{d^2}{dt^2}\langle x^2\rangle&=m\langle\dot{x}^2\rangle-\frac{1}{2}\eta\frac{d}{dt}\langle x^2 \rangle-k\langle x^2\rangle\\
+&=k_B T-\frac{1}{2}\eta\frac{d}{dt}\langle x^2 \rangle-k\langle x^2\rangle
+\end{align*}
+
+同样的，稳态时有
+
+\[
+k=\frac{k_B T}{\langle x^2\rangle}
+\]
+
+测量量为$\langle x^2\rangle$，因此需要统计稳定时的微粒x位置分布，大致如下
+
+\begin{figure}[h] % [h] 表示“here”，即尽可能在当前位置插入
+    \centering
+    \includegraphics[width=0.5\textwidth]{2.png} % 设定图片宽度
+\end{figure}
+
+该方法缺点在于$\langle x^2\rangle$较小，在$10^2(nm^2)$量级，故几乎无法用相机测量，只能采用对位置更灵敏的 QPD 进行测量，而 QPD 需要提前采用其他方法校准，过程较为繁琐且误差经过两步积累会较大。
+
+\subsection{功率谱法}
+
+尝试对式（2）进行傅里叶变换，注意到
+\begin{align*}
+    \displaystyle
+    x_p&=\frac{1}{2\pi}\int X(\omega)e^{i\omega t}d\omega \\
+    \dot{x}_p&=\frac{1}{2\pi}\int i\omega X(\omega)e^{i\omega t}d\omega \\
+    \ddot{x}_p&=\frac{1}{2\pi}\int -\omega^2 X(\omega)e^{i\omega t}d\omega \\
+\end{align*}
+
+故（2）式可化作
+\[
+-\omega^2mX=-i\omega\eta X-kX+C
+\]
+
+这里把随机力$\mathcal{F}$的频谱视作是常数$C$。因此我们就得到了热运动的频谱分布，也即功率谱
+\[
+|X|^2=\frac{C^2}{(k-m\omega^2)^2+\eta^2\omega^2}
+\]
+
+低频处（$\omega\ll10^3$）可略去m项，即
+\[
+|X|^2=\frac{C^2}{k^2+\eta^2\omega^2}
+\]
+
+拟合图像可得$k$值。
+
+\begin{figure}[h] % [h] 表示“here”，即尽可能在当前位置插入
+    \centering
+    \includegraphics[width=0.5\textwidth]{3.png} % 设定图片宽度
+\end{figure}
+
+
+\end{document}
