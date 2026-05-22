@@ -21,10 +21,11 @@ twitter_username: username
 github_username: username
 minimal_mistakes_skin: dirt
 search: true
-head_custom: _includes/head-custom.html
 
 # Build settings
 markdown: kramdown
+kramdown:
+  math_engine: nil
 remote_theme: mmistakes/minimal-mistakes
 # Outputting
 permalink: /:categories/:title/
