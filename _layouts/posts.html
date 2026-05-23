@@ -48,12 +48,6 @@ layout: archive
                   {% if post.excerpt %}
                     <p class="timeline__excerpt">{{ post.excerpt | markdownify | strip_html | truncate: 140 }}</p>
                   {% endif %}
-                  {% if post.categories[0] or post.tags[0] %}
-                    <p class="timeline__taxa">
-                      {% for c in post.categories %}<a href="#cat-{{ c | slugify }}" class="timeline__taxon timeline__taxon--cat">{{ c }}</a>{% endfor %}
-                      {% for t in post.tags %}<a href="#tag-{{ t | slugify }}" class="timeline__taxon timeline__taxon--tag">#{{ t }}</a>{% endfor %}
-                    </p>
-                  {% endif %}
                 </div>
               </div>
             </li>
@@ -258,29 +252,11 @@ layout: archive
   }
   .timeline__title a:hover { border-bottom-color: currentColor; }
   .timeline__excerpt {
-    margin: 0 0 0.45em;
+    margin: 0;
     font-size: 0.88em;
     color: #585858;
     line-height: 1.55;
   }
-  .timeline__taxa {
-    margin: 0;
-    font-size: 0.78em;
-    color: #9a9a9a;
-  }
-  .timeline__taxon {
-    color: inherit;
-    text-decoration: none;
-    margin-right: 0.6em;
-  }
-  .timeline__taxon--cat::before {
-    content: '\f07c';
-    font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', sans-serif;
-    font-weight: 900;
-    margin-right: 0.25em;
-    opacity: 0.7;
-  }
-  .timeline__taxon:hover { color: #343434; }
 
   @media (max-width: 37.5em) {
     .timeline::before { display: none; }
