@@ -1,6 +1,6 @@
 ---
 permalink: /about/
-title: "Here I stand"
+title: "欢迎光临"
 ---
 
 哇哦，居然能找到这个地方嘛，真有你的。\
