@@ -1,0 +1,93 @@
+---
+layout: default
+---
+{%- assign locale = page.locale | default: layout.locale | default: site.locale %}
+
+<div id="main" role="main">
+  {% if page.author_profile %}{% include sidebar.html locale=locale %}{% endif %}
+
+  <article class="page thought thought--single h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    {% if page.title %}<meta itemprop="headline" content="{{ page.title | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+
+    <div class="page__inner-wrap">
+      <header class="thought__meta">
+        <a class="thought__permalink" href="{{ page.url | relative_url }}" rel="bookmark">
+          <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d %H:%M" }}</time>
+        </a>
+        {% if page.title %}<span class="thought__title">· {{ page.title }}</span>{% endif %}
+      </header>
+
+      <section class="thought__content e-content" itemprop="text">
+        {{ content }}
+      </section>
+
+      {% if page.tags and page.tags.size > 0 %}
+        <footer class="thought__tags">
+          {% for tag in page.tags %}
+            <a href="{{ '/posts/' | relative_url }}#tag-{{ tag | slugify }}" class="thought__tag">#{{ tag }}</a>
+          {% endfor %}
+        </footer>
+      {% endif %}
+
+      <p class="thought__back">
+        <a href="{{ '/thoughts/' | relative_url }}">&larr; back to Thoughts</a>
+      </p>
+    </div>
+  </article>
+</div>
+
+<style>
+  .thought--single {
+    max-width: 38rem;
+    margin: 1em auto 2em;
+  }
+  .thought--single .thought__meta {
+    font-size: 0.82em;
+    color: #9a9a9a;
+    margin-bottom: 1em;
+    letter-spacing: 0.02em;
+  }
+  .thought--single .thought__permalink {
+    color: inherit;
+    text-decoration: none;
+  }
+  .thought--single .thought__title {
+    margin-left: 0.4em;
+    color: #6f6f6f;
+    font-weight: 500;
+  }
+  .thought--single .thought__content {
+    font-size: 1em;
+    line-height: 1.75;
+    color: #2f2f2f;
+  }
+  .thought--single .thought__content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.9em 0;
+    border-radius: 6px;
+  }
+  .thought--single .thought__tags {
+    margin-top: 1.2em;
+    font-size: 0.82em;
+  }
+  .thought--single .thought__tag {
+    display: inline-block;
+    margin-right: 0.5em;
+    color: #9a9a9a;
+    text-decoration: none;
+  }
+  .thought--single .thought__tag:hover { color: #555; }
+  .thought__back {
+    margin-top: 2.2em;
+    font-size: 0.88em;
+  }
+  .thought__back a {
+    color: #9a9a9a;
+    text-decoration: none;
+    border-bottom: 1px dotted #cdcdcd;
+  }
+  .thought__back a:hover { color: #555; border-bottom-color: #555; }
+</style>

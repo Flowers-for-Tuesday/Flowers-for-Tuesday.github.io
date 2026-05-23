@@ -1,0 +1,112 @@
+---
+layout: archive
+---
+{%- assign locale = page.locale | default: layout.locale | default: site.locale %}
+
+{{ content }}
+
+{% assign thoughts = site.thoughts | sort: 'date' | reverse %}
+
+{% if thoughts.size == 0 %}
+  <p class="thoughts-feed__empty">还没有 Thoughts。在 <code>_thoughts/</code> 里新建一个 Markdown 文件就行。</p>
+{% else %}
+  <div class="thoughts-feed">
+    {% for thought in thoughts %}
+      {% assign anchor = thought.url | split: '/' | last %}
+      <article class="thought" id="{{ anchor }}">
+        <header class="thought__meta">
+          <a class="thought__permalink" href="{{ thought.url | relative_url }}" rel="bookmark">
+            <time datetime="{{ thought.date | date_to_xmlschema }}">{{ thought.date | date: "%Y-%m-%d %H:%M" }}</time>
+          </a>
+          {% if thought.title %}<span class="thought__title">· {{ thought.title }}</span>{% endif %}
+        </header>
+        <div class="thought__content e-content">
+          {{ thought.content }}
+        </div>
+        {% if thought.tags and thought.tags.size > 0 %}
+          <footer class="thought__tags">
+            {% for tag in thought.tags %}
+              <a href="{{ '/posts/' | relative_url }}#tag-{{ tag | slugify }}" class="thought__tag">#{{ tag }}</a>
+            {% endfor %}
+          </footer>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<style>
+  .thoughts-feed {
+    max-width: 38rem;
+    margin: 0 auto;
+  }
+  .thoughts-feed__empty {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+    padding: 2em 0;
+  }
+  .thought {
+    padding: 1.6em 0 1.8em;
+    border-bottom: 1px solid #ececec;
+  }
+  .thought:first-child { padding-top: 0.4em; }
+  .thought:last-child { border-bottom: 0; }
+  .thought__meta {
+    font-size: 0.82em;
+    color: #9a9a9a;
+    margin-bottom: 0.7em;
+    letter-spacing: 0.02em;
+  }
+  .thought__permalink {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted transparent;
+    transition: border-color 0.15s ease;
+  }
+  .thought__permalink:hover { border-bottom-color: #9a9a9a; }
+  .thought__title {
+    margin-left: 0.4em;
+    color: #6f6f6f;
+    font-weight: 500;
+  }
+  .thought__content {
+    font-size: 1em;
+    line-height: 1.75;
+    color: #2f2f2f;
+  }
+  .thought__content > :first-child { margin-top: 0; }
+  .thought__content > :last-child { margin-bottom: 0; }
+  .thought__content p { margin: 0 0 0.7em; }
+  .thought__content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.9em 0;
+    border-radius: 6px;
+  }
+  .thought__content blockquote {
+    margin: 0.7em 0;
+    padding: 0.1em 0.9em;
+    border-left: 3px solid #d8d8d8;
+    color: #6a6a6a;
+    font-style: italic;
+  }
+  .thought__content code {
+    font-size: 0.92em;
+    padding: 0.1em 0.35em;
+    background: #f4f4f4;
+    border-radius: 3px;
+  }
+  .thought__tags {
+    margin-top: 0.8em;
+    font-size: 0.82em;
+  }
+  .thought__tag {
+    display: inline-block;
+    margin-right: 0.5em;
+    color: #9a9a9a;
+    text-decoration: none;
+  }
+  .thought__tag:hover { color: #555; }
+</style>

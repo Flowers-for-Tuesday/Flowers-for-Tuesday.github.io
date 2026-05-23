@@ -34,9 +34,9 @@ paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 collections:
-  memo:
+  thoughts:
     output: true
-    permalink: /memo/:title/
+    permalink: /thoughts/:title/
 
 include:
   - _pages
@@ -102,17 +102,17 @@ defaults:
     values:
       layout: single
       author_profile: true
-  # _notes
+  # _thoughts
   - scope:
       path: ""
-      type: memo
+      type: thoughts
     values:
-      layout: single
+      layout: thought
       author_profile: true
-      read_time: true
-      comments: true
+      read_time: false
+      comments: false
       share: false
-      related: true
+      related: false
 
 category_archive:
   type: liquid
