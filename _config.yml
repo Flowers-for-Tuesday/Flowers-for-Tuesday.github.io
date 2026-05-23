@@ -75,7 +75,7 @@ author:
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Flowers-for-Tuesday"
     - label: "Zhihu"
-      icon: "fab fa-fw fa-zhihu"
+      icon: "fa-fw icon-zhihu"
       url: "https://www.zhihu.com/people/flowersfortuesday"
     - label: "Email"
       icon: "fas fa-fw fa-envelope"
@@ -87,7 +87,7 @@ footer:
       icon: "fab fa-fw fa-github"
       url: "https://github.com/Flowers-for-Tuesday"
     - label: "Zhihu"
-      icon: "fab fa-fw fa-zhihu"
+      icon: "fa-fw icon-zhihu"
       url: "https://www.zhihu.com/people/flowersfortuesday"
 
 defaults:
