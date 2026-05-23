@@ -67,10 +67,9 @@
   body.layout--home .home-hero {
     position: absolute;
     top: 0;
-    left: 50%;
-    width: 50vw;
-    transform: translateX(-50%);
-    height: 70vh;
+    left: 0;
+    right: 0;
+    height: 35vh;
     background-image: url('/assets/images/cover.jpeg');
     background-size: cover;
     background-position: center;
@@ -117,7 +116,7 @@
   body.layout--home #main {
     position: relative;
     z-index: 1;
-    margin-top: 70vh;
+    margin-top: 35vh;
     background: #ffffff;
     padding-top: 1.5em;
   }
@@ -130,7 +129,7 @@
   }
   /* 移动端：略矮的 hero，避免占满整屏 */
   @media (max-width: 37.5em) {
-    body.layout--home .home-hero { height: 60vh; }
-    body.layout--home #main { margin-top: 60vh; }
+    body.layout--home .home-hero { height: 30vh; }
+    body.layout--home #main { margin-top: 30vh; }
   }
 </style>
