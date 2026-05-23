@@ -1,5 +1,5 @@
 ---
-title: "一些饮料"
+title: "Some Drinks"
 tags:
   - drinks
 ---
