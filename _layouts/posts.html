@@ -26,13 +26,39 @@ layout: archive
       {% endfor %}
     </ul>
     {% for year in postsInYear %}
-      <section id="year-{{ year.name }}" class="taxonomy__section">
+      <section id="year-{{ year.name }}" class="taxonomy__section taxonomy__section--timeline">
         <h2 class="archive__subtitle">{{ year.name }}</h2>
-        <div class="entries-{{ entries_layout }}">
+        <ol class="timeline">
           {% for post in year.items %}
-            {% include archive-single.html locale=locale type=entries_layout %}
+            <li class="timeline__item">
+              <div class="timeline__marker">
+                <time class="timeline__time" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%m-%d %H:%M" }}</time>
+                <span class="timeline__dot" aria-hidden="true"></span>
+              </div>
+              <div class="timeline__content">
+                {% if post.cover %}
+                  <a class="timeline__cover" href="{{ post.url | relative_url }}" rel="permalink">
+                    <img src="{{ post.cover | relative_url }}" alt="">
+                  </a>
+                {% endif %}
+                <div class="timeline__body">
+                  <h3 class="timeline__title">
+                    <a href="{{ post.url | relative_url }}" rel="permalink">{{ post.title }}</a>
+                  </h3>
+                  {% if post.excerpt %}
+                    <p class="timeline__excerpt">{{ post.excerpt | markdownify | strip_html | truncate: 140 }}</p>
+                  {% endif %}
+                  {% if post.categories[0] or post.tags[0] %}
+                    <p class="timeline__taxa">
+                      {% for c in post.categories %}<a href="#cat-{{ c | slugify }}" class="timeline__taxon timeline__taxon--cat">{{ c }}</a>{% endfor %}
+                      {% for t in post.tags %}<a href="#tag-{{ t | slugify }}" class="timeline__taxon timeline__taxon--tag">#{{ t }}</a>{% endfor %}
+                    </p>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
           {% endfor %}
-        </div>
+        </ol>
         <a href="#posts-views" class="back-to-top">{{ site.data.ui-text[locale].back_to_top | default: 'Back to Top' }} &uarr;</a>
       </section>
     {% endfor %}
@@ -146,6 +172,124 @@ layout: archive
     border-radius: 2px;
   }
   .posts-views__panel[hidden] { display: none; }
+
+  /* ===== 时间视图：左侧时间线 ===== */
+  .taxonomy__section--timeline { margin-bottom: 2.5em; }
+  .timeline {
+    list-style: none;
+    margin: 1em 0 0;
+    padding: 0;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6.2em;
+    top: 0.6em;
+    bottom: 0.6em;
+    width: 1px;
+    background: #e4e4e4;
+  }
+  .timeline__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.4em;
+    padding: 0.55em 0;
+    position: relative;
+  }
+  .timeline__marker {
+    flex: 0 0 6.2em;
+    position: relative;
+    text-align: right;
+    padding: 0.2em 1em 0 0;
+    font-size: 0.82em;
+    color: #8a8a8a;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+  }
+  .timeline__time { white-space: nowrap; }
+  .timeline__dot {
+    position: absolute;
+    top: 0.55em;
+    right: -4.5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #b8b8b8;
+    box-shadow: 0 0 0 3px #fff;
+    transition: background-color 0.15s ease;
+  }
+  .timeline__item:hover .timeline__dot { background: #343434; }
+  .timeline__content {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 1em;
+  }
+  .timeline__cover {
+    flex: 0 0 auto;
+    display: block;
+    width: 6.5em;
+    height: 6.5em;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  }
+  .timeline__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .timeline__body { flex: 1 1 auto; min-width: 0; }
+  .timeline__title {
+    margin: 0 0 0.35em;
+    font-size: 1.05em;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .timeline__title a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .timeline__title a:hover { border-bottom-color: currentColor; }
+  .timeline__excerpt {
+    margin: 0 0 0.45em;
+    font-size: 0.88em;
+    color: #585858;
+    line-height: 1.55;
+  }
+  .timeline__taxa {
+    margin: 0;
+    font-size: 0.78em;
+    color: #9a9a9a;
+  }
+  .timeline__taxon {
+    color: inherit;
+    text-decoration: none;
+    margin-right: 0.6em;
+  }
+  .timeline__taxon--cat::before {
+    content: '\f07c';
+    font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free', sans-serif;
+    font-weight: 900;
+    margin-right: 0.25em;
+    opacity: 0.7;
+  }
+  .timeline__taxon:hover { color: #343434; }
+
+  @media (max-width: 37.5em) {
+    .timeline::before { display: none; }
+    .timeline__item { flex-direction: column; align-items: stretch; gap: 0.35em; padding: 0.8em 0; }
+    .timeline__marker { flex: none; text-align: left; padding: 0; }
+    .timeline__dot { display: none; }
+    .timeline__content { gap: 0.7em; }
+    .timeline__cover { width: 4.5em; height: 4.5em; }
+  }
 </style>
 
 <script>
