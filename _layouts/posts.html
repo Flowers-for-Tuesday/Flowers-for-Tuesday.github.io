@@ -1,0 +1,200 @@
+---
+layout: archive
+---
+{%- assign locale = page.locale | default: layout.locale | default: site.locale %}
+{%- assign entries_layout = page.entries_layout | default: 'list' %}
+
+{{ content }}
+
+<div class="posts-views" id="posts-views">
+  <div class="posts-views__tabs" role="tablist">
+    <button type="button" class="posts-views__tab is-active" data-view="time" role="tab" aria-selected="true">时间</button>
+    <button type="button" class="posts-views__tab" data-view="categories" role="tab" aria-selected="false">分类</button>
+    <button type="button" class="posts-views__tab" data-view="tags" role="tab" aria-selected="false">标签</button>
+  </div>
+
+  {% comment %} ===== 时间视图 ===== {% endcomment %}
+  <section class="posts-views__panel is-active" data-panel="time" role="tabpanel">
+    {% assign postsInYear = site.posts | where_exp: "item", "item.hidden != true" | group_by_exp: 'post', 'post.date | date: "%Y"' %}
+    <ul class="taxonomy__index">
+      {% for year in postsInYear %}
+        <li>
+          <a href="#year-{{ year.name }}">
+            <strong>{{ year.name }}</strong> <span class="taxonomy__count">{{ year.items | size }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    {% for year in postsInYear %}
+      <section id="year-{{ year.name }}" class="taxonomy__section">
+        <h2 class="archive__subtitle">{{ year.name }}</h2>
+        <div class="entries-{{ entries_layout }}">
+          {% for post in year.items %}
+            {% include archive-single.html locale=locale type=entries_layout %}
+          {% endfor %}
+        </div>
+        <a href="#posts-views" class="back-to-top">{{ site.data.ui-text[locale].back_to_top | default: 'Back to Top' }} &uarr;</a>
+      </section>
+    {% endfor %}
+  </section>
+
+  {% comment %} ===== 分类视图 ===== {% endcomment %}
+  <section class="posts-views__panel" data-panel="categories" role="tabpanel" hidden>
+    {% assign cat_max = 0 %}
+    {% for item in site.categories %}
+      {% if item[1].size > cat_max %}{% assign cat_max = item[1].size %}{% endif %}
+    {% endfor %}
+    <ul class="taxonomy__index">
+      {% for i in (1..cat_max) reversed %}
+        {% for item in site.categories %}
+          {% if item[1].size == i %}
+            <li>
+              <a href="#cat-{{ item[0] | slugify }}">
+                <strong>{{ item[0] }}</strong> <span class="taxonomy__count">{{ i }}</span>
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </ul>
+    {% for i in (1..cat_max) reversed %}
+      {% for taxonomy in site.categories %}
+        {% if taxonomy[1].size == i %}
+          <section id="cat-{{ taxonomy[0] | slugify }}" class="taxonomy__section">
+            <h2 class="archive__subtitle">{{ taxonomy[0] }}</h2>
+            <div class="entries-{{ entries_layout }}">
+              {% for post in taxonomy.last %}
+                {% include archive-single.html locale=locale type=entries_layout %}
+              {% endfor %}
+            </div>
+            <a href="#posts-views" class="back-to-top">{{ site.data.ui-text[locale].back_to_top | default: 'Back to Top' }} &uarr;</a>
+          </section>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </section>
+
+  {% comment %} ===== 标签视图 ===== {% endcomment %}
+  <section class="posts-views__panel" data-panel="tags" role="tabpanel" hidden>
+    {% assign tag_max = 0 %}
+    {% for item in site.tags %}
+      {% if item[1].size > tag_max %}{% assign tag_max = item[1].size %}{% endif %}
+    {% endfor %}
+    <ul class="taxonomy__index">
+      {% for i in (1..tag_max) reversed %}
+        {% for item in site.tags %}
+          {% if item[1].size == i %}
+            <li>
+              <a href="#tag-{{ item[0] | slugify }}">
+                <strong>{{ item[0] }}</strong> <span class="taxonomy__count">{{ i }}</span>
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </ul>
+    {% for i in (1..tag_max) reversed %}
+      {% for taxonomy in site.tags %}
+        {% if taxonomy[1].size == i %}
+          <section id="tag-{{ taxonomy[0] | slugify }}" class="taxonomy__section">
+            <h2 class="archive__subtitle">{{ taxonomy[0] }}</h2>
+            <div class="entries-{{ entries_layout }}">
+              {% for post in taxonomy.last %}
+                {% include archive-single.html locale=locale type=entries_layout %}
+              {% endfor %}
+            </div>
+            <a href="#posts-views" class="back-to-top">{{ site.data.ui-text[locale].back_to_top | default: 'Back to Top' }} &uarr;</a>
+          </section>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </section>
+</div>
+
+<style>
+  .posts-views__tabs {
+    display: flex;
+    gap: 0.25em;
+    margin: 0 0 1.5em;
+    padding: 0;
+    border-bottom: 1px solid #e8e8e8;
+    list-style: none;
+  }
+  .posts-views__tab {
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 0.55em 1.1em;
+    margin-bottom: -1px;
+    font-family: inherit;
+    font-size: 0.95em;
+    color: #6f6f6f;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .posts-views__tab:hover {
+    color: #343434;
+  }
+  .posts-views__tab.is-active {
+    color: #343434;
+    border-bottom-color: #343434;
+    font-weight: 600;
+  }
+  .posts-views__tab:focus-visible {
+    outline: 2px solid #343434;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .posts-views__panel[hidden] { display: none; }
+</style>
+
+<script>
+  (function () {
+    var root = document.getElementById('posts-views');
+    if (!root) return;
+    var tabs = root.querySelectorAll('.posts-views__tab');
+    var panels = root.querySelectorAll('.posts-views__panel');
+
+    function activate(view, scrollTarget) {
+      tabs.forEach(function (t) {
+        var active = t.dataset.view === view;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      panels.forEach(function (p) {
+        var active = p.dataset.panel === view;
+        p.classList.toggle('is-active', active);
+        if (active) { p.removeAttribute('hidden'); }
+        else { p.setAttribute('hidden', ''); }
+      });
+      if (scrollTarget) {
+        var el = document.getElementById(scrollTarget);
+        if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      }
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var view = tab.dataset.view;
+        activate(view);
+        history.replaceState(null, '', '#view-' + view);
+      });
+    });
+
+    function applyHash() {
+      var hash = (window.location.hash || '').replace(/^#/, '');
+      if (!hash) return;
+      if (hash.indexOf('view-') === 0) {
+        var v = hash.slice(5);
+        if (v === 'time' || v === 'categories' || v === 'tags') activate(v);
+        return;
+      }
+      if (hash.indexOf('cat-') === 0)   { activate('categories', hash); return; }
+      if (hash.indexOf('tag-') === 0)   { activate('tags',       hash); return; }
+      if (hash.indexOf('year-') === 0)  { activate('time',       hash); return; }
+    }
+
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+  })();
+</script>

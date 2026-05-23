@@ -1,0 +1,14 @@
+{% assign locale = include.locale | default: site.locale %}
+{% unless site.show_taxonomy == false %}
+  {% if page.categories[0] %}
+    {% assign categories_sorted = page.categories | sort_natural %}
+    <p class="page__taxonomy">
+      <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> {{ site.data.ui-text[locale].categories_label | default: "Categories:" }} </strong>
+      <span itemprop="keywords">
+      {% for category_word in categories_sorted %}
+        <a href="{{ '/posts/' | relative_url }}#cat-{{ category_word | slugify }}" class="page__taxonomy-item p-category" rel="tag">{{ category_word }}</a>{% unless forloop.last %}<span class="sep">, </span>{% endunless %}
+      {% endfor %}
+      </span>
+    </p>
+  {% endif %}
+{% endunless %}
