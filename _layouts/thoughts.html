@@ -10,47 +10,44 @@ layout: archive
 {% if thoughts.size == 0 %}
   <p class="thoughts-feed__empty">还没有 Thoughts。在 <code>_thoughts/</code> 里新建一个 Markdown 文件就行。</p>
 {% else %}
-  <div class="thoughts-page">
-    <div class="thoughts-feed">
+  <div class="thoughts-feed">
+    {% for thought in thoughts %}
+      {% assign anchor = thought.url | split: '/' | last %}
+      <article class="thought" id="{{ anchor }}">
+        <header class="thought__meta">
+          <a class="thought__permalink" href="{{ thought.url | relative_url }}" rel="bookmark">
+            <time datetime="{{ thought.date | date_to_xmlschema }}">{{ thought.date | date: "%Y-%m-%d %H:%M" }}</time>
+          </a>
+          {% if thought.title %}<span class="thought__title">· {{ thought.title }}</span>{% endif %}
+        </header>
+        <div class="thought__content e-content">
+          {{ thought.content }}
+        </div>
+        {% if thought.tags and thought.tags.size > 0 %}
+          <footer class="thought__tags">
+            {% for tag in thought.tags %}
+              <a href="{{ '/posts/' | relative_url }}#tag-{{ tag | slugify }}" class="thought__tag">#{{ tag }}</a>
+            {% endfor %}
+          </footer>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+
+  <aside class="thoughts-timeline" aria-label="Timeline">
+    <ol class="thoughts-timeline__list">
       {% for thought in thoughts %}
         {% assign anchor = thought.url | split: '/' | last %}
-        <article class="thought" id="{{ anchor }}">
-          <header class="thought__meta">
-            <a class="thought__permalink" href="{{ thought.url | relative_url }}" rel="bookmark">
-              <time datetime="{{ thought.date | date_to_xmlschema }}">{{ thought.date | date: "%Y-%m-%d %H:%M" }}</time>
-            </a>
-            {% if thought.title %}<span class="thought__title">· {{ thought.title }}</span>{% endif %}
-          </header>
-          <div class="thought__content e-content">
-            {{ thought.content }}
-          </div>
-          {% if thought.tags and thought.tags.size > 0 %}
-            <footer class="thought__tags">
-              {% for tag in thought.tags %}
-                <a href="{{ '/posts/' | relative_url }}#tag-{{ tag | slugify }}" class="thought__tag">#{{ tag }}</a>
-              {% endfor %}
-            </footer>
-          {% endif %}
-        </article>
+        <li class="thoughts-timeline__item" data-target="{{ anchor }}">
+          <a href="#{{ anchor }}">
+            <span class="thoughts-timeline__dot" aria-hidden="true"></span>
+            <span class="thoughts-timeline__date">{{ thought.date | date: "%b %d, %Y" }}</span>
+            <span class="thoughts-timeline__time">{{ thought.date | date: "%H:%M" }}</span>
+          </a>
+        </li>
       {% endfor %}
-    </div>
-
-    <aside class="thoughts-timeline" aria-label="Timeline">
-      <h4 class="thoughts-timeline__title">Timeline</h4>
-      <ol class="thoughts-timeline__list">
-        {% for thought in thoughts %}
-          {% assign anchor = thought.url | split: '/' | last %}
-          <li class="thoughts-timeline__item" data-target="{{ anchor }}">
-            <a href="#{{ anchor }}">
-              <span class="thoughts-timeline__dot" aria-hidden="true"></span>
-              <span class="thoughts-timeline__date">{{ thought.date | date: "%b %d, %Y" }}</span>
-              <span class="thoughts-timeline__time">{{ thought.date | date: "%H:%M" }}</span>
-            </a>
-          </li>
-        {% endfor %}
-      </ol>
-    </aside>
-  </div>
+    </ol>
+  </aside>
 
   <script>
     (function () {
@@ -86,18 +83,9 @@ layout: archive
 {% endif %}
 
 <style>
-  .thoughts-page {
-    display: flex;
-    gap: 2.5em;
-    align-items: flex-start;
-    justify-content: center;
-    max-width: 56rem;
-    margin: 0 auto;
-  }
   .thoughts-feed {
-    flex: 1 1 38rem;
     max-width: 38rem;
-    min-width: 0;
+    margin: 0 auto;
   }
   .thoughts-feed__empty {
     color: #888;
@@ -169,23 +157,17 @@ layout: archive
   }
   .thought__tag:hover { color: #555; }
 
-  /* ===== Right-side scrollspy timeline ===== */
+  /* ===== Page-edge scrollspy timeline ===== */
   .thoughts-timeline {
-    flex: 0 0 9.5em;
-    position: sticky;
-    top: 5em;
-    align-self: flex-start;
-    max-height: calc(100vh - 6em);
+    position: fixed;
+    right: 1.5em;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 9em;
+    max-height: 78vh;
     overflow-y: auto;
-    padding-top: 0.2em;
-  }
-  .thoughts-timeline__title {
-    margin: 0 0 0.8em;
-    font-size: 0.72em;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #9a9a9a;
+    padding: 0.4em 0;
+    z-index: 5;
   }
   .thoughts-timeline__list {
     list-style: none;
@@ -244,7 +226,5 @@ layout: archive
 
   @media (max-width: 56em) {
     .thoughts-timeline { display: none; }
-    .thoughts-page { display: block; }
-    .thoughts-feed { margin: 0 auto; }
   }
 </style>
