@@ -163,12 +163,14 @@ layout: archive
     right: 1.5em;
     top: 50%;
     transform: translateY(-50%);
-    width: 9em;
+    width: 10em;
     max-height: 78vh;
-    overflow-y: auto;
-    padding: 0.4em 0;
-    z-index: 5;
+    overflow: visible;
+    padding: 0.4em 0.4em 0.4em 0.6em;
+    z-index: 1000;
+    pointer-events: auto;
   }
+  .thoughts-timeline__list { overflow: visible; }
   .thoughts-timeline__list {
     list-style: none;
     margin: 0;
