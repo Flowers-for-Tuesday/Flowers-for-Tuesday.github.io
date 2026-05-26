@@ -104,7 +104,7 @@ defaults:
       related: true
       toc: true
       toc_sticky: true
-      toc_label: "目录"
+      toc_label: "INDEX"
       toc_icon: "list-ul"
   # _pages
   - scope:
