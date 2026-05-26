@@ -10,35 +10,94 @@ layout: archive
 {% if thoughts.size == 0 %}
   <p class="thoughts-feed__empty">还没有 Thoughts。在 <code>_thoughts/</code> 里新建一个 Markdown 文件就行。</p>
 {% else %}
-  <div class="thoughts-feed">
-    {% for thought in thoughts %}
-      {% assign anchor = thought.url | split: '/' | last %}
-      <article class="thought" id="{{ anchor }}">
-        <header class="thought__meta">
-          <a class="thought__permalink" href="{{ thought.url | relative_url }}" rel="bookmark">
-            <time datetime="{{ thought.date | date_to_xmlschema }}">{{ thought.date | date: "%Y-%m-%d %H:%M" }}</time>
-          </a>
-          {% if thought.title %}<span class="thought__title">· {{ thought.title }}</span>{% endif %}
-        </header>
-        <div class="thought__content e-content">
-          {{ thought.content }}
-        </div>
-        {% if thought.tags and thought.tags.size > 0 %}
-          <footer class="thought__tags">
-            {% for tag in thought.tags %}
-              <a href="{{ '/posts/' | relative_url }}#tag-{{ tag | slugify }}" class="thought__tag">#{{ tag }}</a>
-            {% endfor %}
-          </footer>
-        {% endif %}
-      </article>
-    {% endfor %}
+  <div class="thoughts-page">
+    <div class="thoughts-feed">
+      {% for thought in thoughts %}
+        {% assign anchor = thought.url | split: '/' | last %}
+        <article class="thought" id="{{ anchor }}">
+          <header class="thought__meta">
+            <a class="thought__permalink" href="{{ thought.url | relative_url }}" rel="bookmark">
+              <time datetime="{{ thought.date | date_to_xmlschema }}">{{ thought.date | date: "%Y-%m-%d %H:%M" }}</time>
+            </a>
+            {% if thought.title %}<span class="thought__title">· {{ thought.title }}</span>{% endif %}
+          </header>
+          <div class="thought__content e-content">
+            {{ thought.content }}
+          </div>
+          {% if thought.tags and thought.tags.size > 0 %}
+            <footer class="thought__tags">
+              {% for tag in thought.tags %}
+                <a href="{{ '/posts/' | relative_url }}#tag-{{ tag | slugify }}" class="thought__tag">#{{ tag }}</a>
+              {% endfor %}
+            </footer>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+
+    <aside class="thoughts-timeline" aria-label="Timeline">
+      <h4 class="thoughts-timeline__title">Timeline</h4>
+      <ol class="thoughts-timeline__list">
+        {% for thought in thoughts %}
+          {% assign anchor = thought.url | split: '/' | last %}
+          <li class="thoughts-timeline__item" data-target="{{ anchor }}">
+            <a href="#{{ anchor }}">
+              <span class="thoughts-timeline__dot" aria-hidden="true"></span>
+              <span class="thoughts-timeline__date">{{ thought.date | date: "%b %d, %Y" }}</span>
+              <span class="thoughts-timeline__time">{{ thought.date | date: "%H:%M" }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ol>
+    </aside>
   </div>
+
+  <script>
+    (function () {
+      var items = document.querySelectorAll('.thoughts-timeline__item');
+      if (!items.length || !('IntersectionObserver' in window)) return;
+      var byId = {};
+      items.forEach(function (it) { byId[it.dataset.target] = it; });
+      function setActive(id) {
+        items.forEach(function (it) { it.classList.toggle('is-active', it.dataset.target === id); });
+      }
+      var visible = new Map();
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) visible.set(e.target.id, e.intersectionRatio);
+          else visible.delete(e.target.id);
+        });
+        if (visible.size === 0) return;
+        var topId = null;
+        document.querySelectorAll('.thought').forEach(function (a) {
+          if (visible.has(a.id) && topId === null) topId = a.id;
+        });
+        if (topId) setActive(topId);
+      }, {
+        rootMargin: '-20% 0px -55% 0px',
+        threshold: [0, 0.25, 0.5, 1]
+      });
+      document.querySelectorAll('.thought').forEach(function (a) { observer.observe(a); });
+      // Initial state: first thought
+      var first = document.querySelector('.thought');
+      if (first) setActive(first.id);
+    })();
+  </script>
 {% endif %}
 
 <style>
-  .thoughts-feed {
-    max-width: 38rem;
+  .thoughts-page {
+    display: flex;
+    gap: 2.5em;
+    align-items: flex-start;
+    justify-content: center;
+    max-width: 56rem;
     margin: 0 auto;
+  }
+  .thoughts-feed {
+    flex: 1 1 38rem;
+    max-width: 38rem;
+    min-width: 0;
   }
   .thoughts-feed__empty {
     color: #888;
@@ -109,4 +168,83 @@ layout: archive
     text-decoration: none;
   }
   .thought__tag:hover { color: #555; }
+
+  /* ===== Right-side scrollspy timeline ===== */
+  .thoughts-timeline {
+    flex: 0 0 9.5em;
+    position: sticky;
+    top: 5em;
+    align-self: flex-start;
+    max-height: calc(100vh - 6em);
+    overflow-y: auto;
+    padding-top: 0.2em;
+  }
+  .thoughts-timeline__title {
+    margin: 0 0 0.8em;
+    font-size: 0.72em;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #9a9a9a;
+  }
+  .thoughts-timeline__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .thoughts-timeline__list::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0.6em;
+    bottom: 0.6em;
+    width: 1px;
+    background: #e4e4e4;
+  }
+  .thoughts-timeline__item { padding: 0.45em 0; }
+  .thoughts-timeline__item a {
+    display: block;
+    position: relative;
+    padding-left: 1.4em;
+    color: #b0b0b0;
+    text-decoration: none;
+    font-size: 0.78em;
+    line-height: 1.3;
+    transition: color 0.18s ease;
+  }
+  .thoughts-timeline__dot {
+    position: absolute;
+    left: 0;
+    top: 0.35em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #d0d0d0;
+    box-shadow: 0 0 0 2px #fff;
+    transition: background-color 0.18s ease, transform 0.18s ease;
+  }
+  .thoughts-timeline__date {
+    display: block;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .thoughts-timeline__time {
+    display: block;
+    color: #c4c4c4;
+    font-variant-numeric: tabular-nums;
+    margin-top: 0.05em;
+  }
+  .thoughts-timeline__item a:hover { color: #555; }
+  .thoughts-timeline__item.is-active a { color: #1f1f1f; }
+  .thoughts-timeline__item.is-active .thoughts-timeline__dot {
+    background: #1f1f1f;
+    transform: scale(1.2);
+  }
+
+  @media (max-width: 56em) {
+    .thoughts-timeline { display: none; }
+    .thoughts-page { display: block; }
+    .thoughts-feed { margin: 0 auto; }
+  }
 </style>
