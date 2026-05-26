@@ -102,6 +102,10 @@ defaults:
       comments: true
       share: false
       related: true
+      toc: true
+      toc_sticky: true
+      toc_label: "目录"
+      toc_icon: "list-ul"
   # _pages
   - scope:
       path: "_pages"
