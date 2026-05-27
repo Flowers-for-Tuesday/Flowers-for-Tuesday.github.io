@@ -66,9 +66,16 @@ layout: default
       <section class="page__content e-content" itemprop="text">
         {% if page.toc %}
           <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
-            <nav class="toc" aria-label="Table of contents">
-              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[locale].toc_label | default: "On this page" }}</h4></header>
-              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            <nav class="toc toc--collapsible" aria-label="Table of contents">
+              <header>
+                <button type="button" class="nav__title toc__toggle" aria-expanded="true" aria-controls="toc-menu">
+                  <span class="toc__toggle-label"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[locale].toc_label | default: "On this page" }}</span>
+                  <i class="fas fa-chevron-down toc__toggle-icon" aria-hidden="true"></i>
+                </button>
+              </header>
+              <div class="toc__collapse" id="toc-menu">
+                {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+              </div>
             </nav>
           </aside>
         {% endif %}
@@ -109,3 +116,51 @@ layout: default
     {% include page__related.html locale=locale posts=site.posts %}
   {% endif %}
 </div>
+
+<style>
+  /* ===== Collapsible INDEX (table of contents) ===== */
+  .toc__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    /* inherit the theme's .toc .nav__title bar styling (background/colour) */
+    background: inherit;
+    color: inherit;
+    font: inherit;
+  }
+  .toc__toggle-icon {
+    flex: 0 0 auto;
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+  }
+  .toc.is-collapsed .toc__toggle-icon { transform: rotate(-90deg); }
+  .toc.is-collapsed .toc__collapse { display: none; }
+</style>
+
+<script>
+  (function () {
+    var nav = document.querySelector('.toc--collapsible');
+    if (!nav) return;
+    var btn = nav.querySelector('.toc__toggle');
+    if (!btn) return;
+    var KEY = 'toc-collapsed';
+
+    function setCollapsed(collapsed) {
+      nav.classList.toggle('is-collapsed', collapsed);
+      btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    }
+
+    try { if (localStorage.getItem(KEY) === '1') setCollapsed(true); } catch (e) {}
+
+    btn.addEventListener('click', function () {
+      var collapsed = !nav.classList.contains('is-collapsed');
+      setCollapsed(collapsed);
+      try { localStorage.setItem(KEY, collapsed ? '1' : '0'); } catch (e) {}
+    });
+  })();
+</script>
