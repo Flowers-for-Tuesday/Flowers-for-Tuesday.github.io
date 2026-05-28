@@ -1,0 +1,59 @@
+% Template.tex
+\bibliographystyle{plain}		%参考文献
+
+\usepackage{amsmath, amssymb}	%数学公式
+\usepackage{amsthm}				%定理环境
+\usepackage{bm}					%伪粗体命令
+\usepackage{siunitx}				%国际单位排版
+\usepackage{physics2}
+\usepackage{mhchem}				%化学元素
+\usephysicsmodule{ab, braket, nabla.legacy}	%括号命令
+\usepackage{derivative}			%求导命令
+
+\usepackage{float}				%浮动体结构
+\usepackage{caption}				%设置标题结构
+
+\usepackage{booktabs, tabularx}	%排版表格
+\usepackage{multirow, makecell}	%合并单元格
+\usepackage{longtable}			%长表格
+\newcolumntype{C}[1]{
+	>{\hsize = #1\hsize\centering\arraybackslash}X
+}	%居中格式
+
+\usepackage{graphicx, subfig}	%插入图片
+\usepackage{tikz}				%绘图语言
+\usepackage{circuitikz}			%绘制电路图
+
+\usepackage{xcolor}				%使用颜色
+\usepackage{tcolorbox}			%颜色盒子
+\tcbuselibrary{skins, breakable}
+\newtcolorbox{quiz}[2][]{
+	colback = white,
+	colframe = black, 
+	coltitle = black, 
+	breakable, 
+	enhanced jigsaw, 
+	title = {#2}, 
+	fonttitle = \bfseries, 
+	attach title to upper = {\ }, 
+	#1
+}	%思考题
+
+\usepackage{geometry}			%页面参数
+\geometry{hmargin = 90pt, vmargin = 72pt}
+
+\usepackage{lastpage}			%最后一页
+\usepackage{hyperref}			%超链接
+\renewcommand{\figureautorefname}{图}
+
+\usepackage{fancyhdr}			%页眉页脚
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage\ /\ \pageref{LastPage}}
+\fancyhead[L]{
+	\includegraphics[height = 28pt]{PKUPhy.png}
+	\vspace{-2pt}
+}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}

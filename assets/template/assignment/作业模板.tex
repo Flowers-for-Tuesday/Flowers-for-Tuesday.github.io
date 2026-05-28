@@ -1,0 +1,47 @@
+% main.tex
+\documentclass[11pt, a4paper]{ctexart}
+
+\input{Template}		%导言区设置
+
+\newtheorem{problem}{\indent 题}
+\renewcommand{\proofname}{\indent \textbf{\emph{证明}}}
+\newenvironment{solution}{\begin{proof}[\indent \textbf{\emph{解}}]}{\end{proof}}
+\newtheorem*{remark}{\indent 注}
+
+\fancyhead[R]{
+	\textit{数学物理方法（上）第一次作业}		%右侧页眉
+	\vspace{8pt}
+}
+
+\title{\textbf{数学物理方法（上）第一次作业}}	%标题
+\author{北京大学物理学院 \quad 2400000000 \quad 姓名\thanks{2400000000@stu.pku.edu.cn}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}	%标题所在页的页眉页脚
+
+\begin{problem}
+	我是题目（可选）．
+\end{problem}
+
+\begin{solution}
+	我是解答过程．
+\end{solution}
+
+\begin{problem}
+	我是证明题（可选）．
+\end{problem}
+
+\begin{proof}
+	我是证明过程．
+\end{proof}
+
+\begin{remark}
+	我是评论（可选）．
+\end{remark}
+
+\bibliography{ref}
+
+\end{document}
