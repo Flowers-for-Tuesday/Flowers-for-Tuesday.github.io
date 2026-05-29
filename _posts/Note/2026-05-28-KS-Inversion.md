@@ -96,6 +96,26 @@ $$E_{xc}[n] \equiv (T[n] - T_s[n]) + (V_{ee}[n] - E_H[n])$$
  
 ## 2. Wu-Yang method <sup> [2] </sup>
 
+自洽场迭代求解虽然听起来合理，但其实细想一下还是有不少问题的。在最优化理论中，要100%保证算法能收敛到全局唯一解，目标泛函必须在全空间具有严格的凹性或凸性。自洽能不能收敛，我们是没法证明的。甚至在实际的计算机数值计算中，ZMP 方法常常会遇到严重的收敛困难，甚至发散。
+
+而且就算能收敛，迭代次数往往也不容乐观。
+
+因此相较于ZMP的自洽法，WY方法提出了一种更加简单直接的思路，也就是把目标势函数进行一组高斯基函数的线性展开。将待求的总势能 $v(\mathbf{r})$ 拆分为三部分
+
+$$v(\mathbf{r}) = v_{\text{ext}}(\mathbf{r}) + v_0(\mathbf{r}) + v_t(\mathbf{r}) = v_{\text{ext}}(\mathbf{r}) + v_0(\mathbf{r}) + \sum_t b_t g_t(\mathbf{r})$$
+
+与ZMP类似的采用了具有自相互作用修正的  Fermi-Amaldi 势
+
+$$v_0(\mathbf{r}) = \frac{N-1}{N} \int \frac{\rho_{\text{in}}(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} d\mathbf{r}'$$
+
+$\sum_t b_t g_t(\mathbf{r})$则是需要优化的部分。WY方法用一组已知的高斯基函数 $\{g_t(\mathbf{r})\}$ 将其线性展开。此时，优化一个连续场的问题，简化为了求解一组有限维度的线性系数标量 $\{b_t\}$。
+
+> 理论上无限维的高斯基函数是完备的，但实际运用只能使用有限个基函数，在所需的精度上进行近似。
+
+这里的设计其实很有巧思，因为总势能$v(\mathbf{r})$本身是没法用高斯基组展开的，必须扣除有奇点的$v_{\text{ext}}(\mathbf{r})$，再扣除$v_0(\mathbf{r})$确保边界快速收敛，剩下的有限平滑的函数才能用高斯基组进行高精度的近似。
+
+于是剩下的问题就是有限参量$\{b_t\}$的全局优化问题，这
+
 ---
 
 [1] [Q. Zhao, R. C. Morrison, and R. G. Parr, Phys. Rev. A. 50, 2138 (1994).](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.50.2138)
