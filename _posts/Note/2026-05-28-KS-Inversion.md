@@ -114,7 +114,68 @@ $\sum_t b_t g_t(\mathbf{r})$则是需要优化的部分。WY方法用一组已�
 
 这里的设计其实很有巧思，因为总势能$v(\mathbf{r})$本身是没法用高斯基组展开的，必须扣除有奇点的$v_{\text{ext}}(\mathbf{r})$，再扣除$v_0(\mathbf{r})$确保边界快速收敛，剩下的有限平滑的函数才能用高斯基组进行高精度的近似。
 
-于是剩下的问题就是有限参量$\{b_t\}$的全局优化问题，这
+于是剩下的问题就是有限参量$\{b_t\}$的全局优化问题，这里有一个很有意思的问题转换，我们构造泛函
+
+$$W_s[v(\mathbf{r})] = E_s[v] - \int v(\mathbf{r})\rho_{\text{in}}(\mathbf{r}) d\mathbf{r}$$
+
+也即
+
+$$W_s[v(\mathbf{r})] = \langle \Psi_v | \hat{T} | \Psi_v \rangle + \int v(\mathbf{r}) [ \rho_v(\mathbf{r}) - \rho_{\text{in}}(\mathbf{r}) ] d\mathbf{r}$$
+
+现在我们尝试证明一个引理。现在，假设算法闭着眼睛摸索到了一个错误的外部势能 $v_{\text{wrong}}(\mathbf{r})$。
+在 $v_{\text{wrong}}$ 下，它能解出一个基态波函数 $\Psi_{\text{wrong}}$，以及相应的电子密度 $\rho_{\text{wrong}}$。
+
+我们需要证明
+
+$$W_s[v_{\text{wrong}}] \le  W_s[v_{\text{true}}]$$
+
+根据定义
+
+$$W_s[v_{\text{wrong}}] = \min_{\Psi} \left\{ \langle \Psi | \hat{T} + \hat{V}_{\text{wrong}} | \Psi \rangle \right\} - \int v_{\text{wrong}}(\mathbf{r})\rho_{\text{in}}(\mathbf{r}) d\mathbf{r}$$
+
+根据变分原理，如果我们偏偏把那个正确的波函数 $\Psi_{\text{true}}$ 代入这个错误的哈密顿量呢？它算出来的能量必定比基态高
+
+$$\min_{\Psi} \left\{ \langle \Psi | \hat{T} + \hat{V}_{\text{wrong}} | \Psi \rangle \right\} \le \langle \Psi_{\text{true}} | \hat{T} + \hat{V}_{\text{wrong}} | \Psi_{\text{true}} \rangle$$
+
+把右边展开
+
+$$\langle \Psi_{\text{true}} | \hat{T} + \hat{V}_{\text{wrong}} | \Psi_{\text{true}} \rangle = \langle \Psi_{\text{true}} | \hat{T} | \Psi_{\text{true}} \rangle + \int v_{\text{wrong}}(\mathbf{r})\rho_{\text{in}}(\mathbf{r}) d\mathbf{r}$$
+
+把这个不等式带回 $W_s[v_{\text{wrong}}]$ 的表达式中
+
+$$W_s[v_{\text{wrong}}] \le \left( \langle \Psi_{\text{true}} | \hat{T} | \Psi_{\text{true}} \rangle + \int v_{\text{wrong}}(\mathbf{r})\rho_{\text{in}}(\mathbf{r}) d\mathbf{r} \right) - \int v_{\text{wrong}}(\mathbf{r})\rho_{\text{in}}(\mathbf{r}) d\mathbf{r}$$
+
+于是命题得证
+
+$$W_s[v_{\text{wrong}}] \le \langle \Psi_{\text{true}} | \hat{T} | \Psi_{\text{true}} \rangle = W_s[v_{\text{true}}]$$
+
+因此现在问题被我们转化为一个变分问题，当$v(\mathbf{r}) \rightarrow v_{\text{true}}$，泛函$W_s[v(\mathbf{r})]$取得极大值。
+
+由于$v(\mathbf{r})$可变参数是系数向量 $\mathbf{b} = \{b_t\}$，泛函 $W_s[v]$ 可转化为普通的多元标量函数 $W_s(\mathbf{b})$。因此其导数存在解析形式。
+
+- 梯度向量
+
+$$G_t = \frac{\partial W_s}{\partial b_t} = \int \frac{\delta W_s}{\delta v(\mathbf{r})} \frac{\partial v(\mathbf{r})}{\partial b_t} d\mathbf{r} = \int [\rho_v(\mathbf{r}) - \rho_{\text{in}}(\mathbf{r})] g_t(\mathbf{r}) d\mathbf{r}$$
+
+- Hessian 矩阵
+
+$$H_{ut} = \frac{\partial^2 W_s}{\partial b_u \partial b_t} = 4 \sum_{i}^{\text{occ}} \sum_{a}^{\text{unocc}} \frac{\langle\phi_i|g_u|\phi_a\rangle\langle\phi_a|g_t|\phi_i\rangle}{\epsilon_i - \epsilon_a}$$
+
+拥有了完全解析的二阶 Hessian 矩阵，意味着算法可以使用最直接的**二阶牛顿法**
+
+$$\mathbf{b}^{(k+1)} = \mathbf{b}^{(k)} - \mathbf{H}^{-1} \mathbf{G}$$
+
+这种方法的迭代速度就比ZMP快得多（毕竟优化的参数就那么多）。
+
+另外，如果需要回推交换相关势$v_{xc}(\mathbf{r})$，根据 Kohn-Sham 标准有效势的定义：$v_{\text{eff}}(\mathbf{r}) = v_{\text{ext}}(\mathbf{r}) + v_H(\mathbf{r}) + v_{\text{xc}}(\mathbf{r})$。由于优化得到的精确有效势为 $v(\mathbf{r}) = v_{\text{ext}} + v_0 + \sum_t b_t g_t$，两式相对照
+
+$$v_{\text{xc}}(\mathbf{r}) = \sum_t b_t g_t(\mathbf{r}) + v_0(\mathbf{r}) - v_H(\mathbf{r})$$
+
+也即
+
+$$v_{\text{xc}}(\mathbf{r}) = \sum_t b_t g_t(\mathbf{r}) + \int \frac{\rho_{\text{in}}(\mathbf{r}') - \rho_v(\mathbf{r}')}{|\mathbf{r}-\mathbf{r}'|} d\mathbf{r}' - \frac{1}{N}\int \frac{\rho_{\text{in}}(\mathbf{r}')}{|\mathbf{r}-\mathbf{r}'|} d\mathbf{r}'$$
+
+以上。
 
 ---
 
