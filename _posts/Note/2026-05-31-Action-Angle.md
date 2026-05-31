@@ -9,7 +9,8 @@ tags:
 cover: /assets/images/Note/Action-Angle/cover.jpg
 excerpt: "做了一场三年前的梦。"
 ---
-今天一定会写完作业。
+
+有时候不知道自己的选择是出于勇敢还是软弱。
 
 ## Ⅰ. 作用量与角变量
 
