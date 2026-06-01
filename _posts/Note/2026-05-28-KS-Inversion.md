@@ -96,6 +96,8 @@ $$E_{xc}[n] \equiv (T[n] - T_s[n]) + (V_{ee}[n] - E_H[n])$$
  
 ## 2. Wu-Yang method <sup> [2] </sup>
 
+### 2.1 基本原理
+
 自洽场迭代求解虽然听起来合理，但其实细想一下还是有不少问题的。在最优化理论中，要100%保证算法能收敛到全局唯一解，目标泛函必须在全空间具有严格的凹性或凸性。自洽能不能收敛，我们是没法证明的。甚至在实际的计算机数值计算中，ZMP 方法常常会遇到严重的收敛困难，甚至发散。
 
 而且就算能收敛，迭代次数往往也不容乐观。
@@ -174,6 +176,8 @@ $$v_{\text{xc}}(\mathbf{r}) = \sum_t b_t g_t(\mathbf{r}) + v_0(\mathbf{r}) - v_H
 也即
 
 $$v_{\text{xc}}(\mathbf{r}) = \sum_t b_t g_t(\mathbf{r}) + \int \frac{\rho_{\text{in}}(\mathbf{r}') - \rho_v(\mathbf{r}')}{|\mathbf{r}-\mathbf{r}'|} d\mathbf{r}' - \frac{1}{N}\int \frac{\rho_{\text{in}}(\mathbf{r}')}{|\mathbf{r}-\mathbf{r}'|} d\mathbf{r}'$$
+
+### 2.2 Lieb变换与凹泛函证明
 
 以上。
 
