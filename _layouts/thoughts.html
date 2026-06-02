@@ -36,7 +36,6 @@ layout: archive
 
   <aside class="thoughts-timeline" aria-label="Timeline">
     <div class="thoughts-timeline__window">
-      <span class="thoughts-timeline__cursor" aria-hidden="true"></span>
       <ol class="thoughts-timeline__list">
         {% for thought in thoughts %}
           {% assign anchor = thought.url | split: '/' | last %}
@@ -215,18 +214,6 @@ layout: archive
     mask-image: linear-gradient(
       to bottom, transparent 0%, #000 26%, #000 74%, transparent 100%);
   }
-  /* the highlight band marking the centre slot */
-  .thoughts-timeline__cursor {
-    position: absolute;
-    left: 0;
-    right: 0.2em;
-    top: 50%;
-    height: 2.6em;
-    transform: translateY(-50%);
-    border-top: 1px solid #ececec;
-    border-bottom: 1px solid #ececec;
-    pointer-events: none;
-  }
   .thoughts-timeline__list {
     list-style: none;
     margin: 0;
@@ -251,12 +238,15 @@ layout: archive
     will-change: transform, opacity, filter;
   }
   .thoughts-timeline__item a {
-    display: block;
+    display: inline-block;
     color: #b0b0b0;
     text-decoration: none;
     font-size: 0.78em;
     line-height: 1.25;
-    transition: color 0.18s ease;
+    padding: 0.3em 0;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    transition: color 0.18s ease, border-color 0.25s ease;
   }
   .thoughts-timeline__date {
     display: block;
@@ -271,7 +261,11 @@ layout: archive
     margin-top: 0.05em;
   }
   .thoughts-timeline__item a:hover { color: #777; }
-  .thoughts-timeline__item.is-active a { color: #1f1f1f; }
+  .thoughts-timeline__item.is-active a {
+    color: #1f1f1f;
+    border-top-color: #ececec;
+    border-bottom-color: #ececec;
+  }
   .thoughts-timeline__item.is-active .thoughts-timeline__date {
     font-weight: 600;
   }
