@@ -6,6 +6,7 @@ categories:
 tags:
   - Computational Physics
   - Condensed Matter Physics
+  - Paper Notes
 cover: /assets/images/Note/KS-Inversion/cover.jpg
 excerpt: "人类对DFT的开发程度似乎还未到头"
 ---
