@@ -8,7 +8,7 @@ tags:
   - Condensed Matter Physics
   - Paper Notes
 cover: /assets/images/Note/KS-Inversion/cover.jpg
-excerpt: "人类对DFT的开发程度似乎还未到头"
+excerpt: "DFT还有生命力吗，我们不得而知。"
 ---
 
 自己接下来的科研应该会偏向DFT方向（虽然具体课题还没确定），总之还是得尽快补充知识。
