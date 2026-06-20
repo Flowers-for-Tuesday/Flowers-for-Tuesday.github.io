@@ -13,7 +13,7 @@ excerpt: "Track in Time，追溯时光"
 
 本文为Griffiths《Introduction to Quantum Mechanics》第七章笔记。
 
-##  1.Nondegenerate Perturbation Theory
+##  1. Nondegenerate Perturbation Theory
 
 ### 1.1 General Formulation
 
@@ -108,3 +108,65 @@ $$E_n^{(2)} = \langle n^{(0)} | H' \left( \sum_{m \neq n} \frac{\langle m^{(0)} 
 $$E_n^{(2)} = \sum_{m \neq n} \frac{|\langle m^{(0)} | H' | n^{(0)} \rangle|^2}{E_n^{(0)} - E_m^{(0)}}$$
 
 至于二阶波函数修正，虽然的确可以用同样的方法求出来，但是实用性不大，这里就不作推导了。
+
+##  2. Degenerate Perturbation Theory
+
+显然，虽然我们并没有在前面的推导中提及简并的假设，但从一阶波函数修正中的分母
+
+$$|n^{(1)}\rangle = \sum_{m \neq n} \frac{\langle m^{(0)} | H' | n^{(0)} \rangle}{E_n^{(0)} - E_m^{(0)}} |m^{(0)}\rangle$$
+
+不难看出这个公式对简并态是失效的，因为简并态对应的分母为0。
+
+怎么理解这件事情呢，其实这完全可以用线性代数的视角来思考。前面的推导中其实隐形地包含了一个假设，那就是当哈密顿量$H$发生小量变化是，波函数的本征态发生的变换也是一个小量。从一般线性代数的角度讲，就是当一个矩阵发生一个小的扰动后
+
+$$A'=A_0+\lambda A_1$$
+
+其本征向量的改变量也是一个小量
+
+$$\mathbf{n}'=\mathbf{n_0}+\lambda \mathbf{n_1}$$
+
+这在大多情况下是没问题的，但对有简并的本征向量的矩阵就有点特殊，因为在相同本征值的向量空间中，本征态可以选取空间的任意基底。但是一旦矩阵微扰，微扰后的本征态虽然与先前的向量空间差一个小量，但对某个原先特定的本征态，可就不尽如此了。
+
+这启发我们，对有简并能级的哈密顿量，需要在本征能量的态空间中选取特定的基底，使得微扰后的基底改变仍是一个小量。显然，这个基底应该直接与$H'$的形式相关。
+
+由于先前的非简并理论并没有简并假设，所以其方程仍然是检验简并理论的必要条件，也就是说这组特殊的基底必须至少满足
+
+$$\langle m^{(0)} | H' | n^{(0)} \rangle = 0$$
+
+换言之，假设某已知能级 $E_n^{(0)}$ 具有 $f$ 重简并，对应的本征态为 $|\psi_{n\alpha}^{(0)}\rangle$（其中 $\alpha = 1, 2, \dots, f$）。微扰哈密顿量为 $\hat{H}'$。我们将原本的 $f$ 个简并本征态排成一个行向量（基底向量）
+
+$$|\boldsymbol{\psi}_{n}^{(0)}\rangle = \begin{pmatrix} |\psi_{n1}^{(0)}\rangle, & |\psi_{n2}^{(0)}\rangle, & \dots, & |\psi_{nf}^{(0)}\rangle \end{pmatrix}$$
+
+在旧基底之下，微扰算符对应的矩阵为 $\mathbf{H}'$，其矩阵元为 $\mathbf{H}'_{\alpha\beta} = \langle\psi_{n\alpha}^{(0)}| \hat{H}' |\psi_{n\beta}^{(0)}\rangle$。
+
+现在，问题转换为寻找一个系数矩阵 $C_n$来得到新基底 $|\boldsymbol{\psi}_{n}'^{(0)}\rangle$
+
+$$|\boldsymbol{\psi}_{n}'^{(0)}\rangle = |\boldsymbol{\psi}_{n}^{(0)}\rangle C_n$$
+
+使得新矩阵为对角矩阵
+
+$$\left(\mathbf{H}'_\text{new}\right)_{\alpha\beta} = \langle\psi_{n\alpha}'^{(0)}| \hat{H}' |\psi_{n\beta}'^{(0)}\rangle$$
+
+写成矩阵乘法形式，新矩阵就是
+
+$$\mathbf{H}'_\text{new} = C_n^{\dagger} \mathbf{H}' C_n$$
+
+我们把对角线上的元素（特征值）记为 $\Lambda$
+
+$$\mathbf{H}'_\text{new} = C_n^{\dagger} \mathbf{H}' C_n = \Lambda = \begin{pmatrix} E_1^{(1)} & 0 \\ 0 & E_2^{(1)} \end{pmatrix}$$
+
+直接求解久期方程
+
+$$\det(H' - E^{(1)}I) = 0$$
+
+得到特征值后，结合$C_n$ 幺正矩阵正交归一的特性，可以反向可求得系数矩阵。
+
+于是，接下来的操作和非简并就没什么差异了。
+
+对于一级能量修正，会发现刚好就是我们求出来的本征值$E^{(1)}$
+
+而一级波函数修正变成了$0/0$的不定形
+
+$$|n^{(1)}\rangle = \sum_{n}\sum_{\alpha \ne \beta} \frac{\langle n_{\beta}^{(0)} | H' | n_{\alpha}^{(0)} \rangle}{E_{n_{\alpha}}^{(0)} - E_{n_{\beta}}^{(0)}} |n_{\alpha}^{(0)}\rangle$$
+
+理论上，这里的系数同样可以任意，不过为了简洁，统一选取为0。二阶能量修正也是同理。
