@@ -1,6 +1,6 @@
 ---
 title: "WKB Approximation"
-date: 2026-06-15 8:40
+date: 2026-06-20 18:40
 categories:
   - Note
 tags:
