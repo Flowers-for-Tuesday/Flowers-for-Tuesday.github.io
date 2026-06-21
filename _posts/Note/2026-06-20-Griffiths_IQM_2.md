@@ -112,3 +112,33 @@ $$A(x) = \frac{C}{\sqrt{k(x)}} \propto \frac{1}{\sqrt{p(x)}}$$
 $$\psi(x) \approx \frac{C}{\sqrt{p(x)}} \exp\left( \pm \frac{i}{\hbar}\int p(x')dx' \right)$$
 
 ## 2. Tunneling
+
+转折点就发生在$E=V(x)$的交界处，不过交界点的处理我们先放着，先来定性看看交界外所谓禁区的波函数。从前面的图片不难看到，不存在什么乱七八糟的振荡，就是非常干脆直接的局部隧穿和收敛。
+
+前面的实部虚部方程同样成立
+
+$$A\phi'^2 = k^2(x)A + A'' \implies \phi'^2 = k^2(x) + \frac{A''}{A}$$
+
+$$2A'\phi' + A\phi'' = 0 \implies \frac{d}{dx}\left(A^2 \phi'\right) = 0$$
+
+我们可以玩同样的trick，把这里的 $\frac{A''}{A}$扔掉。但理由与先前的局部平均化不同，这里纯粹是由于$\frac{A''}{A}$的确是个小量。
+
+定义屏障函数 $\kappa(x) = \frac{\sqrt{2m(V(x)-E)}}{\hbar}$。事实上，不妨把WKB解出来的振幅 $A_{\text{WKB}}(x) = \kappa(x)^{-1/2}$ 带回原方程，去严格计算一下被扔掉的 $\frac{A''}{A}$ 到底有多大。屏障函数 $\kappa(x) = \frac{\sqrt{2m(V(x)-E)}}{\hbar}$
+
+根据链式法则，对 $A = \kappa^{-1/2}$ 求二阶导数
+
+$$A' = -\frac{1}{2}\kappa^{-3/2}\kappa'$$
+
+$$A'' = \frac{3}{4}\kappa^{-5/2}(\kappa')^2 - \frac{1}{2}\kappa^{-3/2}\kappa''$$
+
+我们把 $A''$ 除以 $A$
+
+$$\frac{A''}{A} = \frac{3}{4}\left(\frac{\kappa'}{\kappa}\right)^2 - \frac{1}{2}\frac{\kappa''}{\kappa}$$
+
+不难注意到
+
+$$\phi'^2 = \underbrace{\kappa^2(x)}_{\mathcal{O}\left(\frac{1}{\hbar^2}\right)} + \underbrace{\frac{A''}{A}}_{\mathcal{O}(1)}$$
+
+所以半经典近似下，禁区的隧穿衰减是非常快速的，此时忽略尾项确实是合情合理。
+
+## 3. The Connection Formulas
