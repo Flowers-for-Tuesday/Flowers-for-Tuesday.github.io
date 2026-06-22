@@ -51,13 +51,7 @@ WKB近似，其实就是半经典近似。我们知道经典判据就是德布�
 
 ![](/assets/images/Note/Griffiths_IQM/2-1.png)
 
-虽然振幅在密密麻麻振荡，但当我们实际测量时，中间的振荡很大程度上是可以平均掉的，换言之这时候我们想求的其实是这个概率分布的包络线，真实的概率分布恰好平均后就是包络线的一半。这也正是WKB近似的核心思想。
-
-$$\langle |\psi(x)|^2 \rangle_{\text{detect}} = \frac{1}{2} A^2(x)$$
-
-我们有理由认为，在$E>V(x)$的经典区域，半经典条件下（也就是$E$为高能级）波函数振幅都和谐振子一样剧烈振荡，同时在远大于德布罗意波长的小局域范围内有$\langle |\psi(x)|^2 \rangle_{\text{detect}} = \frac{1}{2} A^2(x)$成立，于是如何求解这个包络线成了关键问题。
-
-写出一维定态薛定谔方程
+虽然我们知道它的严格解是厄米多项式，但是在半经典近似下，有更为巧妙的求解方法。写出一维定态薛定谔方程
 
 $$\frac{d^2\psi}{dx^2} + \frac{2m}{\hbar^2}\big(E - V(x)\big)\psi(x) = 0$$
 
@@ -89,19 +83,15 @@ $$A\phi'^2 = k^2(x)A + A'' \implies \phi'^2 = k^2(x) + \frac{A''}{A}$$
 
 $$2A'\phi' + A\phi'' = 0 \implies \frac{d}{dx}\left(A^2 \phi'\right) = 0$$
 
-我们已经凭借过人的直觉知道振幅会疯狂振荡，根据实部方程，这意味着，真实的相位梯度 $\phi'(x)$ 在空间中也是个极度剧烈突变的怪物。这也和虚部方程$A^2 \phi' = \text{Const}$是自洽的。
+注意在转折点的邻域之外，$k(x)$是一个很大的量。这意味着 $\frac{A''}{A}$ 作为0阶是可以忽略的量。
 
-前面提到，WKB近似的目的在于求出包络线，而不是这坨疯狂振荡的波函数，而二者在数学上的差异就在于其平滑性。我们有理由认为，如果令 $\frac{A''}{A} \to 0$，那么振幅$A$就会退化为包络线的形式
-
-> 我承认我有赌的成分，不然实在太难解释了，书里的解释在我看来一塌糊涂。又或者这里其实是一种局部的平均效应导致的。有待进一步讨论。
-
-总之积分得到零阶相位
+于是积分得到零阶相位
 
 $$\phi(x) = \pm \int k(x')dx' = \pm \frac{1}{\hbar}\int p(x')dx'$$
 
 将解出的 $\phi' = k(x)$ 代入虚部方程
 
-$$\frac{d}{dx}\left(A^2 k(x)\right) = 0 \implies A^2 k(x) = \text{常数 } C^2$$
+$$\frac{d}{dx}\left(A^2 k(x)\right) = 0 \implies A^2 k(x) = C^2$$
 
 因为 $k(x) \propto p(x)$，所以我们可得振幅直接有该处的动量决定（更严格地说是能量）
 
@@ -142,3 +132,105 @@ $$\phi'^2 = \underbrace{\kappa^2(x)}_{\mathcal{O}\left(\frac{1}{\hbar^2}\right)}
 所以半经典近似下，禁区的隧穿衰减是非常快速的，此时忽略尾项确实是合情合理。
 
 ## 3. The Connection Formulas
+
+看起来好像目前为止一帆风顺，接下来只要在转折点调一调参数满足归一化和连续性条件，一个看起来合情合理的波函数就诞生了。
+
+个鬼啊，你也没注意看看前面振幅的分母是什么
+
+$$A(x) = \frac{C}{\sqrt{k(x)}} \propto \frac{1}{\sqrt{p(x)}}$$
+
+这玩意在转折点一眼发散，怎么可能是给你调调参就解决的。
+
+事实上可以直接看这张图，会发现转折点处直接爆掉了。
+
+![](/assets/images/Note/Griffiths_IQM/2-3.png)
+
+这里肯定只能舍弃WKB的做法，转而采用最原始的薛定谔形式，考虑到我们只在转折点$x_0$附近的小区域进行求解，可对势能进行线性近似
+
+$$V(x) \approx V(x_0) + F_0(x - x_0) = E + F_0(x - x_0)$$
+
+斜率 $F_0 = V'(x_0)$
+
+于是原方程化为
+
+$$\frac{d^2\psi}{dx^2} - \frac{2mF_0}{\hbar^2}(x-x_0)\psi = 0$$
+
+这个方程在数学上有严格的解析解，即艾里函数 $\text{Ai}(z)$ 和 $\text{Bi}(z)$。
+
+数学形式有点复杂，直接上图
+
+![](/assets/images/Note/Griffiths_IQM/2-2.png)
+
+所以我们可以认为转折点附近的函数就是Airy函数$Ai(x-x_0)$的形式，因为$Bi(x)$会发散。
+
+啊？
+
+这是书上一笔带过的解释，同样非常扯淡。凭什么局部的势能近似就可以得到局部的波函数解一致，这也未免太没逻辑了。
+
+这里更合适的说法应该是，我们在寻找一个小局域上的函数，使得其在这个局域满足薛定谔方程
+
+$$\frac{d^2\psi}{dx^2} - \frac{2mF_0}{\hbar^2}(x-x_0)\psi = 0$$
+
+同时在局域外符合WKB提供的边界条件。如果这两个条件都符合，那这个解毫无疑问就是我们需要的解。
+
+条件一使得这个函数的形式只可能是Airy函数，所以关键就是看其如何对齐边界条件。
+
+严格地用Ai函数来对其显然是做不到的，因为我们连函数解析式都写不出来，但在半经典的条件下就稍微有了不同。注意到
+
+$$\psi_{\text{turning}}(x) = a \cdot \text{Ai}(z) = a \cdot \text{Ai}\left[ \alpha (x - x_0) \right] \quad \text{其中 } \alpha = \left(\frac{2mF_0}{\hbar^2}\right)^{1/3}$$
+
+半经典下这个系数$\alpha$足够大，意味着即使是一个小的局域，对Ai函数来说就相当于是其渐进极限。这意味着我们可以不用普适的边界条件，而采用渐进极限条件下的同步来进行边界的对齐。
+
+我们把经典区和禁区的解先摆着
+
+右侧禁区的 WKB 解
+
+$$\psi_{\text{fobidden}}(x) = \frac{D_1}{\sqrt{|p(x)|}} \exp\left( -\frac{1}{\hbar}\int_{x_0}^x |p(x')|dx' \right) + \frac{D_2}{\sqrt{|p(x)|}} \exp\left( +\frac{1}{\hbar}\int_{x_0}^x |p(x')|dx' \right)$$
+
+左侧经典区的 WKB 解
+
+$$\psi_{\text{classical}}(x) = \frac{C_1}{\sqrt{p(x)}} \sin\left( \frac{1}{\hbar}\int_x^{x_0} p(x')dx' \right) + \frac{C_2}{\sqrt{p(x)}} \cos\left( \frac{1}{\hbar}\int_x^{x_0} p(x')dx' \right)$$
+
+$\text{Ai}(z)$ 在 $z \to +\infty$ 时的严格渐近展开式为
+
+$$\text{Ai}(z) \sim \frac{1}{2\sqrt{\pi}z^{1/4}} \exp\left( -\frac{2}{3}z^{3/2} \right)$$
+
+所以，局域艾里解在重叠区右侧的长相为
+
+$$\psi_{\text{turning}} \approx \frac{a}{2\sqrt{\pi}z^{1/4}} \exp\left( -\frac{2}{3}z^{3/2} \right)$$
+
+让其与禁区解严格对齐，形成恒等式
+
+$$\frac{D}{\sqrt{\alpha\hbar} \cdot z^{1/4}} \exp\left( -\frac{2}{3}z^{3/2} \right) = \frac{a}{2\sqrt{\pi}z^{1/4}} \exp\left( -\frac{2}{3}z^{3/2} \right)$$
+
+消去共有项，我们极其精准地锁定了艾里函数的归一化系数 $a$
+
+$$a = \frac{2\sqrt{\pi}}{\sqrt{\alpha\hbar}} D$$
+
+同理， $\text{Ai}(z)$ 在 $z \to -\infty$（即 $\bar{z} \to +\infty$）时的严格振荡渐近展开式为
+
+$$\text{Ai}(-\bar{z}) \sim \frac{1}{\sqrt{\pi}\bar{z}^{1/4}} \cos\left( \frac{2}{3}\bar{z}^{3/2} - \frac{\pi}{4} \right)$$
+
+这意味着
+
+$$\psi_{\text{turning}} = a \cdot \text{Ai}(- \bar{z}) \approx \left(\frac{2\sqrt{\pi}}{\sqrt{\alpha\hbar}} D\right) \cdot \frac{1}{\sqrt{2\pi}\bar{z}^{1/4}} \left[ \sin\left(\frac{2}{3}\bar{z}^{3/2}\right) + \cos\left(\frac{2}{3}\bar{z}^{3/2}\right) \right]$$
+
+与经典区的WKB解对齐，可得
+
+$$C_1 = \sqrt{2}D, \quad C_2 = \sqrt{2}D$$
+
+$$\psi_{\text{WKB}}^{\text{allowed}}(x) = \frac{2D}{\sqrt{p(x)}} \cos\left( \frac{1}{\hbar}\int_x^{x_0} p(x')dx' - \frac{\pi}{4} \right)$$
+
+此即为WKB近似的最终解。在转折点正上方（$x = x_0$），真实的波函数直接由艾里函数在原点的值接管。这是一个确定值
+
+$$\psi(x_0) = \frac{2\sqrt{\pi}D}{\sqrt{\alpha\hbar}} \text{Ai}(0) \approx \frac{2\sqrt{\pi}D}{\sqrt{\alpha\hbar}} \times 0.35503 \neq \infty$$
+
+其实仔细想想会发现这一套连接的想法对非经典的条件应该也适用，例如还是谐振子势，我们可以在一个非常局域的地方对势能线性近似，然后在把该处的波函数用Airy函数表示
+
+$$\psi_i(x) = C_i \text{Ai}(\xi_i) + D_i \text{Bi}(\xi_i)$$
+
+然后在两段进行边界条件的调整，看似有四个边界方程，但是由于线性近似严格求解的Airy函数具有特殊性，所以是可以做到两个参数符合四个方程的。
+
+而半经典近似下，虽然只是宏观的小局域，但是却已经足以达到Airy函数渐进展开的范畴。这就是为什么我们可以用渐进的对齐来达成边界条件的对齐，不难认识到这种可对齐是一种数学上的必然而非偶然。
+
+是啊，肯定只会是必然。没什么值得惊讶的。
