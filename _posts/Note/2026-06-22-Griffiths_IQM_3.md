@@ -247,7 +247,7 @@ $$V_{\text{截断}}(r) = \begin{cases} V(r), & r \le R \\ 0, & r > R \end{cases}
 
 只考虑前几项波函数，这样算出来的微分散射截面除了在$\theta=0$附近之外，和真实的几乎没什么差别。
 
-
+后续内容出门右转Thijssen的计算物理笔记。
 
 ## 3. The Born Approximation
 
