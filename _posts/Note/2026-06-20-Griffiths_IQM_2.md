@@ -8,7 +8,7 @@ tags:
   - Quantum Mechanics
   - Textbook Notes
 cover: /assets/images/Note/Griffiths_IQM/cover2.jpg
-excerpt: "幾万の箴言を信じて！"
+excerpt: "I Don't Know，无知无罪"
 ---
 
 本文为Griffiths《Introduction to Quantum Mechanics》第九章笔记。
