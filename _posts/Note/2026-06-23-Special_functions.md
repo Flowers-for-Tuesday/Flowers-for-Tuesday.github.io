@@ -22,9 +22,9 @@ Bessel方程的形式如下：$$x^2 \frac{d^2y}{dx^2} + x \frac{dy}{dx} + (x^2 -
 
 - 二类Bessel函数（Neumann函数） $Y_n(x)$：在 $x=0$ 处是发散（无穷大）的。
 
-![](/assets/images/Note/Special%20Function/1.png)
+![](/assets/images/Note/Special%20Functions/1.png)
 
-![](/assets/images/Note/Special%20Function/2.png)
+![](/assets/images/Note/Special%20Functions/2.png)
 
 Bessel方程一般出现在柱对称性中，例如二维圆形边界的薄膜波动方程
 
@@ -129,7 +129,7 @@ $P_3(x) = \frac{1}{2}(5x^3 - 3x)$
 
 $P_4(x) = \frac{1}{8}(35x^4 - 30x^2 + 3)$
 
-![](/assets/images/Note/Special%20Function/3.png)
+![](/assets/images/Note/Special%20Functions/3.png)
 
 不难发现，$P_n(x)$具有确定的奇偶性
 

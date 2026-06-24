@@ -8,7 +8,7 @@ tags:
   - Quantum Mechanics
   - Textbook Notes
 cover: /assets/images/Note/Griffiths_IQM/cover3.jpg
-excerpt: "Color Your Night，夜色尽染"
+excerpt: "Don't Wanna Cry，泪非所愿"
 ---
 
 本文为Griffiths《Introduction to Quantum Mechanics》第十章笔记。
@@ -77,7 +77,7 @@ $$\frac{d^2 u_l(r)}{dr^2} + \left[ k^2 - \frac{l(l+1)}{r^2} \right] u_l(r) \appr
 
 但这毕竟只是简单的变量替换，本质上不是新的方程，通解为球贝塞尔函数的变形
 
-$$u_l(r) = C_1 rj_l(r) + C_2 ry_l(r)$$
+$$u_l(r) = C_1 krj_l(kr) + C_2 kry_l(kr)$$
 
 考虑到我们求的是无穷远处的近似解，这两个函数的渐进展开为
 
@@ -87,7 +87,7 @@ $$y_l(x) \approx -\frac{1}{x} \cos\left( x - \frac{l\pi}{2} \right) \quad (x \to
 
 于是不妨直接将解写作
 
-$$u_l(r) = C_l \sin\left( r - \frac{l\pi}{2} +\delta_l \right)$$
+$$u_l(r) = C_l \sin\left( kr - \frac{l\pi}{2} +\delta_l \right)$$
 
 相移 $\delta_l$ 是一个与角量子数$l$有关的量。
 
@@ -107,7 +107,7 @@ $$j_l(kr) \xrightarrow{r \to \infty} \frac{1}{2ikr} \left[ e^{i\left(kr - \frac{
 
 $$e^{ikz} \xrightarrow{r \to \infty} \sum_{l=0}^{\infty} (2l+1) i^l \frac{1}{2ikr} \left[ e^{i\left(kr - \frac{l\pi}{2}\right)} - e^{-i\left(kr - \frac{l\pi}{2}\right)} \right] P_l(\cos\theta)$$
 
-联系我们先前提到的远场通解形式
+联系我们先前提到的远场通解形式（严格来说是特解，因为只有一个方向）
 
 $$\psi(r, \theta) \approx e^{ikz} + f(\theta)\frac{e^{ikr}}{r}$$
 
@@ -151,9 +151,9 @@ $$\sigma = \frac{4\pi}{k^2} \sum_{l=0}^{\infty} (2l+1) \sin^2\delta_l$$
 
 此即分波法得到的总散射截面计算公式。
 
-这里自己又想多说两句了，我们用系数对齐求出了一堆东西，好像很有意义对吧。实际上呢，这件事情的本质只是从通解中扣去了平面波项而已。说到底这和定义没什么区别，我们之所以求它，是因为它可测量，可被验证，说到底是因为人类的局限性才得以有其真正的价值，否则本质上就是数学上的游戏而已。
+这里自己又想多说两句了，我们用系数对齐求出了一堆东西，好像很有意义对吧。实际上呢，这件事情的本质只是用通解的基底表示特解而已。至于求散射截面等物理量，说到底这和定义没什么区别，我们之所以求它，是因为它可测量，可被验证，说到底是因为人类的局限性才得以有其真正的价值，否则本质上就是数学上的游戏而已。
 
-以上推导看似行云流水，并没有用到任何真正意义的假设，实则有以下几个不可忽略的问题。
+另外，以上推导看似行云流水，实则有以下几个不可忽略的问题。
 
 第一个问题是相位问题，回看径向方程
 
@@ -204,6 +204,48 @@ $$\frac{d^2 u_l(r)}{dr^2} + \left[ k^2 - U(r) - \frac{l(l+1)}{r^2} \right] u_l(r
 $$\text{未知势能的解 } R_l(r) \xrightarrow{r \to \infty} \frac{C}{r} \sin\left( kr - \delta_l \right)$$
 
 第二个问题，虽然我们成功把散射截面用不同角量子数波函数的相移$\delta_l$成功表示了出来，但这并不意味着相移本身是一个容易求出来的东西。
+
+以刚性硬球散射为例，其波函数边界条件为 $u_l(R) = 0$。外区（$r > R$）： 势能严格为 0，方程退化为自由方程，其严格通解正如我们前面推导的，是 Riccati-Bessel 函数的任意线性组合
+
+$$u_l(r) = C_1 \hat{j}_l(kr) + C_2 \hat{n}_l(kr)$$
+
+为了引入相移，我们通常将系数重写为含有 $\delta_l$ 的参数化形式
+
+$$u_l(r) \propto \cos\delta_l \hat{j}_l(kr) - \sin\delta_l \hat{n}_l(kr)$$
+
+这么假设可以使其满足无穷远渐进的 $\sin(kr - \frac{l\pi}{2} + \delta_l)$ 形式
+
+在 $r=R$ 处，内外区波函数必须连续。
+
+$$\cos\delta_l \hat{j}_l(kR) - \sin\delta_l \hat{n}_l(kR) = 0$$
+
+移项对齐得
+
+$$\tan\delta_l = \frac{\hat{j}_l(kR)}{\hat{n}_l(kR)} = \frac{j_l(kR)}{-n_l(kR)}$$
+
+这属于少数我们可以的的确确写出来相移表达式的模型。多数势场大多还是需要通过数值计算的方式求出相移，我们又知道
+
+$$f(\theta) = \sum_{l=0}^{\infty} \frac{2l+1}{k} e^{i\delta_l} \sin\delta_l P_l(\cos\theta)$$
+
+$$\sigma = \frac{4\pi}{k^2} \sum_{l=0}^{\infty} (2l+1) \sin^2\delta_l$$
+
+因为数值计算很麻烦，所以我们希望求和号 $\sum_{l=0}^{\infty}$ 在项数很少（比如只有 $l=0$ 或 $l=1$）时就截止。否则计算成千上万个相移 $\delta_l$的成本太高了。
+
+做个简单的估算，我们知道粒子角动量为
+
+$$L = p \cdot b = \hbar k \cdot b$$
+
+又因为角动量被量子化为 $L =\sqrt{l(l+1)}\hbar \approx \hbar l$，若给势场定一个有效半径$R$反映收敛速度
+
+$$\hbar k \cdot b \approx \hbar l \implies b \approx \frac{l}{k}$$
+
+这意味着角量子数大于$kR$的波函数其实就等价于以大于有效半径入射的粒子，这样的粒子几乎不会被散射。也就是说它们的相移 $\delta_l$ 约等于零。这意味着其对微分散射截面$f(\theta)$的贡献几乎全部集中在$\theta = 0$处，当计算其他角度的微分散射截面时，自然只需要截取前几项即可。这也是为什么说分波法适用于短程低能散射。
+
+根据这个思路，我们完全可以在每个人为设定的$R$处进行势能截断
+
+$$V_{\text{截断}}(r) = \begin{cases} V(r), & r \le R \\ 0, & r > R \end{cases}$$
+
+只考虑前几项波函数，这样算出来的微分散射截面除了在$\theta=0$附近之外，和真实的几乎没什么差别。
 
 
 
