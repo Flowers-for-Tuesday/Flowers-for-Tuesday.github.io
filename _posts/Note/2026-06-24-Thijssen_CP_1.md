@@ -1,6 +1,6 @@
 ---
 title: "Thijssen《Computational Physics》笔记其一"
-date: 2026-06-20 11:40
+date: 2026-06-24 15:40
 categories:
   - Note
 tags:
