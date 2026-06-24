@@ -128,3 +128,64 @@ $$u(r) \sim c_1 r^3 e^{\frac{\sqrt{C}}{5r^5}} + c_2 r^3 e^{-\frac{\sqrt{C}}{5r^5
 同样的，原点处要求收敛，有$c_1=0$，然后就是一致的思路代入一个初值即可。
 
 ### 1.2 关于算法
+
+相比一般数值求解微分方程的RK4方法，书中采用的是 Numerov 算法。
+
+说实在的虽然知道自己在学的是计算物理，但对很多能达到同样结果的东西实在不是很想深究其算法的差异。
+
+无论如何，这里还是简单follow一下思路吧
+
+注意到径向薛定谔方程本质上是这么个形式
+
+$$\frac{d^2 u(r)}{dr^2} = \underbrace{\left[ \frac{l(l+1)}{r^2} + 2V(r) - 2E \right]}_{F(r)} \cdot u(r)$$
+
+即
+
+$$\frac{d^2 y}{dx^2} = f(x) \cdot y(x) $$
+
+我们把 $y(x+h)$ 和 $y(x-h)$ 分别在 $x$ 处进行高阶泰勒展开
+
+$$y(x+h) = y(x) + hy'(x) + \frac{h^2}{2}y''(x) + \frac{h^3}{6}y'''(x) + \frac{h^4}{24}y^{(4)}(x) + \frac{h^5}{120}y^{(5)}(x) + \frac{h^6}{720}y^{(6)}(x) + \dots$$
+
+$$y(x-h) = y(x) - hy'(x) + \frac{h^2}{2}y''(x) - \frac{h^3}{6}y'''(x) + \frac{h^4}{24}y^{(4)}(x) - \frac{h^5}{120}y^{(5)}(x) + \frac{h^6}{720}y^{(6)}(x) - \dots$$
+
+现在，把这两个式子相加。你会发现所有奇数阶导数（$y'$, $y'''$, $y^{(5)}$）全部抵消
+
+$$y(x+h) + y(x-h) = 2y(x) + h^2 y''(x) + \frac{h^4}{12}y^{(4)}(x) + \frac{h^6}{360}y^{(6)}(x) + \dots$$
+
+移项一下
+
+$$y''(x) = \frac{y(x+h) - 2y(x) + y(x-h)}{h^2} - \frac{h^2}{12}y^{(4)}(x) - \frac{h^4}{360}y^{(6)}(x)$$
+
+如果在这里停手，把 $h^2$ 项扔掉，这就是普通的二阶差分。但注意到原方程的形式 $y'' = f \cdot y$，这意味着
+
+$$y^{(4)}(x) = \frac{d^2}{dx^2}(y'') = \frac{d^2}{dx^2}(f(x)y(x))$$
+
+对这个 $y^{(4)}$ 故技重施，也用一次二阶中心差分法来表示
+
+$$y^{(4)}(x) \approx \frac{(fy)_{x+h} - 2(fy)_x + (fy)_{x-h}}{h^2} + O(h^2)$$
+
+代回原式，可得一个误差为 $O(h^6)$ 量级的递推公式
+
+$$\left(1 - \frac{h^2}{12}f_{n+1}\right)y_{n+1} = 2\left(1 + \frac{5h^2}{12}f_n\right)y_n - \left(1 - \frac{h^2}{12}f_{n-1}\right)y_{n-1} + \frac{h^2}{12}(g_{n+1} + 10g_n + g_{n-1})$$
+
+引入一个辅助中间变量 $w_n$
+
+$$w_n = y_n \left(1 - \frac{h^2}{12}f_n\right)$$
+
+则化简成一个比较简洁的两步递推
+
+$$w_{n+1} = 2w_n - w_{n-1} + h^2 f_n y_n$$
+
+$$y_{n+1} = w_{n+1} / \left(1 - \frac{h^2}{12}f_{n+1}\right)$$
+
+二阶递推需要两个初值，这里选取原点$u(0)$和原点附近的小量$u(h)$。
+
+另外，采用这种算法不需要差分计算导数值，意味着我们可以不使用导数作为边界条件，而可以在截断半径外任选两个半径$R_1$和$R_2$，得到
+
+$$\frac{u_{\text{内}}(r_1)}{u_{\text{内}}(r_2)} = \frac{\cos\delta_l \hat{j}_l(k r_1) - \sin\delta_l \hat{n}_l(k r_1)}{\cos\delta_l \hat{j}_l(k r_2) - \sin\delta_l \hat{n}_l(k r_2)}$$
+
+定义 $R_{\text{ratio}} = \frac{u(r_1)}{u(r_2)}$。可得反解公式
+
+$$\tan\delta_l = \frac{\hat{j}_l(k r_1) - R_{\text{ratio}} \hat{j}_l(k r_2)}{\hat{n}_l(k r_1) - R_{\text{ratio}} \hat{n}_l(k r_2)}$$
+
