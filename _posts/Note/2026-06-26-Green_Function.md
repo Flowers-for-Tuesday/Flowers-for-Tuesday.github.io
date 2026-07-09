@@ -1,13 +1,13 @@
 ---
-title: "从逆矩阵到格林函数"
-date: 2026-06-23 12:00
+title: "格林函数的本质"
+date: 2026-06-26 12:00
 categories:
   - Note
 tags:
   - Theoretical Physics
   - Mathematical Methods
 cover: /assets/images/Note/Green-Function/cover.jpg
-excerpt: "与君歌一曲，请君为我倾耳听。"
+excerpt: "随笔一篇，写写自己对绿色函数的理解。"
 ---
 
 同样是一篇想到哪写到哪的玩意
