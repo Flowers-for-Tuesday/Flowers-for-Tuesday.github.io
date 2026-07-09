@@ -8,7 +8,7 @@ tags:
   - Quantum Mechanics
   - Textbook Notes
 cover: /assets/images/Note/Thijssen_CP/cover1.jpeg
-excerpt: "Thijssen《Computational Physics》第1-2章笔记"
+excerpt: "球对称势能下的量子散射问题"
 ---
 
 Thijssen的这本《Computational Physics》相较于国内绝大多数教材的教学方法有显著的差异，体现在每一章介绍的都是具体情形下的物理问题，并在问题中引入计算方法的思路和应用。
