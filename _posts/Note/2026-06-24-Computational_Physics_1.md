@@ -1,5 +1,5 @@
 ---
-title: "Thijssen《Computational Physics》笔记其一"
+title: "【Computational Physics】笔记其一"
 date: 2026-06-24 15:40
 categories:
   - Note
@@ -7,7 +7,7 @@ tags:
   - Computational Physics
   - Quantum Mechanics
   - Textbook Notes
-cover: /assets/images/Note/Thijssen_CP/cover1.jpeg
+cover: /assets/images/Note/Computational_Physics/cover1.jpeg
 excerpt: "球对称势能下的量子散射问题"
 ---
 
