@@ -1,0 +1,341 @@
+---
+title: "Computational Physics // 笔记其二"
+date: 2026-07-09 12:30
+categories:
+  - Note
+tags:
+  - Textbook Notes
+  - Computational Physics
+cover: /assets/images/Note/Textbook%20Notes/Computational%20Physics/Computational_Physics_2/cover.jpg
+excerpt: "偏微分方程的有限元方法（FEM）"
+---
+
+参考教材：
+
+[1] Jos Thijssen , ***Computational Physics***
+
+[2] 刘川 , **电动力学讲义**
+
+## 1. 一点点前置准备
+
+### 1.1 变分原理の应用
+
+首先呢，考虑这么一个很简单的问题，求解泊松方程
+
+$$-\nabla^2\phi = f(x,y)$$
+
+先让它满足最简单的齐次狄利克雷边界条件
+
+$$\phi(x,y) = 0 |_{(x,y) \in \partial \Omega}$$
+
+用惊人的注意力意识到这个偏微分方程，其实刚好等价于一个变分问题，也就是和求下面泛函的极值是等价的
+
+$$J_0[\phi] = \frac{1}{2} \iint_{\Omega} (\nabla \phi)^2 dxdy - \iint_{\Omega} f \phi \, dxdy$$
+
+啊其实这个式子或许还不需要惊人的注意力，因为从静电学的角度很容易发现这个方程就是能量的表现形式。
+
+不过嘛，还是稍稍验证一下，第一项做个变分
+
+$$\delta \left( \frac{1}{2} \iint_{\Omega} (\nabla \phi)^2 dxdy \right) = \frac{1}{2} \iint_{\Omega} 2 (\nabla \phi) \cdot \delta(\nabla \phi) \, dxdy = \iint_{\Omega} \nabla \phi \cdot \nabla(\delta \phi) \, dxdy$$
+
+复习一下格林第一公式
+
+$$\iint_{\Omega} \nabla u \cdot \nabla v \, d\Omega = -\iint_{\Omega} u \nabla^2 v \, d\Omega + \oint_{\partial\Omega} u \frac{\partial v}{\partial n} \, d\Gamma$$
+
+令 $u = \phi$，$v = \delta\phi$，代入上式得到
+
+$$\iint_{\Omega} \nabla \phi \cdot \nabla(\delta \phi) \, dxdy = -\iint_{\Omega} (\nabla^2 \phi) \cdot \delta\phi \, dxdy + \oint_{\partial\Omega} \frac{\partial \phi}{\partial n} \cdot \delta\phi \, d\Gamma$$
+
+注意一下后面的边界积分项。因为边界上的变分 $\delta\phi = 0$，导致这一项实际上是0。
+
+然后是第二项的变分
+
+$$\delta \left( \iint_{\Omega} f \phi \, dxdy \right) = \iint_{\Omega} f \cdot \delta\phi \, dxdy$$
+
+令总变分为 0
+
+$$\delta J_0 = -\iint_{\Omega} \nabla^2\phi \cdot \delta\phi \, dxdy - \iint_{\Omega} f \cdot \delta\phi \, dxdy = 0$$
+
+$$\iint_{\Omega} \left( -\nabla^2\phi - f \right) \delta\phi \, dxdy = 0$$
+
+于是，与原方程一模一样，真是可喜可贺。
+
+很容易验证上面的讨论对齐次纽曼条件也是成立的。
+
+当然你可能会觉得齐次边界条件太过简单，那不妨换成非齐次的狄利克雷边界
+
+$$\phi(x,y) = g(x,y) |_{(x,y) \in \partial \Omega}$$
+
+这就需要额外的一些操作，不妨把最终的解 $u(x,y)$ 拆成两部分的叠加
+
+$$u(x,y) = w(x,y) + G(x,y)$$
+
+其中 $G(x,y)$ 是一个构造出来的已知函数，只要在边界上满足 $G|_{\partial\Omega} = g$ 即可）。
+
+于是泊松方程变成
+
+$$-\nabla^2 w = f + \nabla^2 G$$
+
+新源项 $f^* = f + \nabla^2 G$，显然$w$满足齐次狄利克雷边界。
+
+于是直接写出关于 $w$ 的标准极小值泛函 $J[w]$
+
+$$J[w] = \frac{1}{2} \iint_{\Omega} |\nabla w|^2 dxdy - \iint_{\Omega} f^* w \, dxdy$$
+
+$$J[w] = \frac{1}{2} \iint_{\Omega} |\nabla w|^2 dxdy - \iint_{\Omega} (f + \nabla^2 G) w \, dxdy$$
+
+对含有 $\nabla^2 G \cdot w$ 的那一项应用格林第一定理分部积分（符合刻板印象的，分部积分的边界项直接归零）
+
+$$-\iint_{\Omega} \nabla^2 G \cdot w \, dxdy = \iint_{\Omega} \nabla G \cdot \nabla w \, dxdy$$
+
+代入回去，得到关于 $w$ 对应的泛函
+
+$$J[w] = \frac{1}{2} \iint_{\Omega} |\nabla w|^2 dxdy + \iint_{\Omega} \nabla G \cdot \nabla w \, dxdy - \iint_{\Omega} f w \, dxdy$$
+
+### 1.2 一般化的尝试
+
+简单来说，我们现在的一个想法是把含边界条件的偏微分方程转化为一个区域内的泛函极值问题，这样就可以梯度下降等邪门方法进行数值求解（尽管不是本文重点但这确实是可行的）。
+
+可以猜到的是，肯定不可能所有偏微分方程都能让我们这么干。
+
+这里直接给一个限制性比较强的结论，对一个对称正定的线性算子 $\mathcal{A}$，我们要解决的一般方程为
+
+$$\mathcal{A}u = f \quad (\text{in } \Omega)$$
+
+边界条件就先用着齐次边界条件（Dirichlet或者Neumann）好了，可以证明，$u$是微分方程 $\mathcal{A}u = f$ 的解，当且仅当 $u$ 使以下二次型泛函取得严格全局极小值
+
+$$J[u] = \frac{1}{2}\langle \mathcal{A}u, u \rangle - \langle f, u \rangle$$
+
+这里用的是实空间函数的内积符号
+
+$$\langle u, v \rangle = \int_{\Omega} u(\mathbf{r})v(\mathbf{r}) \, d\Omega$$
+
+算子的线性就不解释了，对称和正定分别指的是满足下面条件（$u,v$为满足齐次边界的任意函数）
+
+$$\langle \mathcal{A}u, v \rangle = \langle u, \mathcal{A}v \rangle$$
+
+$$\langle \mathcal{A}u, u \rangle > 0$$
+
+咳咳，老样子，这种东西的证明就略了吧（）
+
+不过不难看出，这个定理的限制条件实在太多了，以至于更多时候我们还真就需要一点敏锐的观察力来构造泛函（当然更多时候是根本不可能存在这样一个泛函）
+
+下面开始进入正题，看看我们的有限元方法（FEM）。
+
+## 2. 所以，有限元方法到底想干嘛
+
+### 2.1 也许是一个比较清晰的例子
+
+有限元方法其实很好理解，就是把边界内的函数划分成很多的小区域，每个小区域内用简单的线性函数或者多项式进行拟合，最终得到全局函数的近似。
+
+注意到了对吧，这其实是一个全局优化问题，这也是为什么我们前面试图把偏微分方程转化为泛函问题。
+
+至于怎么划分小区域，一般就是采用最小单元，二维问题采用三角形，三维问题采用四面体等等。在网格切得足够密的情况下，拟设函数偷懒用线性函数即可。
+
+那么同样还是沿用前面的例子，我们考虑齐次狄利克雷边界下二维$L \times L$边界的泊松方程。
+
+$$-\nabla^2\phi = f(x,y)$$
+
+把 $L \times L$ 的正方形区域离散化。最简单的方法，就是先将正方形划分为 $M \times M$ 个小正方形网格。再将每个小正方形沿对角线切开，分成两个三角形单元（对角线方向一致），那么总共有 $2M^2$ 个单元。给每个单元一个全局编号 $e$，且其三个顶点在全局节点中分别对应编号 $i, j, k$。
+
+对于任意一个三角形单元 $e$，其三个顶点坐标分别为 $(x_i, y_i), (x_j, y_j), (x_k, y_k)$。用线性函数的话，拟设函数就可以写成
+
+$$u^e(x,y) = \alpha_1 + \alpha_2 x + \alpha_3 y$$
+
+由于要把这个函数写成顶点相关（因为顶点值才是优化参量），顶点值设为$u_m$ ，因此形式上可以转化成
+
+$$u^e(x, y) = N_i^e(x, y)u_i + N_j^e(x, y)u_j + N_k^e(x, y)u_k$$
+
+其中，$N_m^e(x,y)$ 为节点 $m$ 在单元 $e$ 上的形函数，它是一个一次多项式
+
+$$N_m^e(x, y) = \frac{1}{2A_e} (a_m + b_m x + c_m y) \quad (m = i, j, k)$$
+
+其中 $A_e$ 是三角形单元的面积
+
+$$A_e = \frac{1}{2} \det \begin{bmatrix} 1 & x_i & y_i \\ 1 & x_j & y_j \\ 1 & x_k & y_k \end{bmatrix}$$
+
+系数为顶点的几何坐标组合（以 $i$ 为例）
+
+$$a_i = x_j y_k - x_k y_j, \quad b_i = y_j - y_k, \quad c_i = x_k - x_j$$
+
+以及可以注意到线性形函数的梯度是常数
+
+$$\frac{\partial N_m^e}{\partial x} = \frac{b_m}{2A_e}, \quad \frac{\partial N_m^e}{\partial y} = \frac{c_m}{2A_e}$$
+
+由于积分具有可加性，全局泛函等于所有三角形单元泛函的求和
+
+$$J[u] = \sum_{e} J^e[u]$$
+
+把 $u^e$ 代入该单元的泛函贡献中
+
+$$J^e = \frac{1}{2} \iint_{e} \left[ \left( \sum_{m} u_m \frac{\partial N_m^e}{\partial x} \right)^2 + \left( \sum_{m} u_m \frac{\partial N_m^e}{\partial y} \right)^2 \right] dxdy - \iint_{e} f \left( \sum_{m} u_m N_m^e \right) dxdy$$
+
+根据多元函数求极值的条件，要使总泛函 $J[u]$ 达到极小值，泛函对每一个未知节点值 $u_n$ 的偏导数必须为 0（边界的节点就不必了，已经被限制死了）
+
+$$\frac{\partial J}{\partial u_n} = 0$$
+
+由于 $J = \sum_e J^e$，来考察一下每个单元泛函对 $u_n$ 的求导贡献。对单元泛函 $J^e$ 关于其中一个顶点值 $u_m$（$m \in \{i, j, k\}$）求偏导
+
+$$\frac{\partial J^e}{\partial u_m} = \iint_{e} \left[ \left( \sum_{n} u_n \frac{\partial N_n^e}{\partial x} \right) \frac{\partial N_m^e}{\partial x} + \left( \sum_{n} u_n \frac{\partial N_n^e}{\partial y} \right) \frac{\partial N_m^e}{\partial y} \right] dxdy - \iint_{e} f N_m^e \, dxdy$$
+
+将求和符号提取出来，上式可以重写为
+
+$$\frac{\partial J^e}{\partial u_m} = \sum_{n \in \{i,j,k\}} \left\{ \iint_{e} \left( \frac{\partial N_m^e}{\partial x} \frac{\partial N_n^e}{\partial x} + \frac{\partial N_m^e}{\partial y} \frac{\partial N_n^e}{\partial y} \right) dxdy \right\} u_n - \iint_{e} f N_m^e \, dxdy$$
+
+这里借用力学的概念定义一下定义的单元刚度矩阵和单元载荷向量。令
+
+$$K^e_{mn} = \iint_{e} \left( \frac{\partial N_m^e}{\partial x} \frac{\partial N_n^e}{\partial x} + \frac{\partial N_m^e}{\partial y} \frac{\partial N_n^e}{\partial y} \right) dxdy$$
+
+$$F^e_m = \iint_{e} f N_m^e \, dxdy$$
+
+那么该单元的极值条件贡献可以简写为
+
+$$\frac{\partial J^e}{\partial u_m} = \sum_{n} K^e_{mn} u_n - F^e_m$$
+
+在线性拟设下（顺便假设我们切分得足够多，$f$ 在单元内为常数），具体的计算如下
+
+$$K^e_{mn} = \frac{1}{4A_e}(b_m b_n + c_m c_n)$$
+
+$$F^e_m = f \iint_{e} N_m^e \, dxdy = f \cdot \frac{A_e}{3}$$
+
+将所有单元的偏导数贡献累加起来，令全局总偏导为 0
+
+$$\frac{\partial J}{\partial u_n} = \sum_{e} \frac{\partial J^e}{\partial u_n} = 0 \implies \sum_{j=1}^N K_{nj} u_j = F_n$$
+
+写成矩阵形式就是
+
+$$\mathbf{K} \mathbf{U} = \mathbf{F}$$
+
+换句话说，我们可以通过直接求解这个矩阵方程一步得到全局的最优化解，厉害吧，这就是FEM的基本思路。
+
+### 2.2 也许会让你算得快一点的方法
+
+虽然得到一个可解的思路总让人松一口气，但我们学的毕竟是计算物理学，拿到一个矩阵方程就想让计算机直接求逆（或者高斯消元）确实有点不负责任。毕竟有限元分割的区域稍微一多，计算量很容易就会爆炸。
+
+好在$\mathbf{K}$本身还是一个对称正定矩阵，这样的问题还真有加速的策略，就是很有名的共轭梯度法（原谅我在此之前并未听说过）
+
+共轭梯度法本质是特定梯度场下简化的梯度下降。
+
+线性代数理论中，对称正定的线性方程$A\mathbf{x}=\mathbf{b}$可以等价为二次形函数的极小值问题
+
+$$f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^{\mathbf{T}}A\mathbf{x}-\mathbf{b}^{\mathbf{T}}\mathbf{x}$$
+
+在二维空间中体现出来的就是一个椭圆。对狭长的椭圆来说，梯度下降是一个效率不高的算法，因为梯度指向的方向与椭圆中心有较大的偏移，迭代速度会变慢。
+
+来做一点启发式的思考。
+
+假设梯度场是一个正圆，我们可以采用一个简单的方法替代梯度下降，那就是找两个正交的方向，先往一个方向找到局部极小值，再往另一个正交方向迭代到最小值，便可以直接找到全局的最小值。
+
+很容易理解吧，相信大家都想象得出来，就不画图了（
+
+对椭圆形的梯度场也是一个道理，只不过这里的正交会需要修正一下。
+
+因为矩阵 $A$ 是对称正定的，我们在数学上可以对其进行 Cholesky 分解 
+
+$$A = L L^T$$
+
+做一个坐标变换，定义一个不被扭曲的坐标系 $y$
+
+$$y = L^T x \implies x = (L^{-1})^T y$$
+
+为什么说这个坐标不被扭曲呢，很简单，把这个新坐标 $y$ 代入原方程 $Ax = b$ 
+
+$$A \left( (L^{-1})^T y \right) = b$$
+
+$$\underbrace{L^{-1} A (L^{-1})^T}_{I} y = L^{-1} b$$
+
+方程变成了
+
+$$I y = \tilde{b} \quad (\text{其中 } \tilde{b} = L^{-1}b)$$
+
+对应的能量泛函变成了
+
+$$f(y) = \frac{1}{2}y^T I y - \tilde{b}^T y$$
+
+也就是一个正圆的梯度场。
+
+因此呢，在 $y$ 空间（正圆）里相互正交的方向：$dy_i^T dy_j = 0$映射回 $x$ 空间（椭圆）里，由于 $y=L^Tx$，就自动变成了
+
+$$(L^T dx_i)^T (L^T dx_j) = 0 \implies dx_i^T (L L^T) dx_j = 0 \implies \mathbf{dx_i^T A dx_j = 0}$$
+
+这就是椭圆梯度场中两个正交方向所必须满足的关系。
+
+至于为什么前面得到的刚度矩阵是对称正定的，自然是留给读者证明。
+
+### 2.3 也许不是很重要的误差分析环节
+
+网格的大小选取肯定是精度的关键因素，那么呢，一个直接的问题就是如何确定一个区域的误差并针对性地对某些区域进行针对性的切分。
+
+当然误差总是有多种描述方式的，不失一般性，在一个三角形的区域元$K$内，局部误差可以写成下面的这么一个样子
+
+$$\eta_K^2 = h_K^2 \|f + \nabla^2 u_h\|_{L^2(K)}^2 + h_K \sum_{e \in \partial K} \| \llbracket \nabla u_h \cdot \mathbf{n} \rrbracket \|_{L^2(e)}^2$$
+
+$h_K$是单元尺寸的表征，一般用当前三角形单元最长边的长度代替。在这里用于统一量纲和积分尺度影响。
+
+直观地看，第一项是内部残差，用于描述与真实函数间的函数值差异。第二项是边界残差，用于描述不同区域元边界的梯度不连续程度。
+
+有限元虽然能保证区域元内连续，边界处函数值连续，但是边界处导数肯定是不连续的，所以第二项其实就是
+
+$$\llbracket \nabla u_h \cdot \mathbf{n} \rrbracket = \left( \nabla u_h^{\text{Left}} - \nabla u_h^{\text{Right}} \right) \cdot \mathbf{n}$$
+
+对于局部误差大的区域元，就可以对齐进行进一步的细分切割，这时需要考虑的就是粗分区域与细分区域的边界点处理，因为这些点是悬置的。一般会直接将边界悬置点的值用附近点的值直接表示出来，不参与最终的全局优化过程。
+
+## 3. 猜你还想知道：伽辽金法
+
+前面的讨论呢，很大程度上建立在一个很强的限制条件下，那就是所求的偏微分方程的的确确是可以转化成泛函极值问题的。这属于有限元的Ritz法的思路。
+
+但如果有限元适用范围真这么小，估计早也就没人讨论了。
+
+那不用泛函难道也能做吗，还真可以。下面来介绍一下有限元中Galerkin法的思路。
+
+假设要解决的是这样一个PDE
+
+$$\mathcal{L}(u) = f$$
+
+先姑且猜个近似解 $u_h$，代入原方程后必然无法严格等于 $f$，它们之间会产生一个残差
+
+$$R(x, y) = \mathcal{L}(u_h) - f \neq 0$$
+
+我们希望残差 $R$ 在整个区域 $\Omega$ 上尽可能小，Galerkin法的想法是，如果我们能让残差 $R$ 与区域内一组基底 $v$ 的内积都等于 0
+
+$$\iint_{\Omega} R(x, y) \cdot v(x, y) \, dxdy = 0 $$
+
+这意味着残差 $R$ 与整个基底张成的空间严格正交。如果这个空间足够大，残差就被强行压缩成了 0。
+
+选取什么基底呢，当然是我们万能的有限元基底了。这就是有限元法的另一种思路。
+
+很有道理对吧，试着用这个想法解决一下前面的例子。
+
+让残差与测试函数 $v$ 正交
+
+$$\iint_{\Omega} (-\nabla^2 u - f) v \, dxdy = 0$$
+
+利用格林第一公式将二阶导数降阶，并代入边界条件 $v=0$，得到变分形式
+
+$$\iint_{\Omega} \left( \frac{\partial u}{\partial x}\frac{\partial v}{\partial x} + \frac{\partial u}{\partial y}\frac{\partial v}{\partial y} \right) dxdy = \iint_{\Omega} f v \, dxdy$$
+
+试探函数就是所有区域基底函数的叠加
+
+$$u(x, y) \approx u_h(x, y) = \sum_{j=1}^N u_j \phi_j(x, y)$$
+
+将 $u_h = \sum u_j \phi_j$ 和 $v = \phi_i$ 代入变分形式中。由于求和与微分、积分是线性的，我们可以把求和符号和系数 $u_j$ 提到积分外面来
+
+$$\sum_{j=1}^N \left\{ \iint_{\Omega} \left( \frac{\partial \phi_j}{\partial x}\frac{\partial \phi_i}{\partial x} + \frac{\partial \phi_j}{\partial y}\frac{\partial \phi_i}{\partial y} \right) dxdy \right\} u_j = \iint_{\Omega} f \phi_i \, dxdy$$
+
+定义刚度矩阵的元素 $K_{ij}$
+
+$$K_{ij} = \iint_{\Omega} \left( \frac{\partial \phi_i}{\partial x}\frac{\partial \phi_j}{\partial x} + \frac{\partial \phi_i}{\partial y}\frac{\partial \phi_j}{\partial y} \right) dxdy$$
+
+全局载荷向量的元素 $F_i$
+
+$$F_i = \iint_{\Omega} f \phi_i \, dxdy$$
+
+熟悉的方程又回来了
+
+$$\mathbf{K} \mathbf{U} = \mathbf{F}$$
+
+那么读者可能就会问了，这个方法好处这么多，Ritz法能干的事情Galerkin都能干，你怎么不早点写，非要写一堆泛函的玩意来折磨自己呢。
+
+哼哼，好问题。因为我一开始写的时候还真就不知道这个方法。。
+
+那么，以上（）
