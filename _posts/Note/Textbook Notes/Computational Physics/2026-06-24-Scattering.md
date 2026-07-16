@@ -1,12 +1,12 @@
 ---
-title: "Computational Physics // 笔记其一"
+title: "Computational Physics // 量子散射问题"
 date: 2026-06-24 15:40
 categories:
   - Note
 tags:
   - Textbook Notes
   - Computational Physics
-cover: /assets/images/Note/Textbook%20Notes/Computational%20Physics/Computational_Physics_1/cover.jpg
+cover: /assets/images/Note/Textbook%20Notes/Computational%20Physics/Scattering/cover.jpg
 excerpt: "球对称势能下的量子散射问题"
 ---
 
