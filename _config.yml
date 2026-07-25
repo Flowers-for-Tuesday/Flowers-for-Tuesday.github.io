@@ -66,7 +66,7 @@ plugins:
 author:
   name   : "礼拜二的花束"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : 醉后不知天在水 <br>满船清梦压星河
+  bio    : 刻下的话语，浮现心头： <br>将我的平庸，弃置于此。
   links:
     - label: "Beijing, China"
       icon: "fas fa-fw fa-map-marker-alt"
