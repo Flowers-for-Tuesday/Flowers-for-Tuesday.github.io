@@ -77,6 +77,9 @@ author:
     - label: "Zhihu"
       icon: "fa-fw icon-zhihu"
       url: "https://www.zhihu.com/people/flowersfortuesday"
+    - label: "Bilibili"
+      icon: "fa-fw icon-bilibili"
+      url: "https://space.bilibili.com/393925947"
     - label: "Email"
       icon: "fas fa-fw fa-envelope"
       url: "mailto:flowersfortuesday@gmail.com"
@@ -89,6 +92,9 @@ footer:
     - label: "Zhihu"
       icon: "fa-fw icon-zhihu"
       url: "https://www.zhihu.com/people/flowersfortuesday"
+    - label: "Bilibili"
+      icon: "fa-fw icon-bilibili"
+      url: "https://space.bilibili.com/393925947"
 
 defaults:
   # _posts
