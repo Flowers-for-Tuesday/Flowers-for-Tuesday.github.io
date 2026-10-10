@@ -7,7 +7,12 @@
       "你好，欢迎来到 Flowers for Tuesday。这是我的个人博客，也是安放文字、音乐与思考的一个小小角落。",
       "在这里，我会整理学习中的笔记，分享自己写的歌曲，记录公开发表的学术论文。那些尚未成形的想法，也会在这里慢慢生长。"
     ],
-    "background": "更详细的个人介绍正在整理中。"
+    "background": "更详细的个人介绍正在整理中。",
+    "navigation": [
+      {"label": "GitHub", "url": "https://github.com/Flowers-for-Tuesday"},
+      {"label": "Zhihu", "url": "https://www.zhihu.com/people/flowersfortuesday"},
+      {"label": "Bilibili", "url": "https://space.bilibili.com/393925947"}
+    ]
   },
   "notes": [],
   "music": [],

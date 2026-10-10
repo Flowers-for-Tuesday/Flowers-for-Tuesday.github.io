@@ -27,6 +27,8 @@ favicon.ico            原有网站 logo
 
 ## 编辑与预览
 
+About 页的个人账号导航在 `about.navigation` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。
+
 修改 `content/site.json` 后，在仓库根目录运行：
 
 ```powershell

@@ -76,13 +76,19 @@ def home():
 
 def about():
     paragraphs = "".join(f'<p>{e(p)}</p>' for p in DATA["about"]["paragraphs"])
+    profile_links = "".join(
+        f'<a class="text-link" href="{safe_url(link["url"])}">{e(link["label"])} <span aria-hidden="true">↗</span></a>'
+        for link in DATA["about"]["navigation"]
+    )
     render("about", f'''
       <section class="about-hero">
         <figure class="about-image"><img src="../assets/images/about.jpeg" width="2474" height="3500" alt="戴着蓝色花冠的精灵坐在铺满花瓣的门前"></figure>
         <div class="about-copy"><p class="eyebrow">A LITTLE ABOUT ME</p><h1>About<span class="title-period">.</span></h1>
           <p class="page-subtitle">关于我</p>{paragraphs}
           <p>你可以在 <a href="../note/">Note</a> 阅读我的笔记，在 <a href="../music/">Music</a> 听听我的原创音乐，或在 <a href="../publication/">Publication</a> 了解我的学术发表。</p>
-          <a class="text-link" href="{safe_url(DATA['github'])}">在 GitHub 找到我 <span aria-hidden="true">↗</span></a>
+          <div class="about-profiles"><h2 id="profiles-heading">在其他地方找到我</h2>
+            <nav class="profile-links" aria-labelledby="profiles-heading">{profile_links}</nav>
+          </div>
         </div>
       </section>
       <section class="about-background"><p class="eyebrow">BACKGROUND</p><h2>更多关于我</h2><p class="muted">{e(DATA['about']['background'])}</p></section>
