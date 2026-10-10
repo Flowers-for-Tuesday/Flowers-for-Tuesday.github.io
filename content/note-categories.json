@@ -1,6 +1,5 @@
 {
   "Computational Physics": {
-    "label": "计算物理",
-    "description": "从量子多体问题出发，记录理论推导与数值计算方法。"
+    "label": "计算物理"
   }
 }

@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from html import escape
 import json
-import math
 import os
 from pathlib import Path
 import re
@@ -93,7 +92,6 @@ class Note:
     cover: str = ""
     summary: str = ""
     search: str = ""
-    minutes: int = 1
     headings: list = field(default_factory=list)
     html: str = ""
 
@@ -231,8 +229,6 @@ class NoteLibrary:
         note.search = " ".join([note.title, note.category, self.category_label(note.category), *all_text])
         summary = str(note.meta.get("summary") or note.meta.get("description") or (paragraphs[0] if paragraphs else ""))
         note.summary = summary[:125].rstrip() + ("…" if len(summary) > 125 else "")
-        text = " ".join(all_text)
-        note.minutes = max(1, math.ceil(len(re.findall(r"[\u3400-\u9fff]", text)) / 350 + len(re.findall(r"[a-zA-Z]+", text)) / 220))
         if note.meta.get("cover"):
             note.cover = self.resolve_link(str(note.meta["cover"]), note)
 
@@ -264,8 +260,8 @@ class NoteLibrary:
         published = f'<time datetime="{note.published}">{note.published.replace("-", ".")}</time>' if note.published else "未标注日期"
         return f'''<article class="note-card" data-note data-category="{esc(note.category)}" data-search="{esc(note.search)}">
           <a class="note-card-link" href="{href}">{cover}<div class="note-card-body">
-          <p class="note-meta">{published}<span>约 {note.minutes} 分钟</span></p><h3>{esc(note.title)}</h3>
-          <p class="note-summary">{esc(note.summary)}</p><span class="note-read">阅读全文 <span aria-hidden="true">↗</span></span></div></a></article>'''
+          <p class="note-meta">{published}</p><h3>{esc(note.title)}</h3>
+          <span class="note-read">阅读全文 <span aria-hidden="true">↗</span></span></div></a></article>'''
 
     def directory(self):
         counts = Counter(n.category for n in self.notes)
@@ -276,10 +272,9 @@ class NoteLibrary:
             identifier = f"category-{index + 1}"
             label = self.category_label(category)
             links += f'<a href="#{identifier}" data-category-filter="{esc(category)}">{esc(label)} <span>{counts[category]:02d}</span></a>'
-            description = self.categories.get(category, {}).get("description", "")
             eyebrow = f'<p class="eyebrow">{esc(category)}</p>' if label != category else ""
             cards = "".join(self.card(n) for n in self.notes if n.category == category)
-            groups += f'''<section class="note-group" id="{identifier}" data-note-group><header class="note-group-heading">{eyebrow}<h2>{esc(label)} <span>{counts[category]:02d}</span></h2><p>{esc(description)}</p></header><div class="note-grid">{cards}</div></section>'''
+            groups += f'''<section class="note-group" id="{identifier}" data-note-group><header class="note-group-heading">{eyebrow}<h2>{esc(label)} <span>{counts[category]:02d}</span></h2></header><div class="note-grid">{cards}</div></section>'''
         if not self.notes:
             groups = '<div class="empty-state"><h2>下一页，留给新的思考。</h2><p>笔记正在整理中。</p></div>'
         return f'''{MARKER}<header class="page-heading"><p class="eyebrow">记录 · 理解 · 探索</p><h1>Note<span class="title-period">.</span></h1><p>把零散的思考整理成页，在不同的问题之间，慢慢建立联系。</p></header>
@@ -300,7 +295,7 @@ class NoteLibrary:
         related_links = "".join(f'<a href="{relative_url(n.output, note.output.parent)}">{esc(n.title)} <span aria-hidden="true">↗</span></a>' for n in related)
         related_html = f'<section class="related-notes"><h2>继续阅读 · {category}</h2>{related_links}</section>' if related else ""
         return f'''{MARKER}<nav class="note-breadcrumbs" aria-label="当前位置"><a href="{directory}">Note</a><span aria-hidden="true">/</span><a href="{category_url}">{category}</a></nav>
-          <header class="article-heading"><div><p class="eyebrow">{esc(note.category)}</p><h1>{esc(note.title)}</h1><p class="note-meta">{published}<span>约 {note.minutes} 分钟阅读</span><a href="{source}" download>下载 Markdown <span aria-hidden="true">↓</span></a></p></div>{cover}</header>
+          <header class="article-heading"><div><p class="eyebrow">{esc(note.category)}</p><h1>{esc(note.title)}</h1><p class="note-meta">{published}<a href="{source}" download>下载 Markdown <span aria-hidden="true">↓</span></a></p></div>{cover}</header>
           <div class="reading-layout"><aside class="article-sidebar"><details class="note-toc" open><summary>本篇目录</summary><nav aria-label="文章目录"><ol>{toc}</ol></nav></details><a class="back-to-notes" href="{directory}">← 全部笔记</a></aside>
           <div class="article-content"><article class="markdown-body" aria-label="笔记正文">{note.html}</article>{related_html}<div class="page-end"><a href="{directory}">← 返回笔记目录</a><a href="#main">回到顶部 ↑</a></div></div></div>'''
 

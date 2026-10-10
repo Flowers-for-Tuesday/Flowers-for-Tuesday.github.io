@@ -7,7 +7,7 @@
 ```text
 README.md               入场动画的两行原文
 content/site.json       个人介绍、账号链接、歌曲、论文数据
-content/note-categories.json 笔记分类的显示名称与简介
+content/note-categories.json 笔记分类的显示名称
 templates/base.html    共用页头、导航、页脚
 scripts/build.py        静态页面生成入口
 scripts/notes.py        扫描 Markdown、分类、生成目录与正文
@@ -79,19 +79,19 @@ note/
 title: "笔记标题"
 date: 2026-10-10 18:30
 cover: cover.jpeg
-summary: "显示在目录页的摘要；省略时从正文提取。"
+summary: "用于页面描述元数据的摘要，不在列表中展示；省略时从正文提取。"
 category: "Computational Physics" # 省略时使用第一层文件夹名称
 draft: false # true 时不生成页面、不进入目录
 ---
 ```
 
-无元数据时从一级标题或文件名推断标题。文章按日期从新到旧排列，没有日期时显示“未标注日期”。直接放在 `note/` 根目录的笔记属于“未分类”。分类会随笔记自动出现，也可在 `content/note-categories.json` 配置中文名称和简介。现有“Computational Physics”显示为“计算物理”。
+无元数据时从一级标题或文件名推断标题。文章按日期从新到旧排列，没有日期时显示“未标注日期”。直接放在 `note/` 根目录的笔记属于“未分类”。分类会随笔记自动出现，也可在 `content/note-categories.json` 配置中文名称。现有“Computational Physics”显示为“计算物理”。列表展示封面、日期、标题和阅读入口，不展示正文摘要、阅读时间或分类说明。
 
 支持标题、段落、粗体、斜体、引用、列表、任务列表、表格、代码高亮、脚注、图片与链接。原始 HTML 作为文本展示。正文图片使用相对路径，例如 `![图示说明](1.png)`；含空格的路径用 `![说明](<figure 1.png>)`。建议填写图片说明供辅助阅读。跨笔记链接可写 `[另一篇笔记](../另一篇/main.md)`，生成器自动转换为网页链接，并对空格与中文路径编码。
 
 公式支持 `$...$` 与 `$$...$$`（包括矩阵、多行 aligned 等 KaTeX 支持的语法）。公式在生成时转换为 HTML 与 MathML，字体由本站提供；长公式可独立横向滚动，不会撑宽手机页面。错误的公式或缺失的本地图片会给出构建错误，避免静默发布损坏页面。
 
-正文页提供章节目录、分类返回、阅读时间估算、Markdown 下载及同类笔记推荐；目录页支持分类与全文关键词搜索。关闭 JavaScript 时所有已发布笔记和分类仍可直接浏览。
+正文页提供章节目录、分类返回、Markdown 下载及同类笔记推荐；目录页支持分类与全文关键词搜索。关闭 JavaScript 时所有已发布笔记和分类仍可直接浏览。
 
 修改 Markdown 或资源后运行 `python scripts/build.py`。自动生成的页面不应手动编辑；移除源文件后重新生成，会根据 `note/.generated-pages.json` 清理对应的旧阅读页，原始文件不受影响。
 
