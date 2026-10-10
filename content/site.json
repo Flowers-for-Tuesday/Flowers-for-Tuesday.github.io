@@ -9,9 +9,9 @@
     ],
     "background": "更详细的个人介绍正在整理中。",
     "navigation": [
-      {"label": "GitHub", "url": "https://github.com/Flowers-for-Tuesday"},
-      {"label": "Zhihu", "url": "https://www.zhihu.com/people/flowersfortuesday"},
-      {"label": "Bilibili", "url": "https://space.bilibili.com/393925947"}
+      {"label": "GitHub", "url": "https://github.com/Flowers-for-Tuesday", "icon": "github"},
+      {"label": "Zhihu", "url": "https://www.zhihu.com/people/flowersfortuesday", "icon": "zhihu"},
+      {"label": "Bilibili", "url": "https://space.bilibili.com/393925947", "icon": "bilibili"}
     ]
   },
   "notes": [],

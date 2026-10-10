@@ -28,6 +28,7 @@ favicon.ico            原有网站 logo
 ## 编辑与预览
 
 About 页的个人账号导航在 `about.navigation` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。
+可选的 `icon` 字段支持 `github`、`zhihu`、`bilibili`，对应 `assets/icons/` 下的 SVG 图标；生成时内嵌到 HTML，使用 `currentColor` 随链接文字变色，无需额外加载图标文件。不设置 `icon` 时只显示文字链接。
 
 修改 `content/site.json` 后，在仓库根目录运行：
 

@@ -74,10 +74,18 @@ def home():
     ''', DATA["description"])
 
 
+def profile_icon(link):
+    icon = link.get("icon")
+    if icon not in ("github", "zhihu", "bilibili"):
+        return ""
+    svg = (BASE / f"assets/icons/{icon}.svg").read_text(encoding="utf-8").strip()
+    return svg.replace("<svg ", f'<svg class="profile-icon icon-{icon}" aria-hidden="true" focusable="false" fill="currentColor" ', 1)
+
+
 def about():
     paragraphs = "".join(f'<p>{e(p)}</p>' for p in DATA["about"]["paragraphs"])
     profile_links = "".join(
-        f'<a class="text-link" href="{safe_url(link["url"])}">{e(link["label"])} <span aria-hidden="true">↗</span></a>'
+        f'<a class="text-link" href="{safe_url(link["url"])}">{profile_icon(link)}{e(link["label"])} <span aria-hidden="true">↗</span></a>'
         for link in DATA["about"]["navigation"]
     )
     render("about", f'''
