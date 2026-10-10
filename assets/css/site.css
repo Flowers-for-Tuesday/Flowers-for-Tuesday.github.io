@@ -35,10 +35,10 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; }
 .skip-link { position: fixed; top: -100px; left: 20px; z-index: 20; padding: 8px 20px; background: var(--paper); }
 .skip-link:focus { top: 12px; }
 .site-header { min-height: 104px; display: flex; align-items: center; justify-content: space-between; gap: 30px; border-bottom: 1px solid var(--line); }
-.site-brand { display: inline-flex; gap: 12px; align-items: center; font-size: 32px; line-height: 1.2; text-decoration: none; white-space: nowrap; }
+.site-brand { display: inline-flex; gap: 12px; align-items: center; font-size: 40px; line-height: 1.2; text-decoration: none; white-space: nowrap; }
 .site-brand img { object-fit: contain; }
 .site-nav { display: flex; gap: 34px; align-items: center; }
-.site-nav a { position: relative; font-size: 25px; text-decoration: none; padding-block: 12px; }
+.site-nav a { position: relative; font-size: 32px; text-decoration: none; padding-block: 12px; }
 .site-nav a::after { position: absolute; content: ""; height: 1px; background: var(--accent); left: 0; right: 0; bottom: 7px; transform: scaleX(0); transform-origin: left; transition: transform .2s; }
 .site-nav a:hover::after, .site-nav a[aria-current]::after { transform: scaleX(1); }
 .site-nav a[aria-current] { color: var(--accent); }
@@ -127,9 +127,9 @@ audio { display: block; width: min(100%, 550px); margin-top: 20px; }
 @media (max-width: 900px) {
   .wrap { width: calc(100% - 56px); }
   .site-header { gap: 20px; }
-  .site-brand { font-size: 26px; gap: 8px; }
+  .site-brand { font-size: 32px; gap: 8px; }
   .site-nav { gap: 20px; }
-  .site-nav a { font-size: 22px; }
+  .site-nav a { font-size: 26px; }
   .hero { gap: 38px; padding-block: 48px 60px; }
   .hero h1 { font-size: 46px; }
   .hero-description { font-size: 20px; }
@@ -142,7 +142,7 @@ audio { display: block; width: min(100%, 550px); margin-top: 20px; }
   body { font-size: 18px; }
   .wrap { width: calc(100% - 40px); }
   .site-header { min-height: 82px; flex-wrap: wrap; gap: 0 12px; padding-block: 19px; }
-  .site-brand { font-size: 26px; }
+  .site-brand { font-size: 30px; }
   .site-brand img { width: 28px; height: 28px; }
   .menu-toggle:not([hidden]) { display: inline-flex; gap: 8px; align-items: center; }
   .site-nav { width: 100%; justify-content: space-between; gap: 14px; padding-top: 15px; }
@@ -180,7 +180,7 @@ audio { display: block; width: min(100%, 550px); margin-top: 20px; }
   .intro-line { letter-spacing: .035em; }
 }
 @media (max-width: 360px) {
-  .site-brand { font-size: 22px; }
+  .site-brand { font-size: 26px; }
   .site-brand img { width: 24px; height: 24px; }
   .menu-toggle { font-size: 15px; }
   .directory-row h3 span { display: block; margin-left: 0; }
