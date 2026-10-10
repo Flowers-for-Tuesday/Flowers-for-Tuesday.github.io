@@ -47,7 +47,7 @@ def render(page, main, description, title=None):
     )
     target = BASE / ("index.html" if page == "home" else "404.html" if page == "404" else f"{page}/index.html")
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(html, encoding="utf-8")
+    target.write_text("\n".join(line.rstrip() for line in html.splitlines()) + "\n", encoding="utf-8")
 
 
 def home():
