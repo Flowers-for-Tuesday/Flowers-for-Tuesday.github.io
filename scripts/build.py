@@ -1,9 +1,10 @@
-"""Generate the GitHub Pages site. Requires Python 3.10+, no third-party packages."""
+"""Generate the GitHub Pages site; see requirements.txt and docs/MAINTENANCE.md."""
 import json
 from html import escape
 from pathlib import Path
 from string import Template
 from urllib.parse import urlsplit
+from notes import build_notes
 
 BASE = Path(__file__).resolve().parents[1]
 DATA = json.loads((BASE / "content/site.json").read_text(encoding="utf-8"))
@@ -26,8 +27,10 @@ def safe_url(value):
     return e(value)
 
 
-def render(page, main, description, title=None):
-    root = "." if page in ("home", "404") else ".."
+def render(page, main, description, title=None, *, output=None, extra_head=""):
+    target = BASE / (output or ("index.html" if page == "home" else "404.html" if page == "404" else f"{page}/index.html"))
+    depth = len(target.relative_to(BASE).parts) - 1
+    root = "/".join([".."] * depth) or "."
     navigation = "\n".join(
         f'<a href="{root}/{slug}/"' + (' aria-current="page"' if page == slug else '') + f'>{label}</a>'
         for slug, label in NAV
@@ -43,9 +46,9 @@ def render(page, main, description, title=None):
     html = TEMPLATE.substitute(
         root=root, page=page, title=e(title or DATA["name"]), description=e(description),
         github=safe_url(DATA["github"]), navigation=navigation, main=main, intro=intro,
+        extra_head=extra_head.replace("{root}", root),
         replay='<button class="replay-intro" type="button" hidden>重看开场</button>' if page == "home" else "",
     )
-    target = BASE / ("index.html" if page == "home" else "404.html" if page == "404" else f"{page}/index.html")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(line.rstrip() for line in html.splitlines()) + "\n", encoding="utf-8")
 
@@ -127,7 +130,7 @@ if __name__ == "__main__":
         raise ValueError("README.md must contain at least two non-empty lines for the entrance text.")
     home()
     about()
-    collection("note", "notes", "Note", "学习笔记", "随手写下的想法，认真整理的知识。让每一次思考都有迹可循。", "下一页，留给新的思考。", "笔记正在整理中，之后会在这里分享文字与笔记文件。")
+    build_notes(BASE, render)
     collection("music", "music", "Music", "原创音乐", "一些旋律，一些未说出口的话。这里收藏我自己写的歌曲。", "让旋律，慢慢响起。", "原创歌曲正在整理中，之后可以在这里聆听与阅读。")
     collection("publication", "publications", "Publication", "学术发表", "在问题与答案之间，记录每一步探索。这里汇集我的公开学术论文。", "每一份探索，都值得记录。", "论文目录待更新，之后会在这里整理公开发表的论文与阅读链接。")
     render("404", '<section class="not-found"><p class="eyebrow">404 / PAGE NOT FOUND</p><h1>这一页，还未写下。</h1><p class="muted">你寻找的页面不存在，或已搬到别处。</p><a class="text-link" href="/">返回主页 ↗</a></section>', "页面未找到", "404 | " + DATA["name"])
