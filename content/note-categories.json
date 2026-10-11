@@ -4,5 +4,11 @@
   },
   "Mathematical Methods": {
     "label": "数理方法"
+  },
+  "Quantum Many Body": {
+    "label": "量子多体"
+  },
+  "Others": {
+    "label": "杂记"
   }
 }

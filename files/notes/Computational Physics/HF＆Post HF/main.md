@@ -1,6 +1,6 @@
 ---
 title: "HF Method ＆ Post HF"
-date: 2026-07-14 18:30
+date: 2026-07-14
 cover: cover.jpeg
 summary: "憧憬是距离理解最遥远的距离。"
 ---

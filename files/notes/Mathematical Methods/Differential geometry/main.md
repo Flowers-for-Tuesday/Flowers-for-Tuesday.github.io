@@ -1,6 +1,6 @@
 ---
 title: "物理学本科生应该知道的微分几何"
-date: 2026-06-05 8:40
+date: 2026-06-05
 cover: cover.jpg
 summary: "所以接下来只能一个人加油了，Asuka。"
 ---

@@ -1,6 +1,6 @@
 ---
 title: "路径积分蒙特卡洛方法 / Path Integral Monte Carlo"
-date: 2026-08-03 8:40
+date: 2026-08-03
 cover: cover.jpeg
 summary: "过去从未逝去，它甚至从未过去。"
 ---

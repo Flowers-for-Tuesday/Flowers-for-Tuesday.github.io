@@ -1,7 +1,7 @@
 ---
 title: "量子力学の特殊函数"
-date: 2026-06-23 12:00
-cover: cover.jpg
+date: 2026-06-23
+cover: cover.jpeg
 summary: "成长不是什么诅咒，那是一项成就。"
 ---
 

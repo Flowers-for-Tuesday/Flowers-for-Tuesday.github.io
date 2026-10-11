@@ -138,6 +138,12 @@ class NoteLibrary:
     def category_label(self, category):
         return self.categories.get(category, {}).get("label", category)
 
+    def ordered_categories(self):
+        return sorted(
+            {note.category for note in self.notes},
+            key=lambda category: (category.casefold() == "others" or self.category_label(category) == "杂记", category.casefold()),
+        )
+
     def resolve_link(self, raw, note):
         parts = urlsplit(raw)
         if parts.scheme or parts.netloc:
@@ -270,7 +276,7 @@ class NoteLibrary:
 
     def directory(self):
         counts = Counter(n.category for n in self.notes)
-        categories = sorted(counts, key=str.casefold)
+        categories = self.ordered_categories()
         links = f'<a href="#notes" data-category-filter="" aria-current="true">全部笔记 <span>{len(self.notes):02d}</span></a>'
         groups = ""
         for index, category in enumerate(categories):
@@ -289,7 +295,7 @@ class NoteLibrary:
 
     def article(self, note):
         directory = relative_url(self.root / "index.html", note.output.parent)
-        category_index = sorted({n.category for n in self.notes}, key=str.casefold).index(note.category) + 1
+        category_index = self.ordered_categories().index(note.category) + 1
         category_url = f"{directory}#category-{category_index}"
         category = esc(self.category_label(note.category))
         toc = "".join(f'<li class="toc-level-{level}"><a href="#{quote(identifier)}">{esc(text)}</a></li>' for level, identifier, text in note.headings)
