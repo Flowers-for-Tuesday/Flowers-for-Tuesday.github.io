@@ -97,14 +97,14 @@ class PreviewTests(unittest.TestCase):
     def test_snapshot_tracks_sources_and_ignores_generated_files(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
-            for name in ("note/example/main.md", "note/example/index.html", "note/.generated-pages.json",
+            for name in ("files/notes/example/main.md", "files/notes/example/cover.png", "note/example/index.html", "note/.generated-pages.json",
                          "assets/css/site.css", "assets/css/code.css", "templates/base.html"):
                 path = base / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("test", encoding="utf-8")
             snapshot = dev.source_snapshot(base)
-            self.assertEqual(set(snapshot), {"note/example/main.md", "assets/css/site.css", "templates/base.html"})
-            (base / "assets/css/site.css").write_text("changed", encoding="utf-8")
+            self.assertEqual(set(snapshot), {"files/notes/example/main.md", "files/notes/example/cover.png", "assets/css/site.css", "templates/base.html"})
+            (base / "files/notes/example/main.md").write_text("changed", encoding="utf-8")
             self.assertNotEqual(snapshot, dev.source_snapshot(base))
 
     def test_preview_recovers_from_build_error(self):

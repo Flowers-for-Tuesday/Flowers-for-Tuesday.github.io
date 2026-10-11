@@ -41,7 +41,7 @@ README.md               入场动画的两行原文
 preview.cmd             Windows 双击预览入口
 publish.cmd             Windows 双击提交与部署入口
 .vscode/                本地预览、生成、发布任务与 Edge 调试配置
-content/site.json       主页栏目文案、个人介绍、账号链接、歌曲、论文数据
+content/site.json       首页引文、个人介绍、账号链接、歌曲、论文数据
 content/note-categories.json 笔记分类的显示名称
 templates/base.html    共用页头、导航、页脚
 scripts/build.py        静态页面生成入口
@@ -56,15 +56,17 @@ assets/js/notes.js      笔记搜索、分类筛选
 assets/vendor/katex/   公式排版组件、样式、字体与授权文件
 assets/fonts/          东京街角的小浪漫网页字体
 assets/images/         avator.jpg、about.jpeg 原图
-files/notes/           笔记附件
+files/notes/           笔记源文件、封面、插图与附件
 files/music/           歌曲音频、歌词、乐谱
+files/gallery/         摄影作品原图
 files/publications/    公开论文附件
 index.html             生成的主页
 about/index.html       生成的个人介绍
-note/分类/笔记/main.md  笔记源文件（同目录放封面与插图）
+files/notes/分类/笔记/main.md 笔记源文件（同目录放封面与插图）
 note/index.html        自动生成的分类目录
 note/分类/笔记/index.html 自动生成的阅读页面
 music/index.html       生成的原创音乐列表
+gallery/index.html     生成的摄影作品列表
 publication/index.html 生成的论文列表
 404.html               找不到页面时的提示
 favicon.ico            原有网站 logo
@@ -72,22 +74,29 @@ favicon.ico            原有网站 logo
 
 ## 编辑与预览
 
-About 页的个人账号导航在 `about.navigation` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。
+About 页的学习经历在 `content/site.json` 的 `about.background` 数组中维护，按数组顺序显示为相连的时间线。添加经历时复制一项，填写 `years`（年份）、`school`（学校）、`program`（专业或项目），无需修改 HTML 或手动添加连接线。可选的 `logo` 填写相对项目根目录的图片路径，例如 `assets/images/pku-logo.png`；省略该字段时只显示经历内容。
+
+学校标识保存在本地：北京大学校徽来自 https://www.pku.edu.cn/pku_logo_red.png ，Perimeter Institute 标识来自 https://landing.perimeterinstitute.ca/hubfs/Stacked_Perimeter%20English%20Logo%20Black-908x301.png 。
+
+首页个人区域的账号导航在 `social_links` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）；页脚复用同一份配置。首页链接竖向排列，末尾的 Email 读取顶层 `email` 字段，并显示 `assets/icons/email.svg` 邮箱图标。
 可选的 `icon` 字段支持 `github`、`zhihu`、`bilibili`，对应 `assets/icons/` 下的 SVG 图标；生成时内嵌到 HTML，使用 `currentColor` 随链接文字变色，无需额外加载图标文件。不设置 `icon` 时只显示文字链接。
 
 根据修改目的编辑以下源文件：
 
 | 想修改的内容 | 对应文件 |
 | --- | --- |
-| 个人介绍、个人账号、歌曲和论文 | `content/site.json` |
-| 主页三个栏目的文案、主页页脚文字 | `content/site.json` 中的 `home` |
-| 笔记正文、公式与图片 | `note/分类/笔记/main.md` 及同目录图片 |
+| 个人介绍、个人账号、歌曲、摄影作品和论文 | `content/site.json` |
+| 主页引文、页脚文字 | `content/site.json` 中的 `home`；`quote` 数组每项显示为一行 |
+| 主页栏目卡片配图 | `assets/images/note.jpg`、`music.jpg`、`gallery.jpg`、`publication.jpg` |
+| 笔记正文、公式与图片 | `files/notes/分类/笔记/main.md` 及同目录图片 |
 | 笔记分类的显示名称 | `content/note-categories.json` |
 | 导航栏、共用页头和页脚 | `templates/base.html` |
 | 字体大小、间距、颜色、页面布局 | `assets/css/site.css`、`assets/css/notes.css` |
-| 入场动画、移动端导航、笔记筛选 | `assets/js/site.js`、`assets/js/notes.js` |
+| 入场动画、卡片交互、移动端导航、笔记筛选 | `assets/js/site.js`、`assets/js/notes.js` |
 | 入场的两行文字 | `README.md` |
 | 主页与各栏目的页面结构 | `scripts/build.py`；笔记页面结构在 `scripts/notes.py` |
+
+首页桌面端左侧显示圆形头像、姓名、引文和个人账号链接，右侧为手风琴式图片卡片：默认展开 Note，悬停或键盘聚焦其他分类时展开对应图片，其余三张收窄为带竖排分类文字的缩略图。展开图保持原始比例，宽屏下与左侧个人区域等高，四张卡片始终共同铺满右栏；窄屏会适当降低图片高度。鼠标移出后保留当前展开项。手机端个人信息在上方，卡片在下方，轻触收起的卡片展开，再次轻触进入栏目。键盘可用 Tab、左右方向键、Home / End 切换焦点，Enter 进入栏目；系统开启“减少动态效果”时关闭过渡动画。卡片配图与栏目同名，可直接替换 `assets/images/` 中对应的 JPG。引文读取 `home.quote`，同时用作首页的描述元数据。开场动画的文字仍独立读取 `README.md`。
 
 推荐用快捷预览工具监听修改：
 
@@ -103,7 +112,7 @@ python scripts/manage.py preview --open
 沿用示例文件夹即可，不需要手工登记笔记列表：
 
 ```text
-note/
+files/notes/
   Computational Physics/
     PIMC/
       main.md
@@ -119,7 +128,7 @@ note/
       main.md
 ```
 
-每个 Markdown 文件会生成阅读页。`main.md` 或 `index.md` 生成同目录的 `index.html`，其他名称如 `example.md` 生成 `example.html`。同一目录不要同时放 `main.md` 和 `index.md`，以免输出重名。第一层目录默认作为分类，深层目录用于组织主题。
+每个 Markdown 文件会在 `note/` 下的对应目录生成阅读页，例如 `files/notes/Computational Physics/PIMC/main.md` 生成 `note/Computational Physics/PIMC/index.html`。分类子目录中的 `main.md` 或 `index.md` 生成 `index.html`，其他名称如 `example.md` 生成 `example.html`。同一目录不要同时放 `main.md` 和 `index.md`，以免输出重名。第一层目录默认作为分类，深层目录用于组织主题。`note/` 只存放生成结果，日常编辑统一在 `files/notes/` 中进行；已有笔记网页地址保持不变。
 
 文件开头支持 YAML 元数据（均可选）：
 
@@ -134,7 +143,7 @@ draft: false # true 时不生成页面、不进入目录
 ---
 ```
 
-无元数据时从一级标题或文件名推断标题。文章按日期从新到旧排列，没有日期时显示“未标注日期”。直接放在 `note/` 根目录的笔记属于“未分类”。分类会随笔记自动出现，也可在 `content/note-categories.json` 配置中文名称。现有“Computational Physics”显示为“计算物理”。列表展示封面、日期、标题和阅读入口，不展示正文摘要、阅读时间或分类说明。
+无元数据时从一级标题或文件名推断标题。文章按日期从新到旧排列，没有日期时显示“未标注日期”。直接放在 `files/notes/` 根目录的笔记属于“未分类”；其中 `index.md` 生成 `note/index-note.html`，避免覆盖目录页。分类会随笔记自动出现，也可在 `content/note-categories.json` 配置中文名称。现有“Computational Physics”显示为“计算物理”。列表展示封面、日期、标题和阅读入口，不展示正文摘要、阅读时间或分类说明。
 
 支持标题、段落、粗体、斜体、引用、列表、任务列表、表格、代码高亮、脚注、图片与链接。原始 HTML 作为文本展示。正文图片使用相对路径，例如 `![图示说明](1.png)`；含空格的路径用 `![说明](<figure 1.png>)`。建议填写图片说明供辅助阅读。跨笔记链接可写 `[另一篇笔记](../另一篇/main.md)`，生成器自动转换为网页链接，并对空格与中文路径编码。
 
@@ -144,11 +153,11 @@ draft: false # true 时不生成页面、不进入目录
 
 开启快捷预览时，修改 Markdown 或资源会自动生成；也可手动运行 `python scripts/manage.py build`。自动生成的页面不应手动编辑；移除源文件后重新生成，会根据 `note/.generated-pages.json` 清理对应的旧阅读页，原始文件不受影响。
 
-## 添加歌曲与论文
+## 添加歌曲、摄影作品与论文
 
 在 `content/site.json` 的对应数组添加对象，将附件放入对应的 `files` 子目录，然后重新生成页面。
 
-笔记附件也可以放在 `files/notes/`，并在 Markdown 中使用相对路径链接。
+笔记附件与 Markdown 源文件一起放在 `files/notes/` 中，可继续使用相对路径引用同目录图片或其他笔记。生成器会自动换算网页中的图片地址、跨笔记链接和 Markdown 下载地址。
 
 检查生成器：
 
@@ -167,6 +176,20 @@ draft: false # true 时不生成页面、不进入目录
   "links": [{"label": "歌词与乐谱", "url": "../files/music/example.pdf"}]
 }
 ```
+
+摄影作品（添加到 `gallery`，照片放入 `files/gallery/`，点击照片可查看原图）：
+
+```json
+{
+  "title": "猎户座星云",
+  "date": "2026-10-11",
+  "description": "拍摄地点、器材与曝光记录。",
+  "image": "../files/gallery/orion-nebula.jpg",
+  "alt": "星空中的猎户座星云"
+}
+```
+
+`alt` 可省略，默认使用作品标题；`date`、`description` 和 `links` 也可省略。当前 `gallery` 为空时显示占位内容，不会添加示例照片。
 
 论文（添加到 `publications`）：
 

@@ -14,13 +14,14 @@ class NoteTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.base = Path(self.temp.name)
         (self.base / "note").mkdir()
+        (self.base / "files/notes").mkdir(parents=True)
         self.library = NoteLibrary(self.base)
 
     def tearDown(self):
         self.temp.cleanup()
 
     def write(self, name, content):
-        path = self.base / "note" / name
+        path = self.base / "files/notes" / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
         return path
@@ -89,7 +90,7 @@ price = "$not_math$"
         with self.assertRaisesRegex(ValueError, "Missing local asset"):
             self.library.parse(note)
         with self.assertRaisesRegex(ValueError, "outside the site"):
-            self.library.resolve_link("../../secret.txt", note)
+            self.library.resolve_link("../../../../secret.txt", note)
 
     def test_generated_output_collision_does_not_overwrite(self):
         self.write("topic/a/main.md", "A")
@@ -112,13 +113,46 @@ price = "$not_math$"
         self.assertEqual(note.summary, text)
 
     def test_cleanup_only_removes_previous_generated_pages(self):
-        generated = self.write("old.html", MARKER + "old")
-        handwritten = self.write("manual.html", "handwritten")
+        generated = self.base / "note/old.html"
+        generated.write_text(MARKER + "old", encoding="utf-8")
+        handwritten = self.base / "note/manual.html"
+        handwritten.write_text("handwritten", encoding="utf-8")
+        source_asset = self.write("old.html", "source attachment")
         manifest = self.base / "note/.generated-pages.json"
         manifest.write_text(json.dumps(["old.html", "manual.html"]), encoding="utf-8")
         self.library.remove_stale()
         self.assertFalse(generated.exists())
         self.assertTrue(handwritten.exists())
+        self.assertTrue(source_asset.exists())
+
+    def test_separate_source_assets_and_stable_reading_urls(self):
+        source = self.write("Physics/A/main.md", "---\ntitle: A\ncover: cover.png\n---\n![Figure](figure.png)\n\n[Next](../B/main.md#section)")
+        self.write("Physics/A/cover.png", "cover fixture")
+        self.write("Physics/A/figure.png", "figure fixture")
+        self.write("Physics/B/main.md", "# B\n\n## Section")
+        self.library.discover()
+        note = next(n for n in self.library.notes if n.title == "A")
+        self.library.parse(note)
+        self.assertEqual(note.source, source)
+        self.assertEqual(note.output, self.base / "note/Physics/A/index.html")
+        self.assertEqual(note.cover, "../../../files/notes/Physics/A/cover.png")
+        self.assertIn('src="../../../files/notes/Physics/A/figure.png"', note.html)
+        self.assertIn('href="../B/index.html#section"', note.html)
+        self.assertIn('src="../files/notes/Physics/A/cover.png"', self.library.card(note))
+        self.assertIn('href="../../../files/notes/Physics/A/main.md" download', self.library.article(note))
+
+    def test_root_note_names_do_not_replace_directory(self):
+        for name in ("index.md", "main.md", "plain.md"):
+            self.write(name, name)
+        outputs = {note.output.relative_to(self.base).as_posix() for note in self.library.discover()}
+        self.assertEqual(outputs, {"note/index-note.html", "note/main.html", "note/plain.html"})
+
+    def test_source_discovery_ignores_output_directory(self):
+        self.write("new.md", "New source")
+        (self.base / "note/old.md").write_text("Old location", encoding="utf-8")
+        notes = self.library.discover()
+        self.assertEqual(len(notes), 1)
+        self.assertEqual(notes[0].source.name, "new.md")
 
     def test_frontmatter_errors_and_dates(self):
         self.assertEqual(date_value("2026-08-03 8:40"), "2026-08-03")

@@ -37,10 +37,11 @@ def relative_url(target, directory):
     return quote(Path(os.path.relpath(target, directory)).as_posix(), safe="/-._~")
 
 
-def output_for(source, note_root):
-    if source.stem.lower() in ("main", "index") and source.parent != note_root:
-        return source.with_name("index.html")
-    return source.with_name("index-note.html") if source.stem.lower() == "index" else source.with_suffix(".html")
+def output_for(source, source_root, output_root):
+    target = output_root / source.relative_to(source_root)
+    if source.stem.lower() in ("main", "index") and source.parent != source_root:
+        return target.with_name("index.html")
+    return target.with_name("index-note.html") if source.stem.lower() == "index" else target.with_suffix(".html")
 
 
 def split_frontmatter(text):
@@ -100,6 +101,7 @@ class NoteLibrary:
     def __init__(self, base):
         self.base = Path(base).resolve()
         self.root = self.base / "note"
+        self.source_root = self.base / "files/notes"
         self.notes = []
         self.equations = []
         self.paths = {}
@@ -110,19 +112,19 @@ class NoteLibrary:
 
     def discover(self):
         outputs = set()
-        for source in sorted(self.root.rglob("*.md")):
-            if any(p.startswith(".") for p in source.relative_to(self.root).parts):
+        for source in sorted(self.source_root.rglob("*.md")):
+            if any(p.startswith(".") for p in source.relative_to(self.source_root).parts):
                 continue
             meta, body = split_frontmatter(source.read_text(encoding="utf-8-sig"))
             if meta.get("draft") is True:
                 continue
-            output = output_for(source, self.root)
+            output = output_for(source, self.source_root, self.root)
             if str(output).casefold() in outputs:
                 raise ValueError(f"Two notes would overwrite the same page: {output}")
             if output.exists() and MARKER not in output.read_text(encoding="utf-8"):
                 raise ValueError(f"Refusing to overwrite a handwritten page: {output}")
             outputs.add(str(output).casefold())
-            folders = source.relative_to(self.root).parts[:-1]
+            folders = source.relative_to(self.source_root).parts[:-1]
             category = str(meta.get("category") or (folders[0] if folders else "未分类"))
             heading = re.search(r"^#\s+(.+)$", body, re.M)
             title = str(meta.get("title") or (heading.group(1) if heading else source.parent.name if source.stem.lower() in ("main", "index") else source.stem))
@@ -277,7 +279,7 @@ class NoteLibrary:
             groups += f'''<section class="note-group" id="{identifier}" data-note-group><header class="note-group-heading">{eyebrow}<h2>{esc(label)} <span>{counts[category]:02d}</span></h2></header><div class="note-grid">{cards}</div></section>'''
         if not self.notes:
             groups = '<div class="empty-state"><h2>下一页，留给新的思考。</h2><p>笔记正在整理中。</p></div>'
-        return f'''{MARKER}<header class="page-heading"><p class="eyebrow">记录 · 理解 · 探索</p><h1>Note<span class="title-period">.</span></h1><p>把零散的思考整理成页，在不同的问题之间，慢慢建立联系。</p></header>
+        return f'''{MARKER}<header class="page-heading"><p class="eyebrow">学习笔记</p><h1>Note<span class="title-period">.</span></h1></header>
           <div class="notes-layout" id="notes"><aside class="note-sidebar"><p class="eyebrow">按主题阅读</p><nav class="note-categories" aria-label="笔记分类">{links}</nav><p class="note-library-count">{len(categories):02d} 个主题 · {len(self.notes):02d} 篇笔记</p></aside>
           <div class="note-list"><div class="note-search" hidden><label for="note-search">搜索笔记</label><div class="note-search-field"><input id="note-search" type="search" placeholder="标题、关键词或正文…" autocomplete="off"><button type="button" id="clear-note-search" aria-label="清空搜索">清空</button></div><p id="note-results" role="status" aria-live="polite">共 {len(self.notes)} 篇笔记</p></div>
           {groups}<div class="note-no-results" hidden><h2>还没有找到这篇笔记</h2><p>试试其他关键词，或切换到全部笔记。</p></div></div></div>'''
