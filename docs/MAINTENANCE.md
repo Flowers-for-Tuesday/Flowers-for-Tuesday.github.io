@@ -2,16 +2,53 @@
 
 这是一个适合 GitHub Pages 的静态博客。生成页面需要 Python 3.10+ 和 Node.js 18+；Markdown 解析依赖见 `requirements.txt`，公式排版组件已放入仓库，不需要运行 npm install。所有正文与公式在生成时完成排版，关闭 JavaScript 仍可阅读和导航。
 
+## 快捷预览与发布
+
+在 Windows 上，日常操作只需要项目根目录中的两个入口：
+
+1. 双击 **`preview.cmd`**：自动准备项目环境、生成页面并打开浏览器。保持命令窗口开启，修改 Markdown、JSON、模板、CSS 或 JavaScript 并保存，页面会自动刷新。生成失败时，浏览器右下角和终端会显示错误；修正并保存后自动重试。关闭窗口或按 Ctrl+C 停止预览。
+2. 确认本地效果后，双击 **`publish.cmd`**：检查远程分支、生成页面、运行检查，将项目中所有未被 `.gitignore` 排除的修改和删除一起提交并推送到 `origin/main`，随后等待 GitHub Pages 确认部署。显示“部署成功”后，再打开线上网站检查。
+
+本机需要已安装 Python、Node.js 和 Git，并具有该远程仓库的推送权限。第一次运行会联网安装 Python 依赖到项目内的 `.venv/`，以后自动复用；无需手动激活虚拟环境。发布失败时窗口会保留错误信息，已有文件和本地提交不会被撤销。
+
+也可以在项目目录中运行以下命令（跨平台）：
+
+```powershell
+python scripts/manage.py preview --open
+python scripts/manage.py build
+python scripts/manage.py publish -m "更新笔记与页面样式"
+python scripts/manage.py status
+```
+
+预览地址默认是 `http://127.0.0.1:8000`，仅本机可访问；端口已被占用时使用 `python scripts/manage.py preview --open --port 8001`。`status` 只查询当前提交的部署状态，不创建提交或推送。发布默认最多等待 5 分钟，超时后 GitHub 会继续运行，可稍后查询；`--timeout 600` 可延长等待，`--no-wait` 可只推送、不等待部署结果。返回码 `0` 表示成功（使用 `--no-wait` 时仅表示推送成功），`1` 表示失败，`2` 表示代码已推送但部署状态尚未确认。
+
+如果远程 `main` 有本地尚未包含的提交，发布工具会停止，请先处理本地修改并同步远程。它不会强制推送。网络中断后可再次运行发布命令，已有提交会继续推送，没有新改动时不会创建空提交。预览和发布可以同时开启，文件生成会依次执行。
+
+### 在 VS Code 中调试
+
+用 VS Code 打开整个项目文件夹后：
+
+- 按 **F5**：启动本地预览，并在 Edge 中打开网站，可在 `assets/js/` 内设置断点；前端样式可在浏览器开发者工具中查看。
+- 按 **Ctrl+Shift+B**：重新生成页面。
+- 通过 **终端 → 运行任务 → 网站：提交并部署**：输入本次更新说明并发布。
+
+浏览器开发者工具中的临时样式调整不会自动保存到源文件；确认效果后，把改动写回 CSS。结束浏览器调试后，如需关闭预览，在 VS Code 中终止“网站：本地预览”任务。修改 `scripts/dev.py`、`scripts/manage.py` 或依赖配置后，需要重启预览。
+
 ## 文件结构
 
 ```text
 README.md               入场动画的两行原文
-content/site.json       个人介绍、账号链接、歌曲、论文数据
+preview.cmd             Windows 双击预览入口
+publish.cmd             Windows 双击提交与部署入口
+.vscode/                本地预览、生成、发布任务与 Edge 调试配置
+content/site.json       主页栏目文案、个人介绍、账号链接、歌曲、论文数据
 content/note-categories.json 笔记分类的显示名称
 templates/base.html    共用页头、导航、页脚
 scripts/build.py        静态页面生成入口
 scripts/notes.py        扫描 Markdown、分类、生成目录与正文
 scripts/render-math.cjs 构建时排版公式（KaTeX）
+scripts/manage.py       自动准备环境、检查、提交、推送、查询部署
+scripts/dev.py          监听源文件修改与浏览器自动刷新
 assets/css/site.css     样式与响应式布局
 assets/js/site.js       手机导航、可跳过的入场动画
 assets/css/notes.css    笔记目录与正文样式
@@ -38,16 +75,28 @@ favicon.ico            原有网站 logo
 About 页的个人账号导航在 `about.navigation` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。
 可选的 `icon` 字段支持 `github`、`zhihu`、`bilibili`，对应 `assets/icons/` 下的 SVG 图标；生成时内嵌到 HTML，使用 `currentColor` 随链接文字变色，无需额外加载图标文件。不设置 `icon` 时只显示文字链接。
 
-首次安装 Python 依赖，然后生成并预览（也可在 Python 虚拟环境中运行）：
+根据修改目的编辑以下源文件：
+
+| 想修改的内容 | 对应文件 |
+| --- | --- |
+| 个人介绍、个人账号、歌曲和论文 | `content/site.json` |
+| 主页三个栏目的文案、主页页脚文字 | `content/site.json` 中的 `home` |
+| 笔记正文、公式与图片 | `note/分类/笔记/main.md` 及同目录图片 |
+| 笔记分类的显示名称 | `content/note-categories.json` |
+| 导航栏、共用页头和页脚 | `templates/base.html` |
+| 字体大小、间距、颜色、页面布局 | `assets/css/site.css`、`assets/css/notes.css` |
+| 入场动画、移动端导航、笔记筛选 | `assets/js/site.js`、`assets/js/notes.js` |
+| 入场的两行文字 | `README.md` |
+| 主页与各栏目的页面结构 | `scripts/build.py`；笔记页面结构在 `scripts/notes.py` |
+
+推荐用快捷预览工具监听修改：
 
 ```powershell
-python -m pip install -r requirements.txt
-python scripts/build.py
-python -m http.server 8000 --bind 127.0.0.1
+python scripts/manage.py preview --open
 ```
 
 浏览器访问 `http://127.0.0.1:8000`。停止预览按 Ctrl+C。
-需要调整结构时编辑生成脚本或模板，需要调整外观时编辑 CSS。生成后的 HTML 也需一起提交，避免下一次生成覆盖手工修改。
+修改应保存在源文件中，直接修改生成的 `index.html` 等文件会在下次生成时被覆盖。发布工具会自动重新生成并提交 HTML。右下角的本地预览状态与刷新脚本只在预览服务器中临时加入，不会写入生成文件或部署到线上。
 
 ## 添加 Markdown 笔记
 
@@ -93,7 +142,7 @@ draft: false # true 时不生成页面、不进入目录
 
 正文页提供章节目录、分类返回、Markdown 下载及同类笔记推荐；目录页支持分类与全文关键词搜索。关闭 JavaScript 时所有已发布笔记和分类仍可直接浏览。
 
-修改 Markdown 或资源后运行 `python scripts/build.py`。自动生成的页面不应手动编辑；移除源文件后重新生成，会根据 `note/.generated-pages.json` 清理对应的旧阅读页，原始文件不受影响。
+开启快捷预览时，修改 Markdown 或资源会自动生成；也可手动运行 `python scripts/manage.py build`。自动生成的页面不应手动编辑；移除源文件后重新生成，会根据 `note/.generated-pages.json` 清理对应的旧阅读页，原始文件不受影响。
 
 ## 添加歌曲与论文
 
@@ -104,7 +153,7 @@ draft: false # true 时不生成页面、不进入目录
 检查生成器：
 
 ```powershell
-python -m unittest discover -s tests -v
+.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
 歌曲（添加到 `music`，`audio` 可选）：
@@ -148,6 +197,8 @@ python -m unittest discover -s tests -v
 推荐使用 GitHub 仓库 **Settings → Pages → Build and deployment → Source → GitHub Actions**。`.github/workflows/pages.yml` 会在每次推送至 `main` 后安装依赖、检查生成器、扫描 Markdown 并部署。以后只需上传 Markdown 和同目录图片，不需要手动登记或生成 HTML。切换来源后，可在 Actions 的 **Build and publish website → Run workflow** 立即运行一次。
 
 如果仍使用 **Deploy from a branch → main → /(root)**，本次已提交的生成页面可照常发布；后续更新需要本地生成并提交 HTML。工作流会完成构建并保存 `github-pages` 产物，但在来源不是 GitHub Actions 时跳过部署，以免与已有发布方式冲突。
+
+`publish.cmd` 兼容以上两种发布方式，会自动生成并提交 HTML；部署状态检查会匹配本次提交，只有 Pages 发布任务成功才显示“部署成功”，构建成功但部署被跳过不会被误报。
 
 网站地址为 <https://flowers-for-tuesday.github.io/>。发布包通过 `scripts/package_site.py` 生成，只包含网站目录，不包含本地预览工具、构建依赖或 Git 数据。
 

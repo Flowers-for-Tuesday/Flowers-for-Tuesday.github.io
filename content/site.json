@@ -2,6 +2,14 @@
   "name": "Flowers for Tuesday",
   "description": "一些笔记，一些旋律，以及探索世界留下的痕迹。",
   "github": "https://github.com/Flowers-for-Tuesday",
+  "home": {
+    "footer_text": "礼拜二的花束",
+    "directory_descriptions": {
+      "note": "“可是老师，那些没有天赋的人呢？他们的人生从一开始就浪费了吗？”",
+      "music": "“其实谁也没有恶意，宇宙如此，我们也是一样。”",
+      "publication": "“世上终究没有不停的雨，但或许有无止境的冒险。”"
+    }
+  },
   "about": {
     "paragraphs": [
       "你好，欢迎来到 Flowers for Tuesday。这是我的个人博客，也是安放文字、音乐与思考的一个小小角落。",

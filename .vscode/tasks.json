@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "网站：本地预览",
+      "type": "process",
+      "command": "python",
+      "args": ["scripts/manage.py", "preview"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {"regexp": "^(.+):(\\d+): (ERROR .+)$", "file": 1, "line": 2, "message": 3},
+        "background": {"activeOnStart": true, "beginsPattern": "Preparing local preview", "endsPattern": "Preview ready:"}
+      },
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    },
+    {
+      "label": "网站：生成页面",
+      "type": "process",
+      "command": "python",
+      "args": ["scripts/manage.py", "build"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "group": {"kind": "build", "isDefault": true},
+      "problemMatcher": []
+    },
+    {
+      "label": "网站：提交并部署",
+      "type": "process",
+      "command": "python",
+      "args": ["scripts/manage.py", "publish", "-m", "${input:commitMessage}"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": [],
+      "presentation": {"reveal": "always", "panel": "dedicated"}
+    }
+  ],
+  "inputs": [{"id": "commitMessage", "type": "promptString", "description": "本次网站更新说明（可留空）", "default": "Update website"}]
+}

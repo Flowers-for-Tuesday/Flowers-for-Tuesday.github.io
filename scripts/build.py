@@ -47,6 +47,7 @@ def render(page, main, description, title=None, *, output=None, extra_head=""):
         root=root, page=page, title=e(title or DATA["name"]), description=e(description),
         github=safe_url(DATA["github"]), navigation=navigation, main=main, intro=intro,
         extra_head=extra_head.replace("{root}", root),
+        footer_text=e(DATA["home"]["footer_text"] if page == "home" else "文字、旋律，与生活的切片。"),
         replay='<button class="replay-intro" type="button" hidden>重看开场</button>' if page == "home" else "",
     )
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -55,18 +56,19 @@ def render(page, main, description, title=None, *, output=None, extra_head=""):
 
 def home():
     rows = ""
-    for number, slug, label, chinese, text in [
-        ("01", "note", "Note", "笔记", "记下问题，也记下寻找答案的过程。"),
-        ("02", "music", "Music", "音乐", "把难以言说的心情，写进旋律里。"),
-        ("03", "publication", "Publication", "学术发表", "记录研究中的思考与公开发表的成果。"),
+    for number, slug, label, chinese in [
+        ("01", "note", "Note", "笔记"),
+        ("02", "music", "Music", "音乐"),
+        ("03", "publication", "Publication", "学术发表"),
     ]:
+        text = e(DATA["home"]["directory_descriptions"][slug])
         rows += f'''<a class="directory-row" href="./{slug}/"><span class="row-number">{number}</span>
           <h3>{label}<span>{chinese}</span></h3><p>{text}</p><span class="row-arrow" aria-hidden="true">↗</span></a>'''
     render("home", f'''
       <section class="hero">
         <figure class="hero-image"><img src="./assets/images/avator.jpg" width="1600" height="1600" fetchpriority="high" alt="窗边伏在桌上的女孩，阳光洒在书页上"></figure>
         <div class="hero-copy"><p class="eyebrow">WELCOME TO MY LITTLE CORNER</p>
-          <h1>Flowers<br>for Tuesday<span class="title-period">.</span></h1>
+          <h1>{e(DATA['name'])}<span class="title-period">.</span></h1>
           <p class="hero-description">{e(DATA['description'])}</p>
           <p class="muted hero-note">欢迎来到我的个人博客。<br>在平凡的日子里，留下一点值得珍藏的东西。</p>
           <a class="text-link" href="./about/">关于我 <span aria-hidden="true">↗</span></a>
