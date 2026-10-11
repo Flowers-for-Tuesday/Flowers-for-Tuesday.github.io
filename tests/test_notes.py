@@ -111,6 +111,36 @@ price = "$not_math$"
         note = self.library.discover()[0]
         self.library.parse(note)
         self.assertEqual(note.summary, text)
+        self.assertNotIn('note-card-summary', self.library.card(note))
+
+    def test_optional_summary_is_visible_only_in_preview_and_escaped(self):
+        summary = 'Preview-only <script>alert(1)</script> & details. ' + 'More context. ' * 12
+        self.write("summary.md", "---\ntitle: My note\nsummary: " + json.dumps(summary) + "\n---\n# My note\n\nActual body.")
+        note = self.library.discover()[0]
+        self.library.parse(note)
+        card = self.library.card(note)
+        from html import escape
+        self.assertIn('<h3>My note</h3><p class="note-card-summary">' + escape(summary.strip(), quote=True) + '</p>', card)
+        self.assertNotIn('<script>', card)
+        self.assertIn(summary.strip(), note.search)
+        self.assertNotIn('Preview-only', self.library.article(note))
+        self.assertIn('Actual body.', self.library.article(note))
+
+    def test_empty_summary_does_not_show_description_or_body_in_preview(self):
+        for value in ('null', '""', '"   "'):
+            with self.subTest(value=value):
+                self.write("summary.md", '---\nsummary: ' + value + '\ndescription: Metadata description\n---\n' + 'Long body paragraph. ' * 10)
+                library = NoteLibrary(self.base)
+                note = library.discover()[0]
+                library.parse(note)
+                self.assertNotIn('note-card-summary', library.card(note))
+                self.assertEqual(note.summary, 'Metadata description')
+
+    def test_folded_multiline_summary(self):
+        self.write("summary.md", "---\nsummary: >-\n  First line\n  second line\n---\nBody")
+        note = self.library.discover()[0]
+        self.library.parse(note)
+        self.assertIn('<p class="note-card-summary">First line second line</p>', self.library.card(note))
 
     def test_cleanup_only_removes_previous_generated_pages(self):
         generated = self.base / "note/old.html"

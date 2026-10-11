@@ -92,6 +92,7 @@ class Note:
     published: str
     cover: str = ""
     summary: str = ""
+    preview_summary: str = ""
     search: str = ""
     headings: list = field(default_factory=list)
     html: str = ""
@@ -228,8 +229,9 @@ class NoteLibrary:
         md.add_render_rule("image", render_image)
         note.html = md.renderer.render(tokens, md.options, env)
         note.html = note.html.replace('<table class="note-table">', '<div class="table-scroll" tabindex="0" role="region" aria-label="表格，可横向滚动"><table class="note-table">').replace("</table>", "</table></div>")
-        note.search = " ".join([note.title, note.category, self.category_label(note.category), *all_text])
-        summary = str(note.meta.get("summary") or note.meta.get("description") or (paragraphs[0] if paragraphs else ""))
+        note.preview_summary = str(note.meta.get("summary") or "").strip()
+        note.search = " ".join([note.title, note.category, self.category_label(note.category), note.preview_summary, *all_text])
+        summary = str(note.preview_summary or note.meta.get("description") or (paragraphs[0] if paragraphs else ""))
         note.summary = summary[:125].rstrip() + ("…" if len(summary) > 125 else "")
         if note.meta.get("cover"):
             note.cover = self.resolve_link(str(note.meta["cover"]), note)
@@ -260,9 +262,10 @@ class NoteLibrary:
             src = note.cover if parts.scheme else relative_url((note.output.parent / unquote(parts.path)).resolve(), self.root)
             cover = f'<img class="note-card-cover" src="{esc(src)}" alt="" loading="lazy">'
         published = f'<time datetime="{note.published}">{note.published.replace("-", ".")}</time>' if note.published else "未标注日期"
+        summary = f'<p class="note-card-summary">{esc(note.preview_summary)}</p>' if note.preview_summary else ""
         return f'''<article class="note-card" data-note data-category="{esc(note.category)}" data-search="{esc(note.search)}">
           <a class="note-card-link" href="{href}">{cover}<div class="note-card-body">
-          <p class="note-meta">{published}</p><h3>{esc(note.title)}</h3>
+          <p class="note-meta">{published}</p><h3>{esc(note.title)}</h3>{summary}
           <span class="note-read">阅读全文 <span aria-hidden="true">↗</span></span></div></a></article>'''
 
     def directory(self):
