@@ -106,7 +106,12 @@ def profile_icon(link):
 
 
 def about():
-    paragraphs = "".join(f'<p>{e(p)}</p>' for p in DATA["about"]["paragraphs"])
+    articles = []
+    for index, item in enumerate(DATA["about"]["entries"]):
+        paragraphs = "".join(f'<p>{e(p)}</p>' for p in item["paragraphs"])
+        articles.append(f'''<article class="about-entry" aria-labelledby="about-subtitle-{index}">
+          <p class="page-subtitle" id="about-subtitle-{index}">{e(item['subtitle'])}</p>{paragraphs}
+        </article>''')
     education = []
     for item in DATA["about"]["background"]:
         logo = (
@@ -122,8 +127,12 @@ def about():
       <section class="about-hero">
         <figure class="about-image"><img src="../assets/images/about.jpeg" width="2474" height="3500" alt="戴着蓝色花冠的精灵坐在铺满花瓣的门前"></figure>
         <div class="about-copy"><h1>About<span class="title-period">.</span></h1>
-          <p class="page-subtitle"> 2026/10/10，夜，于北京</p>{paragraphs}
-          <p>你可以在 <a href="../note/">Note</a> 阅读我的笔记，在 <a href="../music/">Music</a> 听听我写的歌，在 <a href="../gallery/">Gallery</a> 看看我的旅途，或在 <a href="../publication/">Publication</a> 了解我的学术发表。</p>
+          <div class="about-pagination" role="group" aria-label="切换 About 文章" hidden>
+            <button type="button" class="about-previous" aria-label="上一篇" aria-controls="about-entries"><span aria-hidden="true">←</span></button>
+            <span class="about-position" role="status" aria-atomic="true"></span>
+            <button type="button" class="about-next" aria-label="下一篇" aria-controls="about-entries"><span aria-hidden="true">→</span></button>
+          </div>
+          <div id="about-entries">{''.join(articles)}</div>
         </div>
       </section>
       <section class="about-background" aria-labelledby="background-heading">

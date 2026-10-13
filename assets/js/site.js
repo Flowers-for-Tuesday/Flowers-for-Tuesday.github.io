@@ -82,6 +82,34 @@
     sizeCards();
   }
 
+  const aboutCopy = document.querySelector('.about-copy');
+  if (aboutCopy) {
+    const entries = [...aboutCopy.querySelectorAll('.about-entry')];
+    const pagination = aboutCopy.querySelector('.about-pagination');
+    if (entries.length && pagination) {
+      const previous = pagination.querySelector('.about-previous');
+      const next = pagination.querySelector('.about-next');
+      const position = pagination.querySelector('.about-position');
+      let active = 0;
+      const showEntry = index => {
+        active = (index + entries.length) % entries.length;
+        entries.forEach((entry, i) => { entry.hidden = i !== active; });
+        position.textContent = `${active + 1} / ${entries.length}`;
+        position.setAttribute('aria-label', `第 ${active + 1} 篇，共 ${entries.length} 篇：${entries[active].querySelector('.page-subtitle').textContent}`);
+      };
+      previous.disabled = next.disabled = entries.length < 2;
+      previous.addEventListener('click', () => showEntry(active - 1));
+      next.addEventListener('click', () => showEntry(active + 1));
+      pagination.addEventListener('keydown', event => {
+        if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+        event.preventDefault();
+        showEntry(active + (event.key === 'ArrowRight' ? 1 : -1));
+      });
+      showEntry(0);
+      pagination.hidden = false;
+    }
+  }
+
   const intro = document.querySelector('.intro');
   if (!intro || typeof intro.showModal !== 'function') return;
   const sessionKey = 'flowers-for-tuesday:intro-seen';

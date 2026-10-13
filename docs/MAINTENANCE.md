@@ -74,6 +74,17 @@ favicon.ico            原有网站 logo
 
 ## 编辑与预览
 
+About 页支持多篇介绍，在 `content/site.json` 的 `about.entries` 数组中维护，每篇包含 `subtitle`（时间、地点副标题）和 `paragraphs`（正文段落数组）。复制数组中的一项即可新增一篇；按数组顺序显示，默认打开第一篇。保存后重新生成页面即可生效。
+
+```json
+"entries": [
+  {"subtitle": "2025/12/7，夜，于北京", "paragraphs": ["第一篇的第一段。", "第一篇的第二段。"]},
+  {"subtitle": "2026/10/12，于北京", "paragraphs": ["第二篇的正文。"]}
+]
+```
+
+正文上方的左右箭头可循环切换文章，并显示当前篇数；按钮获得焦点时也可用键盘左右方向键切换。只有一篇时按钮置灰。关闭 JavaScript 时所有文章按顺序展示。下方的 Background 学习经历由所有文章共用。
+
 About 页的学习经历在 `content/site.json` 的 `about.background` 数组中维护，按数组顺序显示为相连的时间线。添加经历时复制一项，填写 `years`（年份）、`school`（学校）、`program`（专业或项目），无需修改 HTML 或手动添加连接线。可选的 `logo` 填写相对项目根目录的图片路径，例如 `assets/images/pku-logo.png`；省略该字段时只显示经历内容。
 
 学校标识保存在本地：北京大学校徽来自 https://www.pku.edu.cn/pku_logo_red.png ，Perimeter Institute 标识来自 https://landing.perimeterinstitute.ca/hubfs/Stacked_Perimeter%20English%20Logo%20Black-908x301.png 。

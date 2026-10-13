@@ -1,8 +1,8 @@
 ---
-title: "不打职业不用学的DFT进阶魔法"
+title: "不打职业不用学的DFT进阶操作"
 date: 2026-10-09
 cover: cover.jpg
-summary: "告诉我，王和坐骑的区别是什么？"
+summary: "What I cannot create, I do not understand."
 ---
 
 那么来鉴赏一下自己科研过程中遇到的DFT相关的杂七杂八的理论
