@@ -2,7 +2,7 @@
 title: "连续量子相变理论 / Continuous Quantum Phase Transition"
 date: 2026-10-10
 cover: cover.jpeg
-summary: "还请，莫向外求。"
+summary: "我是旧时代的残党，新时代没有载我的船。"
 ---
 
 本文主要参考Subir Sachdev 的Quantum Phase Transitions，以及他关于连续量子相变的经典综述 [​Continuous quantum phase transitions](https://link.aps.org/doi/10.1103/RevModPhys.69.315) 
@@ -683,3 +683,7 @@ $$
 有趣的一点是，虽然2D Ising的作用量不能严格用$\phi^4$有效场论表示，但如果适当调节 $\phi^4$ 理论的质量参数，使其位于临界面上，完整 RG flow 可以流向二维 Ising 的 fixed point。也即两个模型属于相同的普适类，具有相同的普适临界指数。当然，这一点的证明需要更多复杂的数学，略。
 
 ## 3 / 横场Ising＆量子相变
+
+### 3.1 / Jordan-Wigner变换
+
+### 3.2 / 二维经典mapping
