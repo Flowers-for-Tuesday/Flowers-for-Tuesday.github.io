@@ -81,7 +81,7 @@ def home():
     render("home", f'''
       <div class="home-layout">
       <section class="hero" aria-labelledby="home-name">
-        <figure class="hero-image"><img src="./assets/images/avator.jpg" width="1600" height="1600" fetchpriority="high" alt="窗边伏在桌上的女孩，阳光洒在书页上"></figure>
+        <figure class="hero-image"><img src="./assets/images/avator.jpeg" width="1862" height="1862" fetchpriority="high" alt="个人头像"></figure>
         <div class="hero-copy">
           <h1 id="home-name">{e(DATA['name'])}<span class="title-period">.</span></h1>
           <aside class="home-quote"><span class="quote-mark" aria-hidden="true">“</span><p>{'<br>'.join(e(line) for line in DATA['home']['quote'])}</p></aside>

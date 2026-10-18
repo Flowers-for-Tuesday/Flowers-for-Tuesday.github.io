@@ -285,11 +285,11 @@ class NoteLibrary:
             links += f'<a href="#{identifier}" data-category-filter="{esc(category)}">{esc(label)} <span>{counts[category]:02d}</span></a>'
             eyebrow = f'<p class="eyebrow">{esc(category)}</p>' if label != category else ""
             cards = "".join(self.card(n) for n in self.notes if n.category == category)
-            groups += f'''<section class="note-group" id="{identifier}" data-note-group><header class="note-group-heading">{eyebrow}<h2>{esc(label)} <span>{counts[category]:02d}</span></h2></header><div class="note-grid">{cards}</div></section>'''
+            groups += f'''<section class="note-group" id="{identifier}" data-note-group><header class="note-group-heading"><div>{eyebrow}<h2 id="{identifier}-heading" tabindex="-1">{esc(label)} <span>{counts[category]:02d}</span></h2></div><a class="note-more" href="#{identifier}" data-category-filter="{esc(category)}" aria-label="更多{esc(label)}笔记">更多 <span aria-hidden="true">→</span></a></header><div class="note-grid" role="region" aria-labelledby="{identifier}-heading" tabindex="0">{cards}</div></section>'''
         if not self.notes:
             groups = '<div class="empty-state"><h2>下一页，留给新的思考。</h2><p>笔记正在整理中。</p></div>'
         return f'''{MARKER}<header class="page-heading"><p class="eyebrow">学习笔记</p><h1>Note<span class="title-period">.</span></h1></header>
-          <div class="notes-layout" id="notes"><aside class="note-sidebar"><p class="eyebrow">按主题阅读</p><nav class="note-categories" aria-label="笔记分类">{links}</nav><p class="note-library-count">{len(categories):02d} 个主题 · {len(self.notes):02d} 篇笔记</p></aside>
+          <div class="notes-layout notes-overview" id="notes"><aside class="note-sidebar"><p class="eyebrow">按主题阅读</p><nav class="note-categories" aria-label="笔记分类">{links}</nav><p class="note-library-count">{len(categories):02d} 个主题 · {len(self.notes):02d} 篇笔记</p></aside>
           <div class="note-list"><div class="note-search" hidden><label for="note-search">搜索笔记</label><div class="note-search-field"><input id="note-search" type="search" placeholder="标题、关键词或正文…" autocomplete="off"><button type="button" id="clear-note-search" aria-label="清空搜索">清空</button></div><p id="note-results" role="status" aria-live="polite">共 {len(self.notes)} 篇笔记</p></div>
           {groups}<div class="note-no-results" hidden><h2>还没有找到这篇笔记</h2><p>试试其他关键词，或切换到全部笔记。</p></div></div></div>'''
 
@@ -302,9 +302,10 @@ class NoteLibrary:
         published = f'<time datetime="{note.published}">{note.published.replace("-", ".")}</time>' if note.published else "未标注日期"
         cover = f'<img class="article-cover" src="{esc(note.cover)}" alt="" fetchpriority="high">' if note.cover else ""
         source = relative_url(note.source, note.output.parent)
-        related = [n for n in self.notes if n.category == note.category and n != note][:2]
-        related_links = "".join(f'<a href="{relative_url(n.output, note.output.parent)}">{esc(n.title)} <span aria-hidden="true">↗</span></a>' for n in related)
-        related_html = f'<section class="related-notes"><h2>继续阅读 · {category}</h2>{related_links}</section>' if related else ""
+        category_notes = [n for n in self.notes if n.category == note.category]
+        next_note = category_notes[(category_notes.index(note) + 1) % len(category_notes)]
+        related_link = f'<a href="{relative_url(next_note.output, note.output.parent)}">{esc(next_note.title)} <span aria-hidden="true">↗</span></a>'
+        related_html = f'<section class="related-notes"><h2>继续阅读 · {category}</h2>{related_link}</section>' if len(category_notes) > 1 else ""
         return f'''{MARKER}<nav class="note-breadcrumbs" aria-label="当前位置"><a href="{directory}">Note</a><span aria-hidden="true">/</span><a href="{category_url}">{category}</a></nav>
           <header class="article-heading"><div><p class="eyebrow">{esc(note.category)}</p><h1>{esc(note.title)}</h1><p class="note-meta">{published}<a href="{source}" download>下载 Markdown <span aria-hidden="true">↓</span></a></p></div>{cover}</header>
           <div class="reading-layout"><aside class="article-sidebar"><details class="note-toc" open><summary>本篇目录</summary><nav aria-label="文章目录"><ol>{toc}</ol></nav></details><a class="back-to-notes" href="{directory}">← 全部笔记</a></aside>

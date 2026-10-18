@@ -592,7 +592,7 @@ $$
 +\cdots.
 $$
 
-在fixed point $(r=0,u=0)$附近尝试分析临界性质
+在Gaussian fixed point $(r=0,u=0)$附近尝试分析临界性质
 
 $$
 \frac{d\rho}{d\ell}=0,
@@ -628,7 +628,7 @@ $$
 y_1=2,\qquad y_2=4-d
 $$
 
-对我们当前讨论的2D模型，有$y_2=2>0$，意味着当四次项不为0，模型必然偏离Gaussian fixed point $(r=0,u=0)$。尝试找一下其他的fixed point，比如有名的 Wilson–Fisher 不动点
+对我们当前讨论的2D模型，有$y_2=2>0$，意味着当四次项不为0，模型必然偏离Gaussian fixed point $(r=0,u=0)$。尝试找一下其他的fixed point，比如有名的 Wilson–Fisher fixed point
 
 为了让计算可控，取
 
@@ -684,6 +684,364 @@ $$
 
 ## 3 / 横场Ising＆量子相变
 
+那么终于到了主题部分，考虑下面这个最经典的量子相变模型，一维横场Ising，其作用在一维自旋格点体系下，属于一个well defined的量子体系，其Hamiltonian写成
+
+$$
+H=H_J+H_\Gamma=-J\sum_{j=1}^{N-1}\sigma_j^z\sigma_{j+1}^z
+-\Gamma\sum_{j=1}^N\sigma_j^x
+$$
+
+注意到$[H_J,H_\Gamma]\neq0$，意味着两部分无法同时对角化，两个部分的能量无法同时达到最小值。这种竞争就可以理解为一种相变。不妨取个极限
+
+当 $\Gamma=0$ 时，对应有序相，两个基态分别是
+
+$$
+|\mathrm F_+\rangle=|\uparrow\uparrow\cdots\uparrow\rangle,
+|\mathrm F_-\rangle=|\downarrow\downarrow\cdots\downarrow\rangle
+$$
+
+其能量均为 $E_0=-(N-1)J$
+
+相应的 $J=0$ 为无序相，基态则是
+
+$$
+|\mathrm P\rangle=\bigotimes_{j=1}^{N}|\rightarrow\rangle_j
+$$
+
+$$
+|\rightarrow\rangle
+=\frac{|\uparrow\rangle+|\downarrow\rangle}{\sqrt2}
+$$
+
+此时$ E_0=-Nh $，因此直觉上看应该存在一个分界使得系统发生有序到无序的转变。
+
+这里其实可以试着进行一些微扰讨论然后和后面的精确解做比较，但自己懒得写这部分了，我们直接看精确求解方法。下面是横场Ising的两种典型解法
+
 ### 3.1 / Jordan-Wigner变换
 
+JW变换最直接的想法是试图把整个自旋链体系用等效的费米子链体系表示，因为二者有一个看着似乎很显然的对应关系，即把自旋的$|\uparrow\rangle,|\downarrow\rangle$直接与费米子的占据状态对应$|0\rangle,|1\rangle$
+
+$$
+|\uparrow\rangle\longleftrightarrow|0\rangle,
+$$
+
+$$
+|\downarrow\rangle\longleftrightarrow|1\rangle.
+$$
+
+事实也的确如此，自旋链的希尔伯特空间与费米子 Fock 空间严格等价（尽管不是那么显然，但这是对的）。所以根据二次量子化的思想，自旋体系中的算符应该也可以用产生湮灭算符完备表示。
+
+尽管似乎有现成的自旋升降算符例如$\sigma_j^-|\uparrow\rangle_j=|\downarrow\rangle_j$，但很遗憾这些算符并不满足fermion产生湮灭算符的性质
+
+$$
+\{\hat c_i,\hat c_j^\dagger\} = \delta_{ij},\qquad
+\{\hat c_i,\hat c_j\} = 0,\qquad
+\{\hat c_i^\dagger,\hat c_j^\dagger\} = 0
+$$
+
+所以还得具体去构造。至于怎么构造的你就别管了，关键是我们知道这件事是肯定可以做到的，这里直接搬结果。定义旋转后的自旋算符
+
+$$
+\tau_j^x=\sigma_j^z,
+\qquad
+\tau_j^y=-\sigma_j^y,
+\qquad
+\tau_j^z=\sigma_j^x.
+$$
+
+$$
+H=-J\sum_{j=1}^{N-1}\tau_j^x\tau_{j+1}^x
+-\Gamma\sum_{j=1}^N\tau_j^z.
+$$
+
+这相当于一种旋转，这个自旋算符和原先的自旋算符本征态肯定是不一样了，我们可以在这个新的自旋算符之上再定义新的自旋升降
+
+$$
+\tau_j^+=\frac{\tau_j^x+i\tau_j^y}{2},
+$$
+
+$$
+\tau_j^-=\frac{\tau_j^x-i\tau_j^y}{2}.
+$$
+
+而最终的产生湮灭算符会长成这个样子
+
+$$
+c_j=
+\left(\prod_{\ell<j}\tau_\ell^z\right)\tau_j^+
+$$
+
+$$
+c_j^\dagger=
+\left(\prod_{\ell<j}\tau_\ell^z\right)\tau_j^-.
+$$
+
+此即 Jordan–Wigner 变换。用升降算符重写哈密顿量，得到
+
+$$
+H={}-J\sum_{j=1}^{N-1}
+\left(
+c_j^\dagger c_{j+1}
++c_{j+1}^\dagger c_j
+\right)
+-J\sum_{j=1}^{N-1}
+\left(
+c_j^\dagger c_{j+1}^\dagger
++c_{j+1}c_j
+\right)
++2\Gamma\sum_{j=1}^{N}c_j^\dagger c_j
+-N\Gamma
+$$
+
+当然这么一同操作之后模型也不见得就很好处理了。不过起码我们可以试着来进行熟悉的二次量子化下的对角化操作，首先注意到系统具有平移对称性，可以改用动量模式
+
+$$
+c_j=\frac1{\sqrt N}\sum_ke^{ikj}c_k.
+$$
+
+动量模型下的哈密顿量写成
+
+$$
+H=\sum_kA_kc_k^\dagger c_k-N\Gamma
+-i\sum_{k>0}B_k
+(c_k^\dagger c_{-k}^\dagger+c_kc_{-k}).
+$$
+
+$$
+A_k=2(\Gamma-J\cos k)
+$$
+
+$$
+B_k=2J\sin k.
+$$
+
+看着顺眼不少，进一步的Bogoliubov变换得到我们需要的对角化形式
+
+$$
+H=
+\sum_k
+\varepsilon_k
+\left(
+\gamma_k^\dagger\gamma_k-\frac12
+\right).
+$$
+
+其中
+
+$$
+\gamma_k
+=
+\sqrt{\frac{\varepsilon_k+A_k}{2\varepsilon_k}}\,c_k
+-
+i\sqrt{\frac{\varepsilon_k-A_k}{2\varepsilon_k}}\,c_{-k}^\dagger
+$$
+
+$$
+\varepsilon_k
+=
+2\sqrt{\Gamma^2+J^2-2\Gamma J\cos k},
+$$
+
+对应的准粒子基态可以用动量模式写成
+
+$$
+|GS\rangle
+=
+\prod_{k>0}
+\left(
+\sqrt{\frac{\varepsilon_k+A_k}{2\varepsilon_k}}+
+i\sqrt{\frac{\varepsilon_k-A_k}{2\varepsilon_k}}
+c_k^\dagger c_{-k}^\dagger
+\right)|0_c\rangle.
+$$
+
+于是哈密顿量又可以写作
+
+$$
+H=E_0+\sum_k\varepsilon_k n_k,
+$$
+
+$$
+E_0=-\frac12\sum_k\varepsilon_k
+$$
+
+其实从跃迁能量$\varepsilon_k$的表达式中就可以初见端倪，无限体系下动量模式$k$连续，意味着当$k=0$时有最低跃迁能级（即能隙）$\Delta_{\mathrm{qp}}=2|\Gamma-J|$。不难发现存在一个临界点
+
+$$
+g = \Gamma/J = 1
+$$
+
+但我们还不好说这玩意就是我们想找的相变临界点，毕竟能隙怎么在原来的自旋模型中找到对应还有待考量。更直接的方法应该是计算磁化量，严格求解结果给出
+
+$$
+m_z^{\mathrm{sp}}(g)=
+\begin{cases}
+(1-g^2)^{1/8},&0\leq g<1,\\
+0,&g\geq1.
+\end{cases}
+$$
+
+由此直接得到临界点和临界指数。以及也可以试着计算关联长度，利用自旋关联函数，可证明在顺磁相 $g>1$，纵向自旋两点关联函数的远距离渐近形式为
+
+$$
+\langle\sigma_j^z\sigma_{j+r}^z\rangle
+\sim C(g)\,r^{-1/2}g^{-r},
+$$
+
+比较 $g^{-r}=e^{-r\ln g}$ 与 $e^{-r/\xi}$，得到
+
+$$
+\xi(g)=\frac1{\ln g},
+\qquad g>1.
+$$
+
+故有渐进形式
+
+$$
+\xi\sim|g-1|^{-1},
+\qquad\nu=1.
+$$
+
+同样可以得到临界点和对应的临界指数。
+
 ### 3.2 / 二维经典mapping
+
+相比起JW的严格求解，这个方法更多是提供一个新的视角而非新的求解方式。
+
+尽管横场Ising完全是一个纯态的量子模型，但原则上并不阻止我们依照量子统计的观点写出它的有限温度下的配分函数，毕竟总可以通过把温度趋于0得到纯态的性质。
+
+$$
+Z_Q=\operatorname{Tr}e^{-\beta H_Q},
+\qquad
+\beta=\frac1{k_BT_Q}.
+$$
+
+$$
+H_Q=H_J+H_\Gamma=-J\sum_{j=1}^{N}\sigma_j^z\sigma_{j+1}^z
+-\Gamma\sum_{j=1}^{N}\sigma_j^x,
+$$
+
+由于$[H_z,H_x]\neq0$ ，指数上的哈密顿量没法直接拆开，但我们可以利用Wick转动的trick来把等效的虚时间切分成无数份，小量下就可以近似良好地把指数拆分开
+
+$$
+e^{-\beta(H_z+H_x)}
+=
+\lim_{M\to\infty}
+\left(
+e^{-\Delta\tau H_z}
+e^{-\Delta\tau H_x}
+\right)^M.
+$$
+
+$$
+\Delta\tau=\frac{\beta}{M}.
+$$
+
+$$
+Z_Q
+=
+\lim_{M\to\infty}
+\operatorname{Tr}
+\left[
+e^{\Delta\tau J\sum_j\sigma_j^z\sigma_{j+1}^z}
+e^{\Delta\tau\Gamma\sum_j\sigma_j^x}
+\right]^M.
+$$
+
+求迹等同于对某一完备本征基底投影求和，选择插入完备的构形基底（也即 $\sigma^z$ 的本征基底） $ |\mathbf s\rangle
+=|s_1,s_2,\ldots,s_N\rangle $，满足边界$
+\mathbf s_{M+1}=\mathbf s_1$
+
+$$
+I=\sum_{\mathbf s}|\mathbf s\rangle\langle\mathbf s|.
+$$
+
+$$
+Z_Q
+=\lim_{M\to\infty}
+\sum_{\{\mathbf s_1,\ldots,\mathbf s_M\}}
+\prod_{\ell=1}^M
+\langle\mathbf s_\ell|
+e^{-\Delta\tau H_z}
+|\mathbf s_\ell\rangle
+\langle\mathbf s_\ell|
+e^{-\Delta\tau H_x}
+|\mathbf s_{\ell+1}\rangle.
+$$
+
+
+这里可以参考[路径积分蒙特卡洛方法 / Path Integral Monte Carlo](</files/notes/Computational Physics/PIMC/main.md#2-pimc>)这篇笔记里关于虚时路径积分的内容。
+
+比较显然地有
+
+$$
+\begin{aligned}
+&\langle\mathbf s_\ell|
+e^{-\Delta\tau H_z}
+|\mathbf s_\ell\rangle
+=
+\exp\left[
+J\Delta\tau
+\sum_j s_{j,\ell}s_{j+1,\ell}
+\right].
+\end{aligned}
+$$
+
+比较不太显然地有
+
+$$
+\langle s'|e^{\Gamma\Delta\tau\sigma^x}|s\rangle
+=
+\sqrt{\frac12\sinh(2\Gamma\Delta\tau)}
+\exp\left[
+K_\tau ss'
+\right].
+$$
+
+$$
+K_\tau
+=\frac12\ln\coth(\Gamma\Delta\tau).
+$$
+
+两个式子合在一块就可以得到总的配分函数，会发现它与经典二维Ising模型（无磁场且各向异性）的配分函数非常的神似
+
+$$
+Z_Q=
+\lim_{\substack{M\to\infty\\\Delta\tau=\beta/M}}
+B^{NM}
+\sum_{\{s_{j,\ell}\}}
+\exp\left[
+K_x\sum_{j,\ell}s_{j,\ell}s_{j+1,\ell}
++
+K_\tau\sum_{j,\ell}s_{j,\ell}s_{j,\ell+1}
+\right].
+$$
+
+$$
+Z_{\mathrm{cl}}
+=
+\sum_{\{s_{j,\ell}=\pm1\}}
+\exp\left[
+K_x\sum_{j,\ell}s_{j,\ell}s_{j+1,\ell}
++
+K_y\sum_{j,\ell}s_{j,\ell}s_{j,\ell+1}
+\right].
+$$
+
+也就是说如果把虚时间视作y方向的坐标，两个东西的配分函数是完全一致的。再加上由于纯态可以视作虚时间尺度趋于无穷，这与无限延申的2D Ising刚好匹配。
+
+于是很自然地我们可以把所有2D Ising的结论往横场Ising里套（结论怎么来的你先别管）
+
+各向异性的2D Ising有精确临界条件
+
+$$
+\sinh(2K_x)\sinh(2K_y)=1.
+$$
+
+往里套$K_x$和$K_\tau$就可以得到量子相变临界点 $g_c=\frac{\Gamma_c}{J}=1$
+
+剩下的一系列临界指数也是同理。换句话说就是1D的横场Ising和2D的经典Ising属于一个普适类（用共形场论或许会更容易解释些，可惜自己不会）
+
+至于 2D Ising的经典求解非想了解的可以去看Onsager的神秘传递矩阵法）
+
+> 另外换种思路或许可以通过JW变换的思路来求解2D 经典Ising？

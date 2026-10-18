@@ -46,7 +46,7 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; }
 .home-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px; align-items: center; padding-block: 48px 64px; }
 .hero { min-width: 0; text-align: center; }
 .hero-image { width: 160px; margin: 0 auto 24px; }
-.hero-image img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 50%; }
+.hero-image img { width: 100%; aspect-ratio: 1; object-fit: cover; }
 .hero h1 { font-size: 32px; line-height: 1.25; letter-spacing: -.025em; }
 .title-period { color: #769b97; }
 .text-link { display: inline-flex; align-items: center; gap: 28px; text-decoration: none; color: var(--accent); }

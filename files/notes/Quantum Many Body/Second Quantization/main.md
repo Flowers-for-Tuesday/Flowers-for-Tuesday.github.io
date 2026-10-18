@@ -239,8 +239,134 @@ $$
 \end{aligned}
 $$
 
+至于二次量子化处理具体问题的方法，跟波函数哪一套其实没什么区别，都是对角化而已，只不过表达方式上有些许差异。干脆拿个能算的例子来解释。
+
+## e.g. / 1D Hubbard Dimer
+
+作为最简单的非平凡 Hubbard 模型，其Hamiltonian
+
+$$
+\hat H={}-t\sum_{\sigma=\uparrow,\downarrow}
+\left(
+\hat c_{1\sigma}^\dagger\hat c_{2\sigma}
++\hat c_{2\sigma}^\dagger\hat c_{1\sigma}
+\right)
++U\left(
+\hat n_{1\uparrow}\hat n_{1\downarrow}
++\hat n_{2\uparrow}\hat n_{2\downarrow}
+\right)
+$$
+
+两个格点四种模式，完整 Fock 空间的维数为 $ \dim \mathcal F=2^4=16 $，通常研究半填充下的模型，此时固定电子数2，对应的Fock空间维度变成 $ \dim\mathcal H_{N=2}=\binom42=6$，说明这意味着整个半填充 Hubbard Dimer 的 Hamiltonian 只是一个 $6\times6$ 矩阵。
+
+可以直接写出六个态，选择的基底顺序是
+
+$$
+\mathcal B=
+\{|D_1\rangle,|A\rangle,|B\rangle,
+|D_2\rangle,|T_+\rangle,|T_-\rangle\}
+$$
+
+$$
+\begin{aligned}
+|D_1\rangle
+&=\hat c_{1\uparrow}^\dagger\hat c_{1\downarrow}^\dagger|0\rangle\\
+|A\rangle
+&=\hat c_{1\uparrow}^\dagger\hat c_{2\downarrow}^\dagger|0\rangle\\
+|B\rangle
+&=\hat c_{1\downarrow}^\dagger\hat c_{2\uparrow}^\dagger|0\rangle\\
+|D_2\rangle
+&=\hat c_{2\uparrow}^\dagger\hat c_{2\downarrow}^\dagger|0\rangle\\
+|T_+\rangle
+&=\hat c_{1\uparrow}^\dagger\hat c_{2\uparrow}^\dagger|0\rangle\\
+|T_-\rangle
+&=\hat c_{1\downarrow}^\dagger\hat c_{2\downarrow}^\dagger|0\rangle
+\end{aligned}
+$$
+
+![](1.png)
+
+写成矩阵，不难验证
+
+$$
+H=
+\begin{pmatrix}
+U&-t&+t&0&0&0\\
+-t&0&0&-t&0&0\\
++t&0&0&+t&0&0\\
+0&-t&+t&U&0&0\\
+0&0&0&0&0&0\\
+0&0&0&0&0&0
+\end{pmatrix}
+$$
+
+或者直接从一开始选取比较合适的基底
+
+$$
+\mathcal B'=
+\{|S\rangle,|D_+\rangle,|D_-\rangle,
+|T_0\rangle,|T_+\rangle,|T_-\rangle\}
+$$
+
+$$
+|S\rangle=\frac{|A\rangle-|B\rangle}{\sqrt2}
+$$
+
+$$
+|T_0\rangle=\frac{|A\rangle+|B\rangle}{\sqrt2}
+$$
+
+$$
+|D_+\rangle=
+\frac{|D_1\rangle+|D_2\rangle}{\sqrt2}
+$$
+
+$$
+|D_-\rangle=
+\frac{|D_1\rangle-|D_2\rangle}{\sqrt2}
+$$
+
+有对应的矩阵
+
+$$
+H'=
+\begin{pmatrix}
+0&-2t&0&0&0&0\\
+-2t&U&0&0&0&0\\
+0&0&U&0&0&0\\
+0&0&0&0&0&0\\
+0&0&0&0&0&0\\
+0&0&0&0&0&0
+\end{pmatrix}
+$$
+
+对角化$H'$肯定是更简单的，因为后面四个已经自动变成本征态了，而剩下的$2 \times 2$矩阵也很好处理，求解
+
+$$
+\det(H_{2\times2}-EI)=0
+$$
+
+$$
+E_\pm=
+\frac{U\pm\sqrt{U^2+16t^2}}2
+$$
+
+对应剩下的两个本征态
+
+$$
+|E_-\rangle=u|S\rangle+v|D_+\rangle
+$$
+
+$$
+|E_+\rangle=-v|S\rangle+u|D_+\rangle
+$$
+
+$$
+u=\sqrt{\frac{1+U/\Delta}{2}},
+v=\sqrt{\frac{1-U/\Delta}{2}},
+\Delta=\sqrt{U^2+16t^2}
+$$
+
+也即求出了所有的能量本征态和能级，一如一次量子化所能做到的一切。
+
 写得有点乱，总之就是这样。
-
----
-
-另，没人觉得二次量子化这个名字很帅吗

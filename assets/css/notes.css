@@ -6,6 +6,7 @@
 .note-categories a:hover { background: #edf2ee; }
 .note-categories a span { font-size: 15px; color: var(--muted); }
 .note-library-count { margin-top: 27px; color: var(--muted); font-size: 15px; padding-left: 14px; }
+.note-list { min-width: 0; }
 .note-search { padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
 .note-search label { display: block; font-size: 18px; margin-bottom: 10px; }
 .note-search-field { display: flex; align-items: center; border: 1px solid #afc0b9; border-radius: 5px; background: #fffdfa; }
@@ -19,6 +20,13 @@
 .note-group-heading h2 { font-size: 30px; display: flex; align-items: center; gap: 18px; }
 .note-group-heading h2 span { color: var(--muted); font-size: 14px; }
 .note-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.note-more { display: none; }
+.notes-overview .note-group-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+.notes-overview .note-group-heading > div { min-width: 0; }
+.notes-overview .note-more { display: inline-flex; flex-shrink: 0; align-items: center; gap: 10px; padding: 6px 0; color: var(--accent); font-size: 17px; text-decoration: none; }
+.notes-overview .note-more:hover { text-decoration: underline; }
+.notes-overview .note-grid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: calc((100% - 28px) / 2); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; padding: 8px 8px 16px; margin: -8px -8px 0; scrollbar-width: thin; scrollbar-color: #afc0b9 transparent; }
+.notes-overview .note-card { scroll-snap-align: start; }
 .note-card { min-width: 0; border-bottom: 1px solid var(--line); }
 .note-card-link { display: flex; height: 100%; flex-direction: column; text-decoration: none; }
 .note-card-cover { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 5px; background: #e7eeea; transition: filter .2s; }
@@ -90,6 +98,7 @@
 @media (max-width: 1000px) {
   .notes-layout { grid-template-columns: 175px minmax(0, 1fr); gap: 32px; }
   .note-grid { gap: 22px; }
+  .notes-overview .note-grid { grid-auto-columns: calc((100% - 22px) / 2); }
   .note-card h3 { font-size: 23px; }
   .reading-layout { grid-template-columns: 190px minmax(0, 1fr); gap: 30px; }
   .article-heading { gap: 28px; }
@@ -114,6 +123,7 @@
 }
 @media (max-width: 520px) {
   .note-grid { grid-template-columns: 1fr; gap: 32px; }
+  .notes-overview .note-grid { grid-auto-columns: 86%; gap: 20px; }
   .notes-layout { padding-bottom: 40px; }
   .note-card h3 { font-size: 26px; }
   .note-meta { font-size: 15px; }
