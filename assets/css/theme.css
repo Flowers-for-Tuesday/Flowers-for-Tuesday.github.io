@@ -1,0 +1,119 @@
+:root {
+  --surface: #fffdfa;
+  --surface-active: #e8efea;
+  --surface-hover: #edf2ee;
+  --field-line: #afc0b9;
+  --cover-surface: #e7eeea;
+  --quote-surface: #edf2ed;
+  --quote-ink: #4b6561;
+  --quote-line: #87a79a;
+  --code-surface: #e9eeea;
+  --button-hover: #416f740a;
+  --logo-surface: transparent;
+  --about-night-opacity: 0;
+  --about-day-entry: block;
+  --about-night-entry: none;
+}
+
+/* Screen-only palettes preserve the existing light print layout. */
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #182326;
+    --ink: #e1e9e5;
+    --muted: #a7b9b7;
+    --accent: #9acbc4;
+    --line: #3b5052;
+    --surface: #202e31;
+    --surface-active: #304547;
+    --surface-hover: #293b3e;
+    --field-line: #607d7b;
+    --cover-surface: #26383b;
+    --quote-surface: #233538;
+    --quote-ink: #bed5ce;
+    --quote-line: #779f93;
+    --code-surface: #2b3c3f;
+    --button-hover: #9acbc414;
+    --logo-surface: #f8f9f6;
+    --about-night-opacity: 1;
+    --about-day-entry: none;
+    --about-night-entry: block;
+  }
+}
+
+/* Follow the system even when JavaScript is unavailable. */
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --paper: #182326;
+    --ink: #e1e9e5;
+    --muted: #a7b9b7;
+    --accent: #9acbc4;
+    --line: #3b5052;
+    --surface: #202e31;
+    --surface-active: #304547;
+    --surface-hover: #293b3e;
+    --field-line: #607d7b;
+    --cover-surface: #26383b;
+    --quote-surface: #233538;
+    --quote-ink: #bed5ce;
+    --quote-line: #779f93;
+    --code-surface: #2b3c3f;
+    --button-hover: #9acbc414;
+    --logo-surface: #f8f9f6;
+    --about-night-opacity: 1;
+    --about-day-entry: none;
+    --about-night-entry: block;
+  }
+}
+
+.site-nav { margin-left: auto; }
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+}
+.theme-toggle:hover { background: var(--surface-hover); border-color: var(--accent); }
+.theme-toggle svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.theme-sun, [data-theme="dark"] .theme-moon { display: none; }
+[data-theme="dark"] .theme-sun { display: block; }
+.about-pagination button:hover:not(:disabled) { background: var(--button-hover); }
+.about-image.theme-image { display: grid; width: 100%; max-width: 350px; isolation: isolate; }
+.theme-image img { grid-area: 1 / 1; width: 100%; height: auto; aspect-ratio: 2474 / 3500; object-fit: cover; }
+.theme-image .theme-image-night { opacity: var(--image-night-opacity, var(--about-night-opacity)); transition: opacity .8s ease-in-out; }
+.background-image.theme-image { margin-left: auto; }
+@media screen {
+  .about-entry[data-entry-theme="light"] { display: var(--about-day-entry); }
+  .about-entry[data-entry-theme="dark"] { display: var(--about-night-entry); }
+}
+.education-logo img { background: var(--logo-surface); border-radius: 3px; }
+.note-categories a[aria-current] { background: var(--surface-active); }
+.note-categories a:hover { background: var(--surface-hover); }
+.note-search-field { border-color: var(--field-line); background: var(--surface); }
+.notes-overview .note-grid { scrollbar-color: var(--field-line) transparent; }
+.note-card-cover { background: var(--cover-surface); }
+.markdown-body blockquote { border-color: var(--quote-line); background: var(--quote-surface); color: var(--quote-ink); }
+.markdown-body code { background: var(--code-surface); }
+.markdown-body pre code { background: none; }
+.note-table th { background: var(--surface-active); }
+
+@media (max-width: 680px) {
+  .about-image.theme-image { max-width: 320px; }
+  .background-image.theme-image { margin-left: 0; }
+  .site-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; }
+  .site-brand { grid-column: 1; grid-row: 1; font-size: clamp(20px, 5.5vw, 30px); gap: 6px; }
+  .site-brand img { width: 24px; height: 24px; }
+  .theme-toggle { grid-column: 2; grid-row: 1; }
+  .menu-toggle { grid-column: 3; grid-row: 1; padding-left: 0; }
+  .site-nav { grid-column: 1 / -1; margin-left: 0; }
+}
+@media print {
+  .theme-toggle { display: none !important; }
+}

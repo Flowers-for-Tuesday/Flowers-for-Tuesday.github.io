@@ -9,7 +9,7 @@ import webbrowser
 
 from manage import BASE, build_lock, generate, say
 
-PUBLIC_DIRECTORIES = {"about", "note", "music", "gallery", "publication", "assets", "files"}
+PUBLIC_DIRECTORIES = {"about", "note", "music", "gallery", "research", "assets", "files"}
 PUBLIC_FILES = {"index.html", "404.html", "favicon.ico", "robots.txt", "sitemap.xml"}
 IGNORED = {"__pycache__", "code.css"}
 RELOAD_SCRIPT = r"""

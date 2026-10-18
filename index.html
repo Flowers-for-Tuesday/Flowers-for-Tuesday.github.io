@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="刻下的话语， 浮现心头： 将我的平庸， 弃置于此。">
   <meta name="theme-color" content="#f8f9f6">
+  <script src="./assets/js/theme.js"></script>
   <title>礼拜二的花束</title>
   <link rel="icon" href="./favicon.ico" sizes="any">
   <link rel="preload" href="./assets/fonts/tokyo-romance.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./assets/css/site.css">
 
+  <link rel="stylesheet" href="./assets/css/theme.css">
   <script src="./assets/js/site.js" defer></script>
 </head>
 <body data-page="home">
@@ -24,12 +26,16 @@
 <a href="./note/">Note</a>
 <a href="./music/">Music</a>
 <a href="./gallery/">Gallery</a>
-<a href="./publication/">Publication</a></nav>
+<a href="./research/">Research</a></nav>
+    <button class="theme-toggle" type="button" aria-label="深色模式" aria-pressed="false" title="切换到深色模式" hidden>
+      <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 0 1 10.7 3.5a8.5 8.5 0 1 0 9.8 9.8Z"/></svg>
+      <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+    </button>
   </header>
   <main id="main" class="wrap" tabindex="-1">
       <div class="home-layout">
       <section class="hero" aria-labelledby="home-name">
-        <figure class="hero-image"><img src="./assets/images/avator.jpeg" width="1862" height="1862" fetchpriority="high" alt="个人头像"></figure>
+        <figure class="hero-image"><img src="./assets/images/avator.png" width="1862" height="1862" fetchpriority="high" alt="个人头像"></figure>
         <div class="hero-copy">
           <h1 id="home-name">礼拜二的花束<span class="title-period">.</span></h1>
           <aside class="home-quote"><span class="quote-mark" aria-hidden="true">“</span><p>刻下的话语，<br>浮现心头：<br>将我的平庸，<br>弃置于此。</p></aside>
@@ -67,11 +73,11 @@
             <span class="card-number" aria-hidden="true">03</span>
             <div class="card-caption"><h3 id="card-gallery">Gallery<span>摄影作品</span></h3><span class="card-arrow" aria-hidden="true">↗</span></div>
           </div>
-        </a><a class="directory-card" href="./publication/" aria-labelledby="card-publication">
+        </a><a class="directory-card" href="./research/" aria-labelledby="card-research">
           <div class="directory-card-surface">
-            <img src="./assets/images/publication.jpg" width="2896" height="4096" alt="" loading="lazy" decoding="async">
+            <img src="./assets/images/research.jpg" width="2896" height="4096" alt="" loading="lazy" decoding="async">
             <span class="card-number" aria-hidden="true">04</span>
-            <div class="card-caption"><h3 id="card-publication">Publication<span>学术发表</span></h3><span class="card-arrow" aria-hidden="true">↗</span></div>
+            <div class="card-caption"><h3 id="card-research">Research<span>研究课题</span></h3><span class="card-arrow" aria-hidden="true">↗</span></div>
           </div>
         </a></div>
       </section>

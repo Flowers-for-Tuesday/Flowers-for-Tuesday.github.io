@@ -12,6 +12,6 @@ if DEST.exists():
 DEST.mkdir()
 for name in ("index.html", "404.html", "favicon.ico", ".nojekyll"):
     shutil.copy2(BASE / name, DEST / name)
-for name in ("about", "note", "music", "gallery", "publication", "assets", "files"):
+for name in ("about", "note", "music", "gallery", "research", "assets", "files"):
     shutil.copytree(BASE / name, DEST / name, ignore=shutil.ignore_patterns(".*"))
 print("Packaged static website in .site/")

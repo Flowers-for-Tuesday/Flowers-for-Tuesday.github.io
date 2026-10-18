@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="关于 Flowers for Tuesday：个人介绍、笔记、原创音乐、摄影与学术发表。">
   <meta name="theme-color" content="#f8f9f6">
+  <script src="../assets/js/theme.js"></script>
   <title>About | 礼拜二的花束</title>
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="preload" href="../assets/fonts/tokyo-romance.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../assets/css/site.css">
 
+  <link rel="stylesheet" href="../assets/css/theme.css">
   <script src="../assets/js/site.js" defer></script>
 </head>
 <body data-page="about">
@@ -24,22 +26,30 @@
 <a href="../note/">Note</a>
 <a href="../music/">Music</a>
 <a href="../gallery/">Gallery</a>
-<a href="../publication/">Publication</a></nav>
+<a href="../research/">Research</a></nav>
+    <button class="theme-toggle" type="button" aria-label="深色模式" aria-pressed="false" title="切换到深色模式" hidden>
+      <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 0 1 10.7 3.5a8.5 8.5 0 1 0 9.8 9.8Z"/></svg>
+      <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+    </button>
   </header>
   <main id="main" class="wrap" tabindex="-1">
       <section class="about-hero">
-        <figure class="about-image"><img src="../assets/images/about.jpeg" width="2474" height="3500" alt="戴着蓝色花冠的精灵坐在铺满花瓣的门前"></figure>
+        <figure class="about-image theme-image" role="img" aria-label="林间休憩与花门前的精灵">
+          <img class="theme-image-day" src="../assets/images/about_day.jpg" width="2474" height="3500" alt="" decoding="async">
+          <img class="theme-image-night" src="../assets/images/about_night.jpeg" width="2474" height="3500" alt="" decoding="async">
+        </figure>
         <div class="about-copy"><h1>About<span class="title-period">.</span></h1>
           <div class="about-pagination" role="group" aria-label="切换 About 文章" hidden>
             <button type="button" class="about-previous" aria-label="上一篇" aria-controls="about-entries"><span aria-hidden="true">←</span></button>
             <span class="about-position" role="status" aria-atomic="true"></span>
             <button type="button" class="about-next" aria-label="下一篇" aria-controls="about-entries"><span aria-hidden="true">→</span></button>
           </div>
-          <div id="about-entries"><article class="about-entry" aria-labelledby="about-subtitle-0">
-          <p class="page-subtitle" id="about-subtitle-0">2025/12/7，夜，于北京</p><p>居然能找到这个地方吗，真有你的。</p><p>如你所见，这是一个记录我个人学习笔记和一些小成果的地方。</p><p>笔者目前是一名物理学专业的普通本科生，之所以建这个小网站，在这个大概率没人发现的地方写些文字，也是希望能勉励现在无所作为的自己，能挣扎着做出一些哪怕微不足道的改变。倘若未来不可避免地走向平庸，也能有着一处痕迹曾记录下我尚还有些不甘的尝试。</p><p>自己的爱好是音乐、独立游戏和天文摄影，梦想是成为厉害的物理学家。</p><p>那么，请多指教。</p>
-        </article><article class="about-entry" aria-labelledby="about-subtitle-1">
+          <div id="about-entries"><article class="about-entry" data-entry-theme="light" aria-labelledby="about-subtitle-0">
+          <p class="page-subtitle" id="about-subtitle-0">2025/12/7，晨，于北京</p><p>居然能找到这个地方吗，真有你的。</p><p>如你所见，这是一个记录我个人学习笔记和一些小成果的地方。</p><p>笔者目前是一名物理学专业的普通本科生，之所以建这个小网站，在这个大概率没人发现的地方写些文字，也是希望能勉励现在无所作为的自己，能挣扎着做出一些哪怕微不足道的改变。倘若未来不可避免地走向平庸，也能有着一处痕迹曾记录下我尚还有些不甘的尝试。</p><p>自己的爱好是音乐、独立游戏和天文摄影，梦想是成为厉害的物理学家。</p><p>那么，请多指教。</p>
+        </article><article class="about-entry" data-entry-theme="dark" aria-labelledby="about-subtitle-1">
           <p class="page-subtitle" id="about-subtitle-1">2026/10/10，夜，于北京</p><p>不知为何，忽然想起来这个荒废了许久的小网站。</p><p>过去的一年，是我大学生活以来经历的最为迷茫无助的一段日子。这里曾记录着自己的诸多郁闷，现在呢，自己打算删去先前的所有随笔，也不愿再写一些琐碎的文字了。我所期冀的，是真正的改变与成长。</p><p>也是，无需再去反思些什么。自己已然下定决心，一定要逃离这个令人难以呼吸的地方。自己或许做不到锋芒毕露，但现在也有不愿停下的理由。即便痛苦大于力量，即便此刻只能不甘地忍耐。</p><p>如果这世界，仍还想要驯服我。那就如你所愿吧，我会无耻地挣扎到底。</p>
         </article></div>
+          <p class="about-empty muted" hidden>此时，还没有留下文字。</p>
         </div>
       </section>
       <section class="about-background" aria-labelledby="background-heading">
@@ -48,7 +58,10 @@
           <span class="education-track" aria-hidden="true"></span>
           <div class="education-content"><div class="education-logo"><img src="../assets/images/pku-logo.png" alt="" loading="lazy"></div><div class="education-details"><h3>北京大学</h3><p>物理学，本科</p></div></div>
         </li></ol></div>
-        <figure class="about-image background-image"><img src="../assets/images/background.jpeg" width="2474" height="3500" alt="书架之间探出头的蓝发女孩" loading="lazy"></figure>
+        <figure class="about-image background-image theme-image" role="img" aria-label="书架之间的精灵">
+          <img class="theme-image-day" src="../assets/images/background_day.jpeg" width="2474" height="3500" alt="" decoding="async">
+          <img class="theme-image-night" src="../assets/images/background_night.jpg" width="2474" height="3500" alt="" decoding="async">
+        </figure>
       </section>
     </main>
   <footer class="site-footer wrap">

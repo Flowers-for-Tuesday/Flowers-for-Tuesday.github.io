@@ -1,12 +1,8 @@
 ---
-title: "不打职业不用学的DFT进阶操作"
+title: "DFT的响应理论"
 date: 2026-10-09
 cover: cover.jpg
-summary: "What I cannot create, I do not understand."
----
-
-那么来鉴赏一下自己科研过程中遇到的DFT相关的杂七杂八的理论
-
+summary: "若是我所持有之物，便能交付与你"
 ---
 
 ## 1 / DFT 的 Legendre-transform 结构
@@ -525,10 +521,4 @@ $$
 \chi_s f_{\mathrm{Hxc}}\delta n.
 $$
 
-## 3 / DFT微扰理论
-
-## 4 / 广义密度泛函与自旋DFT理论
-
-## 5 / 二次量子化形式下的DFT
-
-
+## 3 / 进一步的微扰分析

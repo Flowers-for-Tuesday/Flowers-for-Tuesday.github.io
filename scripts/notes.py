@@ -293,11 +293,12 @@ class NoteLibrary:
           <div class="note-list"><div class="note-search" hidden><label for="note-search">搜索笔记</label><div class="note-search-field"><input id="note-search" type="search" placeholder="标题、关键词或正文…" autocomplete="off"><button type="button" id="clear-note-search" aria-label="清空搜索">清空</button></div><p id="note-results" role="status" aria-live="polite">共 {len(self.notes)} 篇笔记</p></div>
           {groups}<div class="note-no-results" hidden><h2>还没有找到这篇笔记</h2><p>试试其他关键词，或切换到全部笔记。</p></div></div></div>'''
 
-    def article(self, note):
-        directory = relative_url(self.root / "index.html", note.output.parent)
+    def article(self, note, *, directory_path=None, collection_label="Note", return_label="笔记目录", category_anchor=None, breadcrumb_label=None):
+        directory = relative_url(directory_path or self.root / "index.html", note.output.parent)
         category_index = self.ordered_categories().index(note.category) + 1
-        category_url = f"{directory}#category-{category_index}"
+        category_url = f"{directory}#{category_anchor or f'category-{category_index}'}"
         category = esc(self.category_label(note.category))
+        breadcrumb = esc(breadcrumb_label) if breadcrumb_label is not None else category
         toc = "".join(f'<li class="toc-level-{level}"><a href="#{quote(identifier)}">{esc(text)}</a></li>' for level, identifier, text in note.headings)
         published = f'<time datetime="{note.published}">{note.published.replace("-", ".")}</time>' if note.published else "未标注日期"
         cover = f'<img class="article-cover" src="{esc(note.cover)}" alt="" fetchpriority="high">' if note.cover else ""
@@ -306,10 +307,11 @@ class NoteLibrary:
         next_note = category_notes[(category_notes.index(note) + 1) % len(category_notes)]
         related_link = f'<a href="{relative_url(next_note.output, note.output.parent)}">{esc(next_note.title)} <span aria-hidden="true">↗</span></a>'
         related_html = f'<section class="related-notes"><h2>继续阅读 · {category}</h2>{related_link}</section>' if len(category_notes) > 1 else ""
-        return f'''{MARKER}<nav class="note-breadcrumbs" aria-label="当前位置"><a href="{directory}">Note</a><span aria-hidden="true">/</span><a href="{category_url}">{category}</a></nav>
+        sidebar_label = "全部笔记" if return_label == "笔记目录" else return_label
+        return f'''{MARKER}<nav class="note-breadcrumbs" aria-label="当前位置"><a href="{directory}">{esc(collection_label)}</a><span aria-hidden="true">/</span><a href="{category_url}">{breadcrumb}</a></nav>
           <header class="article-heading"><div><p class="eyebrow">{esc(note.category)}</p><h1>{esc(note.title)}</h1><p class="note-meta">{published}<a href="{source}" download>下载 Markdown <span aria-hidden="true">↓</span></a></p></div>{cover}</header>
-          <div class="reading-layout"><aside class="article-sidebar"><details class="note-toc" open><summary>本篇目录</summary><nav aria-label="文章目录"><ol>{toc}</ol></nav></details><a class="back-to-notes" href="{directory}">← 全部笔记</a></aside>
-          <div class="article-content"><article class="markdown-body" aria-label="笔记正文">{note.html}</article>{related_html}<div class="page-end"><a href="{directory}">← 返回笔记目录</a><a href="#main">回到顶部 ↑</a></div></div></div>'''
+          <div class="reading-layout"><aside class="article-sidebar"><details class="note-toc" open><summary>本篇目录</summary><nav aria-label="文章目录"><ol>{toc}</ol></nav></details><a class="back-to-notes" href="{directory}">← {esc(sidebar_label)}</a></aside>
+          <div class="article-content"><article class="markdown-body" aria-label="笔记正文">{note.html}</article>{related_html}<div class="page-end"><a href="{directory}">← 返回{esc(return_label)}</a><a href="#main">回到顶部 ↑</a></div></div></div>'''
 
     def remove_stale(self):
         manifest = self.root / ".generated-pages.json"
@@ -333,6 +335,14 @@ def build_notes(base, render):
     for note in library.notes:
         render("note", library.article(note), note.summary or note.title, note.title + " | Flowers for Tuesday", output=note.output.relative_to(base).as_posix(), extra_head=ARTICLE_HEAD)
     render("note", library.directory(), "按主题分类的学习笔记、理论推导与计算方法。", "Note | Flowers for Tuesday", extra_head=NOTE_HEAD + '\n<script src="{root}/assets/js/notes.js" defer></script>')
-    (base / "assets/css/code.css").write_text(HtmlFormatter(style="friendly").get_style_defs(".codehilite") + "\n", encoding="utf-8")
+    light_code = HtmlFormatter(style="friendly").get_style_defs(".codehilite")
+    dark_formatter = HtmlFormatter(style="native")
+    dark_code = dark_formatter.get_style_defs(':root[data-theme="dark"] .codehilite')
+    system_code = dark_formatter.get_style_defs(':root:not([data-theme]) .codehilite')
+    (base / "assets/css/code.css").write_text(
+        light_code + "\n@media screen {\n" + dark_code
+        + "\n}\n@media screen and (prefers-color-scheme: dark) {\n" + system_code + "\n}\n",
+        encoding="utf-8",
+    )
     library.remove_stale()
     print(f"Built {len(library.notes)} Markdown notes and {len(library.equations)} equations.")

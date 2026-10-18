@@ -5,12 +5,13 @@ from pathlib import Path
 from string import Template
 from urllib.parse import urlsplit
 from notes import build_notes
+from projects import build_projects
 
 BASE = Path(__file__).resolve().parents[1]
 DATA = json.loads((BASE / "content/site.json").read_text(encoding="utf-8"))
 TEMPLATE = Template((BASE / "templates/base.html").read_text(encoding="utf-8"))
 QUOTE = [line.strip() for line in (BASE / "README.md").read_text(encoding="utf-8-sig").splitlines() if line.strip()][:2]
-NAV = [("about", "About"), ("note", "Note"), ("music", "Music"), ("gallery", "Gallery"), ("publication", "Publication")]
+NAV = [("about", "About"), ("note", "Note"), ("music", "Music"), ("gallery", "Gallery"), ("research", "Research")]
 
 
 def e(value):
@@ -69,11 +70,11 @@ def home():
         ("01", "note", "Note", "学习笔记"),
         ("02", "music", "Music", "原创音乐"),
         ("03", "gallery", "Gallery", "摄影作品"),
-        ("04", "publication", "Publication", "学术发表"),
+        ("04", "research", "Research", "研究课题"),
     ]:
         cards += f'''<a class="directory-card{' is-expanded' if slug == 'note' else ''}" href="./{slug}/" aria-labelledby="card-{slug}">
           <div class="directory-card-surface">
-            <img src="./assets/images/{slug}.jpg" width="{2896 if slug == 'publication' else 2892}" height="4096" alt="" loading="lazy" decoding="async">
+            <img src="./assets/images/{slug}.jpg" width="{2896 if slug == 'research' else 2892}" height="4096" alt="" loading="lazy" decoding="async">
             <span class="card-number" aria-hidden="true">{number}</span>
             <div class="card-caption"><h3 id="card-{slug}">{label}<span>{chinese}</span></h3><span class="card-arrow" aria-hidden="true">↗</span></div>
           </div>
@@ -81,7 +82,7 @@ def home():
     render("home", f'''
       <div class="home-layout">
       <section class="hero" aria-labelledby="home-name">
-        <figure class="hero-image"><img src="./assets/images/avator.jpeg" width="1862" height="1862" fetchpriority="high" alt="个人头像"></figure>
+        <figure class="hero-image"><img src="./assets/images/avator.png" width="1862" height="1862" fetchpriority="high" alt="个人头像"></figure>
         <div class="hero-copy">
           <h1 id="home-name">{e(DATA['name'])}<span class="title-period">.</span></h1>
           <aside class="home-quote"><span class="quote-mark" aria-hidden="true">“</span><p>{'<br>'.join(e(line) for line in DATA['home']['quote'])}</p></aside>
@@ -108,9 +109,18 @@ def profile_icon(link):
 def about():
     articles = []
     for index, item in enumerate(DATA["about"]["entries"]):
+        subtitle = item["subtitle"]
+        if isinstance(subtitle, dict):
+            period = subtitle.get("period", "").strip()
+            subtitle = "，".join(subtitle.get(key, "").strip() for key in ("date", "period", "location") if subtitle.get(key, "").strip())
+        else:
+            # Keep existing string subtitles working; match the period, not the place name.
+            parts = subtitle.replace(",", "，").split("，")
+            period = parts[1].strip() if len(parts) > 1 else ""
+        theme = {"晨": "light", "午": "light", "夜": "dark"}.get(period, "all")
         paragraphs = "".join(f'<p>{e(p)}</p>' for p in item["paragraphs"])
-        articles.append(f'''<article class="about-entry" aria-labelledby="about-subtitle-{index}">
-          <p class="page-subtitle" id="about-subtitle-{index}">{e(item['subtitle'])}</p>{paragraphs}
+        articles.append(f'''<article class="about-entry" data-entry-theme="{theme}" aria-labelledby="about-subtitle-{index}">
+          <p class="page-subtitle" id="about-subtitle-{index}">{e(subtitle)}</p>{paragraphs}
         </article>''')
     education = []
     for item in DATA["about"]["background"]:
@@ -125,7 +135,10 @@ def about():
         </li>''')
     render("about", f'''
       <section class="about-hero">
-        <figure class="about-image"><img src="../assets/images/about.jpeg" width="2474" height="3500" alt="戴着蓝色花冠的精灵坐在铺满花瓣的门前"></figure>
+        <figure class="about-image theme-image" role="img" aria-label="林间休憩与花门前的精灵">
+          <img class="theme-image-day" src="../assets/images/about_day.jpg" width="2474" height="3500" alt="" decoding="async">
+          <img class="theme-image-night" src="../assets/images/about_night.jpeg" width="2474" height="3500" alt="" decoding="async">
+        </figure>
         <div class="about-copy"><h1>About<span class="title-period">.</span></h1>
           <div class="about-pagination" role="group" aria-label="切换 About 文章" hidden>
             <button type="button" class="about-previous" aria-label="上一篇" aria-controls="about-entries"><span aria-hidden="true">←</span></button>
@@ -133,11 +146,15 @@ def about():
             <button type="button" class="about-next" aria-label="下一篇" aria-controls="about-entries"><span aria-hidden="true">→</span></button>
           </div>
           <div id="about-entries">{''.join(articles)}</div>
+          <p class="about-empty muted" hidden>此时，还没有留下文字。</p>
         </div>
       </section>
       <section class="about-background" aria-labelledby="background-heading">
         <div class="about-background-copy"><h2 id="background-heading">Background</h2><ol class="education-timeline" role="list">{''.join(education)}</ol></div>
-        <figure class="about-image background-image"><img src="../assets/images/background.jpeg" width="2474" height="3500" alt="书架之间探出头的蓝发女孩" loading="lazy"></figure>
+        <figure class="about-image background-image theme-image" role="img" aria-label="书架之间的精灵">
+          <img class="theme-image-day" src="../assets/images/background_day.jpeg" width="2474" height="3500" alt="" decoding="async">
+          <img class="theme-image-night" src="../assets/images/background_night.jpg" width="2474" height="3500" alt="" decoding="async">
+        </figure>
       </section>
     ''', "关于 Flowers for Tuesday：个人介绍、笔记、原创音乐、摄影与学术发表。", "About | " + DATA["name"])
 
@@ -159,7 +176,6 @@ def collection(page, key, label, chinese, description, empty_title, empty_text):
     render(page, f'''
       <header class="page-heading"><p class="eyebrow">{chinese}</p><h1>{label}<span class="title-period">.</span></h1></header>
       <section class="collection" aria-label="{chinese}列表"><div class="collection-heading"><h2>{chinese}</h2><span>{len(items):02d} {unit}</span></div>{content}</section>
-      <div class="page-end"><span>慢慢积累，慢慢更新。</span><a class="text-link" href="../">返回主页 <span aria-hidden="true">↗</span></a></div>
     ''', description, label + " | " + DATA["name"])
 
 
@@ -171,9 +187,9 @@ if __name__ == "__main__":
     build_notes(BASE, render)
     collection("music", "music", "Music", "原创音乐", "一些旋律，一些未说出口的话。这里收藏我自己写的歌曲。", "让旋律，慢慢响起。", "原创歌曲正在整理中，之后可以在这里聆听与阅读。")
     collection("gallery", "gallery", "Gallery", "摄影作品", "一些星光，一些夜色。这里收藏我的摄影作品，记录镜头中的宇宙与日常。", "把星光，留在这里。", "摄影作品正在整理中，之后会在这里分享我的天文摄影与拍摄记录。")
-    collection("publication", "publications", "Publication", "学术发表", "在问题与答案之间，记录每一步探索。这里汇集我的公开学术论文。", "每一份探索，都值得记录。", "论文目录待更新，之后会在这里整理公开发表的论文与阅读链接。")
+    build_projects(BASE, render)
     render("404", '<section class="not-found"><h1>这一页，还未写下。</h1><p class="muted">你寻找的页面不存在，或已搬到别处。</p><a class="text-link" href="/">返回主页 ↗</a></section>', "页面未找到", "404 | " + DATA["name"])
     # GitHub Pages serves 404.html at arbitrary paths, so its assets need absolute URLs.
     path = BASE / "404.html"
     path.write_text(path.read_text(encoding="utf-8").replace('href="./', 'href="/').replace('src="./', 'src="/'), encoding="utf-8")
-    print("Built home, About, Note, Music, Gallery, Publication and 404 pages.")
+    print("Built home, About, Note, Music, Gallery, Research and 404 pages.")

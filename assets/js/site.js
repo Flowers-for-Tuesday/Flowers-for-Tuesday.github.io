@@ -84,20 +84,43 @@
 
   const aboutCopy = document.querySelector('.about-copy');
   if (aboutCopy) {
+    const currentTheme = () => document.documentElement.dataset.theme || 'light';
+    const images = [...document.querySelectorAll('.theme-image')];
+    images.forEach(figure => figure.style.setProperty('--image-night-opacity', currentTheme() === 'dark' ? '1' : '0'));
+    const updateImages = () => {
+      const theme = currentTheme();
+      images.forEach(async figure => {
+        const target = figure.querySelector(theme === 'dark' ? '.theme-image-night' : '.theme-image-day');
+        try { await target.decode(); } catch { return; /* Retain the current image if loading fails. */ }
+        if (currentTheme() === theme) figure.style.setProperty('--image-night-opacity', theme === 'dark' ? '1' : '0');
+      });
+    };
+    window.addEventListener('themechange', updateImages);
     const entries = [...aboutCopy.querySelectorAll('.about-entry')];
     const pagination = aboutCopy.querySelector('.about-pagination');
-    if (entries.length && pagination) {
+    if (pagination) {
       const previous = pagination.querySelector('.about-previous');
       const next = pagination.querySelector('.about-next');
       const position = pagination.querySelector('.about-position');
+      const empty = aboutCopy.querySelector('.about-empty');
+      const remembered = new Map();
+      let available = [];
       let active = 0;
       const showEntry = index => {
-        active = (index + entries.length) % entries.length;
-        entries.forEach((entry, i) => { entry.hidden = i !== active; });
-        position.textContent = `${active + 1} / ${entries.length}`;
-        position.setAttribute('aria-label', `第 ${active + 1} 篇，共 ${entries.length} 篇：${entries[active].querySelector('.page-subtitle').textContent}`);
+        active = available.length ? (index + available.length) % available.length : 0;
+        const selected = available[active];
+        entries.forEach(entry => { entry.hidden = entry !== selected; });
+        previous.disabled = next.disabled = available.length < 2;
+        pagination.hidden = available.length === 0;
+        if (empty) empty.hidden = available.length !== 0;
+        position.textContent = selected ? `${active + 1} / ${available.length}` : '';
+        position.setAttribute('aria-label', selected ? `第 ${active + 1} 篇，共 ${available.length} 篇：${selected.querySelector('.page-subtitle').textContent}` : '暂无文章');
+        remembered.set(currentTheme(), active);
       };
-      previous.disabled = next.disabled = entries.length < 2;
+      const filterEntries = () => {
+        available = entries.filter(entry => !entry.dataset.entryTheme || entry.dataset.entryTheme === 'all' || entry.dataset.entryTheme === currentTheme());
+        showEntry(remembered.get(currentTheme()) || 0);
+      };
       previous.addEventListener('click', () => showEntry(active - 1));
       next.addEventListener('click', () => showEntry(active + 1));
       pagination.addEventListener('keydown', event => {
@@ -105,8 +128,8 @@
         event.preventDefault();
         showEntry(active + (event.key === 'ArrowRight' ? 1 : -1));
       });
-      showEntry(0);
-      pagination.hidden = false;
+      filterEntries();
+      window.addEventListener('themechange', filterEntries);
     }
   }
 

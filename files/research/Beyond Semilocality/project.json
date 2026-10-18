@@ -1,0 +1,13 @@
+{
+  "title": "Beyond Semilocality: Quantum-Critical Constraints on Density Functionals",
+  "description": "量子临界普适性是否能够告诉我们，固定范围的局域/半局域泛函为什么必然失去正确的临界响应，以及如何构造一种能够跨越临界区、具备可预测性的改进泛函？",
+  "status": "draft",
+  "date": "2026-09-25",
+  "cover": "assets/cover.jpg",
+  "links": {
+    "Preprint": "",
+    "DOI": "",
+    "GitHub": "https://github.com/Flowers-for-Tuesday/Beyond-Semilocality",
+    "Original PDF": "assets/critical_dft_framework.pdf"
+  }
+}

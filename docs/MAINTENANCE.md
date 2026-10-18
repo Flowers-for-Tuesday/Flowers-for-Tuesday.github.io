@@ -55,11 +55,11 @@ assets/css/notes.css    笔记目录与正文样式
 assets/js/notes.js      笔记搜索、分类筛选
 assets/vendor/katex/   公式排版组件、样式、字体与授权文件
 assets/fonts/          东京街角的小浪漫网页字体
-assets/images/         avator.jpg、about.jpeg 原图
+assets/images/         头像、栏目配图及 About 的 day/night 图片
 files/notes/           笔记源文件、封面、插图与附件
 files/music/           歌曲音频、歌词、乐谱
 files/gallery/         摄影作品原图
-files/publications/    公开论文附件
+files/research/    研究课题源文件（每个课题一个目录）
 index.html             生成的主页
 about/index.html       生成的个人介绍
 files/notes/分类/笔记/main.md 笔记源文件（同目录放封面与插图）
@@ -67,23 +67,29 @@ note/index.html        自动生成的分类目录
 note/分类/笔记/index.html 自动生成的阅读页面
 music/index.html       生成的原创音乐列表
 gallery/index.html     生成的摄影作品列表
-publication/index.html 生成的论文列表
+research/index.html 生成的课题列表（课题主页和笔记在其子目录）
 404.html               找不到页面时的提示
 favicon.ico            原有网站 logo
 ```
 
 ## 编辑与预览
 
-About 页支持多篇介绍，在 `content/site.json` 的 `about.entries` 数组中维护，每篇包含 `subtitle`（时间、地点副标题）和 `paragraphs`（正文段落数组）。复制数组中的一项即可新增一篇；按数组顺序显示，默认打开第一篇。保存后重新生成页面即可生效。
+页头的月亮／太阳按钮用于切换深色和浅色模式。首次访问跟随系统配色，手动切换后保存在浏览器本地，并在页面跳转及同源标签页之间保持一致。清除网站的本地存储后恢复跟随系统。禁用 JavaScript 时仍会通过 CSS 跟随系统配色，打印保持浅色。
+
+主题初始化与切换在 `assets/js/theme.js`，配色和控件样式在 `assets/css/theme.css`。初始化脚本在页面内容渲染前执行，避免深色模式闪白。代码高亮的浅色／深色样式由 `scripts/notes.py` 生成到 `assets/css/code.css`；修改后需重新构建。
+
+About 页支持多篇介绍，在 `content/site.json` 的 `about.entries` 数组中维护，每篇包含 `subtitle` 和 `paragraphs`（正文段落数组）。副标题拆成 `date`（日期）、`period`（时段）、`location`（地点），显示时用中文逗号连接。`period` 为“晨”或“午”时只在浅色模式出现，为“夜”时只在深色模式出现；未指定或其他时段在两种模式均可见。旧的字符串副标题仍然兼容，取逗号分隔后的第二部分作为时段。保存后重新生成页面即可生效。
 
 ```json
 "entries": [
-  {"subtitle": "2025/12/7，夜，于北京", "paragraphs": ["第一篇的第一段。", "第一篇的第二段。"]},
-  {"subtitle": "2026/10/12，于北京", "paragraphs": ["第二篇的正文。"]}
+  {"subtitle": {"date": "2025/12/7", "period": "晨", "location": "于北京"}, "paragraphs": ["白天的第一段。", "白天的第二段。"]},
+  {"subtitle": {"date": "2026/10/10", "period": "夜", "location": "于北京"}, "paragraphs": ["夜晚的正文。"]}
 ]
 ```
 
-正文上方的左右箭头可循环切换文章，并显示当前篇数；按钮获得焦点时也可用键盘左右方向键切换。只有一篇时按钮置灰。关闭 JavaScript 时所有文章按顺序展示。下方的 Background 学习经历由所有文章共用。
+正文上方的左右箭头只在当前主题对应的文章中循环切换，计数也只计算这些文章；按钮获得焦点时可用键盘左右方向键切换。每种主题分别记住当前页面中的阅读位置。只有一篇时按钮置灰，没有匹配文章时显示留白提示。关闭 JavaScript 时跟随系统配色，按顺序展示该主题对应的所有文章。下方的 Background 学习经历由所有文章共用。
+
+About 的两处插图随主题变化：上方使用 `assets/images/about_day.jpg`／`about_night.jpeg`，下方使用 `background_day.jpeg`／`background_night.jpg`。两张图片叠放，目标图片解码完成后以 0.8 秒淡入淡出切换，图片区域尺寸保持固定。系统开启“减少动态效果”时关闭动画。直接替换对应文件即可更新配图。
 
 About 页的学习经历在 `content/site.json` 的 `about.background` 数组中维护，按数组顺序显示为相连的时间线。添加经历时复制一项，填写 `years`（年份）、`school`（学校）、`program`（专业或项目），无需修改 HTML 或手动添加连接线。可选的 `logo` 填写相对项目根目录的图片路径，例如 `assets/images/pku-logo.png`；省略该字段时只显示经历内容。
 
@@ -98,7 +104,7 @@ About 页的学习经历在 `content/site.json` 的 `about.background` 数组中
 | --- | --- |
 | 个人介绍、个人账号、歌曲、摄影作品和论文 | `content/site.json` |
 | 主页引文、页脚文字 | `content/site.json` 中的 `home`；`quote` 数组每项显示为一行 |
-| 主页栏目卡片配图 | `assets/images/note.jpg`、`music.jpg`、`gallery.jpg`、`publication.jpg` |
+| 主页栏目卡片配图 | `assets/images/note.jpg`、`music.jpg`、`gallery.jpg`、`research.jpg` |
 | 笔记正文、公式与图片 | `files/notes/分类/笔记/main.md` 及同目录图片 |
 | 笔记分类的显示名称 | `content/note-categories.json` |
 | 导航栏、共用页头和页脚 | `templates/base.html` |
@@ -204,21 +210,87 @@ draft: false # true 时不生成页面、不进入目录
 
 `alt` 可省略，默认使用作品标题；`date`、`description` 和 `links` 也可省略。当前 `gallery` 为空时显示占位内容，不会添加示例照片。
 
-论文（添加到 `publications`）：
+### 研究课题（Research）
+
+在 `files/research/` 中为每个课题创建一个目录，无需在 `content/site.json` 中登记。也兼容 `files/projects/`；两个位置不能出现同名课题，以免生成相同网址。现有测试课题位于 `files/research/Example/`。
+
+```text
+files/research/Example/
+  project.json              课题元数据
+  log.md                    研究日志
+  assets/
+    cover.jpg               课题封面
+    ...                     数据、图表、PPT、Poster 等附件
+  notes/
+    01-question/
+      main.md               课题笔记
+      figure.png            笔记插图（可选）
+    02-analysis/
+      main.md
+```
+
+`project.json` 示例：
 
 ```json
 {
-  "title": "论文标题",
-  "date": "2026",
-  "description": "作者列表 · 期刊或会议名称",
-  "links": [
-    {"label": "DOI", "url": "https://doi.org/实际的论文DOI"},
-    {"label": "PDF", "url": "../files/publications/example.pdf"}
-  ]
+  "title": "课题名称",
+  "description": "简要介绍研究问题与方法。",
+  "status": "draft",
+  "date": "2026-10-18",
+  "cover": "assets/cover.jpg",
+  "authors": "",
+  "venue": "",
+  "links": {
+    "Preprint": "",
+    "DOI": "",
+    "GitHub": ""
+  }
 }
 ```
 
-以上仅为格式示例，不会展示在网站上。列表按 JSON 中的顺序显示，最新内容可放在数组最前面。
+所有资源链接统一放在 `links` 字典中：键是页面显示的名称，值是网址或本地文件路径，按字典中的书写顺序统一生成课题页顶部的链接。`Preprint`、`DOI`、`GitHub` 可分别填写完整的预印本网址、`https://doi.org/...` 链接和代码仓库网址。名称可自由定义，新增材料只需在字典中添加一项，例如 `"Poster": "assets/poster.pdf"` 或 `"讨论 PPT": "assets/slides.pdf"`，无需修改生成脚本。相对路径以 `project.json` 所在目录为起点。
+
+链接值为空字符串、仅含空白或 `null` 时不生成对应元素；省略 `links`、设为 `null` / `{}` 或全部链接为空时不生成链接栏。`authors`、`venue` 分别用于作者和期刊信息。旧的顶层 `preprint`、`doi`、`github` 字段与链接数组已统一替换为这一字典格式。
+
+`status` 使用以下三个值，课题列表和课题主页统一显示英文状态与对应颜色的边框；省略或留空时不显示状态：
+
+| `status` 值 | 页面显示 | 边框 | 阶段 |
+| --- | --- | --- | --- |
+| `draft` | Draft | 红色 | 待完成论文初稿 |
+| `review` | Review | 黄色 | 审稿修改阶段 |
+| `published` | Published | 绿色 | 正式发表 |
+
+元数据字段均可省略，标题默认取文件夹名。封面仅在 `cover` 中明确填写后显示。课题按 `date` 倒序排列，缺少日期的放在末尾。设置顶层 `"draft": true` 可不生成该课题页面；它与表示论文写作阶段的 `"status": "draft"` 是不同设置。
+
+`log.md` 使用与笔记相同的 Markdown、公式、表格和代码语法，正文直接展示在课题主页。建议使用 `## 2026-10-18 · 进展标题` 分段，手动把最新日志写在最前面。空文件、缺少文件或 front matter 中设置 `draft: true` 时，不生成日志分区。
+
+`notes/` 递归扫描 Markdown，格式与 `files/notes/` 一致：
+
+```markdown
+---
+title: 笔记标题
+date: 2026-10-18 14:30
+category: Research Notes
+cover: cover.jpg
+summary: 可选的列表摘要，只在课题主页展示。
+---
+
+# 笔记标题
+
+## 推导与讨论
+
+正文……
+```
+
+笔记按 `date` 倒序显示，左侧展示日期；填写时分时，也会显示时分并用于同一天内的排序。缺少日期的笔记放在末尾并标注“未标注日期”。笔记支持 `cover`、`summary`、`draft` 等现有字段，正文继续使用现有文章布局、目录、公式渲染和 Markdown 下载。每个笔记目录推荐使用 `main.md`，也支持直接在 `notes/` 中放置 `名称.md`。
+
+Research 内的笔记分类统一为 `Research Notes`，由构建器强制设置；即使省略或填写其他 `category`，页面分类仍保持一致。每篇笔记的 `cover` 路径相对于该 Markdown 文件，封面同时显示在课题笔记列表和文章页。未填写 `cover` 时沿用课题的封面；两者均未设置时不显示图片。列表保留左侧时间戳，桌面显示封面与文字并排，窄屏则将封面放在文字上方。
+
+日志与笔记中的图片、文件和跨笔记链接均以当前 Markdown 文件所在目录为起点。例如日志链接到 `notes/01-question/main.md`，构建器会转换为生成的网页地址。`assets/` 不会被扫描为笔记，也不会自动生成数据清单；需要展示或下载的文件请显式引用。当前发布脚本仍会复制 `files/` 中的文件，因此“不列出”不代表文件私密。
+
+生成结果为 `research/Example/index.html` 和 `research/Example/notes/...`。删除或改名源笔记后，重新构建会清理此前生成的旧页面，不删除原始附件或手写网页。课题列表直接扫描源文件目录生成。
+
+Example 中包含两篇明确标注的排版示例笔记和示例日志，可直接替换为自己的研究内容；现有封面保持不变。
 
 ## 入场动画与字体
 
