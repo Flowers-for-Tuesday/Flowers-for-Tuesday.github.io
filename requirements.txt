@@ -3,3 +3,5 @@ mdit-py-plugins==0.4.2
 mdurl==0.1.2
 PyYAML==6.0.2
 Pygments==2.19.1
+pybtex==0.25.1
+latexcodec==3.0.1

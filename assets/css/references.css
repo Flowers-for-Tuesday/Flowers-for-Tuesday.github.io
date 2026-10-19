@@ -1,0 +1,34 @@
+.reference-list { list-style: none; margin: 0; padding: 0; }
+.reference-item { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 18px; padding-block: 22px; border-top: 1px solid var(--line); scroll-margin-top: 28px; border-radius: 3px; }
+.reference-number { color: var(--muted); font-size: 16px; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.reference-copy { min-width: 0; font-size: 19px; line-height: 1.85; overflow-wrap: anywhere; }
+.reference-copy cite { font-style: italic; }
+.reference-title { color: var(--ink); }
+.reference-link { display: inline-block; margin-top: 9px; color: var(--accent); font-size: 16px; text-decoration: none; }
+.reference-link:hover { text-decoration: underline; }
+.markdown-body .research-citations { font-size: .72em; line-height: 0; vertical-align: super; }
+.markdown-body .research-citation { color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; text-decoration: none; }
+.markdown-body .research-citation:hover { text-decoration: underline; }
+.reference-item.reference-highlight,
+:root:not(.references-enhanced) .reference-item:target { animation: reference-highlight 4s ease-out; }
+@keyframes reference-highlight {
+  0%, 75% { background-color: color-mix(in srgb, var(--accent) 10%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
+  100% { background-color: transparent; box-shadow: 0 0 0 1px transparent; }
+}
+.note-references { margin-top: 55px; scroll-margin-top: 28px; }
+.note-references > header { margin-bottom: 24px; }
+.note-references h2 { margin-top: 8px; font-size: 28px; }
+.note-references h2 span { color: var(--muted); font-size: 16px; margin-left: 14px; }
+@media (max-width: 680px) {
+  .reference-item { grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding-block: 18px; }
+  .reference-copy { font-size: 18px; }
+  .reference-link { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reference-item.reference-highlight,
+  :root:not(.references-enhanced) .reference-item:target { animation: reference-highlight 4s step-end !important; }
+}
+@media print {
+  .reference-item.reference-highlight,
+  :root:not(.references-enhanced) .reference-item:target { animation: none !important; }
+}

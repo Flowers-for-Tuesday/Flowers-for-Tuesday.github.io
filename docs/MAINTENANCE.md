@@ -220,6 +220,7 @@ files/research/Example/
   log.md                    研究日志
   assets/
     cover.jpg               课题封面
+    references.bib          参考文献（BibTeX）
     ...                     数据、图表、PPT、Poster 等附件
   notes/
     01-question/
@@ -291,6 +292,58 @@ Research 内的笔记分类统一为 `Research Notes`，由构建器强制设置
 生成结果为 `research/Example/index.html` 和 `research/Example/notes/...`。删除或改名源笔记后，重新构建会清理此前生成的旧页面，不删除原始附件或手写网页。课题列表直接扫描源文件目录生成。
 
 Example 中包含两篇明确标注的排版示例笔记和示例日志，可直接替换为自己的研究内容；现有封面保持不变。
+
+### 课题参考文献
+
+将 Zotero 等工具导出的 BibTeX 文件保存为课题目录下的 `assets/references.bib`。构建时自动生成“参考文献”分区，并将其入口固定在 **PROJECT INDEX 的最后一项**，正文分区也位于日志和笔记之后。
+
+条目按发表时间倒序排列，再依次编号为 `[1]`、`[2]`……。优先使用 `date`（`YYYY`、`YYYY-MM` 或 `YYYY-MM-DD`），否则使用 `year`、`month` 和可选的 `day`；月份支持数字、`jan` 等 BibTeX 宏及英文月份名。同一日期保持 `.bib` 原始顺序；仅有年份的排在当年有月份的条目之后，无日期的放在最后，不使用 `urldate`（访问时间）排序。排版使用“作者．标题．期刊，卷（期），页码（年份）”，支持 BibTeX 作者姓名、大小写保护括号、常见 LaTeX 重音和页码范围。
+
+```bibtex
+@article{example,
+  author = {Surname, Given and Another, Author},
+  title = {Paper title},
+  journal = {Journal name},
+  volume = {10},
+  number = {2},
+  pages = {100--110},
+  year = {2026},
+  doi = {10.1234/example}
+}
+```
+
+`doi` 可填写 DOI 标识符或完整 `https://doi.org/...` 地址，页面统一生成可跳转的 DOI 链接；没有 DOI 时使用 `url` 中的 HTTP(S) 原文地址。两者都没有时仅展示引用文本。未提供年份时显示 `n.d.`，其他缺失字段省略。
+
+不需要上传 PDF，也不会读取 BibTeX 中 Zotero 导出的 `file` 字段或本机附件路径。没有 `references.bib` 或没有有效条目时不显示该分区。BibTeX 语法或链接格式出错时，构建会报告文件位置，修正后重新生成即可。
+
+### 在日志和课题笔记中引用文献
+
+在 `log.md` 或课题 `notes/` 中使用 `[@引用键]`，引用键就是本课题 `assets/references.bib` 中 `@article{` 等类型之后、首个逗号之前的名称。例如 `@article{mao_testing_2021, ...}` 可以这样引用：
+
+```markdown
+这一结论可参见 [@mao_testing_2021]。
+同时引用多篇：[@mao_testing_2021; @carrascal_hubbard_2015]。
+```
+
+构建后自动显示右上角可点击的上标 `[序号]`，多篇引用及其分隔符一起以上标显示，编号与按发表时间倒序排列的参考文献一致。日志和课题笔记中的链接均在当前页跳转，目标条目会高亮。每篇课题笔记在正文底部显示共享文献库的参考文献，并在本篇目录末尾加入入口。可以使用浏览器后退回到原来的阅读位置。
+
+链接锚点基于引用键，新增文献或调整排序后仍指向同一条目，无需手动修改编号。引用键区分大小写；不存在的引用键会使构建报错，并提示源文件及引用键。代码块、行内代码、数学公式中的示例不会被转换；普通 `[1]` 文本保持原样。每个课题使用自己的文献库。
+
+跳转后的高亮保持约 3 秒，再用 1 秒淡出；再次点击同一引用会重新高亮。高亮消失后保留当前位置及链接锚点。开启“减少动态效果”时，高亮短暂保留后直接消失。
+
+### 普通笔记的参考文献
+
+普通 Note 在 Markdown 所在文件夹中放置 `references.bib`，例如：
+
+```text
+files/notes/Quantum Many Body/CQPT/
+  main.md
+  references.bib
+```
+
+构建时自动在正文底部、“继续阅读”之前生成参考文献，并在本篇目录末尾加入入口。按发表时间倒序排列，引用格式、上标和 DOI 链接与 Research 一致。在 CQPT 的正文中可以写 `参见 [@sondhi_continuous_1997]。`，点击上标跳到本页对应文献。
+
+每篇普通笔记只读取与 Markdown 同目录的文献库，不读取父目录或其他笔记的文献库。同目录有多篇 Markdown 时共用该目录的 `references.bib`。文件缺失或内容为空时不显示文献分区；未放置该文件的普通笔记保留原有 Markdown 解析。Research Notes 共用所属课题的 `assets/references.bib`，在各自正文底部显示参考文献，引用在本页内跳转；无需在课题笔记目录中另放文献库。共享文献库的排序和编号在课题主页及各篇笔记中保持一致。
 
 ## 入场动画与字体
 

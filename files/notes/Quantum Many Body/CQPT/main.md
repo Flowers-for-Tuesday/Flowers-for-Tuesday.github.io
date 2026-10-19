@@ -5,7 +5,7 @@ cover: cover.jpeg
 summary: "我是旧时代的残党，新时代没有载我的船。"
 ---
 
-本文主要参考Subir Sachdev 的Quantum Phase Transitions，以及他关于连续量子相变的经典综述 [​Continuous quantum phase transitions](https://link.aps.org/doi/10.1103/RevModPhys.69.315) 
+本文主要参考Subir Sachdev 的Quantum Phase Transitions，以及他关于连续量子相变的经典综述[@sondhi_continuous_1997]
 
 以及PI的[​Quamtum Matter](https://pirsa.org/c25062) 课程，听了前几节感觉挺有收获的，推荐一下
 
