@@ -77,7 +77,7 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; }
 .site-footer p { font-size: 14px; color: var(--muted); margin-top: 3px; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 24px; font-size: 14px; color: var(--muted); }
 .footer-links a { text-decoration: none; }
-.about-hero { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 84px; align-items: start; margin-block: 68px 65px; }
+.about-hero { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 64px; align-items: center; margin-block: 56px 60px; }
 .about-image img { width: 100%; max-width: 350px; border-radius: 7px; }
 .about-copy h1, .about-background h2 { font-size: 62px; }
 .about-copy h1 { margin-top: 12px; }
@@ -95,23 +95,22 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; }
 .profile-links .text-link > span { margin-left: auto; }
 .profile-icon { display: inline-block; flex: 0 0 1.25em; width: 1.25em; height: 1.1em; fill: currentColor; }
 .icon-zhihu { height: 1.05em; }
-.about-background { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); gap: 84px; align-items: start; border-top: 1px solid var(--line); padding-block: 35px 72px; }
-.about-background-copy { min-width: 0; }
+.about-background { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); gap: 32px; align-items: stretch; border-top: 1px solid var(--line); padding-block: 40px 60px; }
+.about-background-copy { display: flex; flex-direction: column; min-width: 0; }
 .background-image img { margin-left: auto; }
-.about-background h2 { margin-block: 15px; }
-.education-timeline { list-style: none; padding: 0; margin: 36px 0 0; max-width: 900px; overflow-x: auto; }
-.education-item { display: grid; grid-template-columns: 120px 12px minmax(max-content, 1fr); column-gap: 20px; min-width: max-content; }
-.education-years { padding-top: 10px; color: var(--accent); font-size: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.education-track { position: relative; }
-.education-track::before { content: ""; position: absolute; width: 1px; background: var(--line); left: 50%; top: 28px; bottom: -28px; }
-.education-track::after { content: ""; position: absolute; width: 10px; height: 10px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 50%; background: var(--paper); left: 50%; top: 23px; transform: translateX(-50%); }
-.education-item:last-child .education-track::before { display: none; }
-.education-content { display: flex; align-items: center; gap: 24px; padding: 8px 0 24px; }
-.education-item:last-child .education-content { padding-bottom: 0; }
-.education-details { display: flex; align-items: baseline; gap: 18px; white-space: nowrap; }
+.about-background h2 { margin: 0; padding-right: 32px; text-align: right; }
+.education-timeline { display: flex; flex-direction: column; flex: 1; list-style: none; padding: 0; margin: 36px 0 0; }
+.education-item { display: grid; flex: 1; grid-template-columns: minmax(0, 1fr) 12px; grid-template-rows: auto 1fr; column-gap: 20px; min-height: 140px; }
+.education-years { grid-column: 1; grid-row: 1; text-align: right; color: var(--accent); font-size: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.education-track { grid-column: 2; grid-row: 1 / 3; position: relative; }
+.education-track::before { content: ""; position: absolute; width: 1px; background: var(--line); left: 50%; top: 18px; bottom: -18px; }
+.education-track::after { content: ""; position: absolute; width: 10px; height: 10px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 50%; background: var(--paper); left: 50%; top: 13px; transform: translateX(-50%); }
+.education-item:last-child .education-track::before { bottom: 0; }
+.education-content { grid-column: 1; grid-row: 2; display: flex; justify-content: flex-end; align-items: flex-start; gap: 18px; padding: 8px 0 28px; min-width: 0; }
+.education-details { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: baseline; gap: 6px 18px; text-align: right; min-width: 0; overflow-wrap: anywhere; }
 .education-details h3 { font-size: 26px; line-height: 1.35; }
 .education-details p { color: var(--muted); font-size: 19px; }
-.education-logo { display: flex; align-items: center; justify-content: center; flex: 0 0 96px; min-height: 40px; }
+.education-logo { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; min-height: 35px; }
 .education-logo img { width: auto; height: auto; max-width: 96px; max-height: 32px; }
 .page-heading { max-width: 800px; padding-block: 64px 54px; }
 .page-heading h1 { font-size: clamp(44px, 6vw, 72px); margin-block: 15px 0; overflow-wrap: anywhere; }
@@ -158,7 +157,10 @@ audio { display: block; width: min(100%, 550px); margin-top: 20px; }
   .home-quote p { font-size: 19px; }
   .directory-track { gap: 12px; }
 
-  .about-hero, .about-background { gap: 42px; }
+  .about-hero { gap: 36px; }
+  .about-background { gap: 24px; }
+  .about-hero { grid-template-columns: minmax(0, 240px) minmax(0, 1fr); }
+  .about-background { grid-template-columns: minmax(0, 1fr) minmax(0, 240px); }
 }
 @media (max-width: 680px) {
   body { font-size: 18px; }
@@ -184,15 +186,16 @@ audio { display: block; width: min(100%, 550px); margin-top: 20px; }
   .about-background { grid-template-columns: minmax(0, 1fr); gap: 34px; padding-bottom: 50px; }
   .background-image img { margin-left: 0; }
   .education-timeline { margin-top: 28px; }
-  .education-item { grid-template-columns: 76px 10px minmax(max-content, 1fr); column-gap: 10px; }
+  .education-item { grid-template-columns: minmax(0, 1fr) 10px; column-gap: 14px; min-height: 120px; }
+  .about-background h2 { padding-right: 24px; }
   .education-years { font-size: 16px; }
-  .education-track::before { top: 24px; bottom: -24px; }
-  .education-track::after { top: 19px; }
+  .education-track::before { top: 14px; bottom: -14px; }
+  .education-track::after { top: 9px; }
   .education-content { gap: 14px; }
   .education-details { gap: 12px; }
   .education-details h3 { font-size: 20px; }
   .education-details p { font-size: 16px; }
-  .education-logo { flex-basis: 60px; min-height: 32px; }
+  .education-logo { min-height: 27px; }
   .education-logo img { max-width: 60px; max-height: 24px; }
   .page-heading { padding-block: 42px 36px; }
   .empty-state { padding: 40px 0; }

@@ -1,7 +1,7 @@
 ---
 title: "当我们相信着数学的时候，我们在相信着什么？"
 date: 2026-07-12
-cover: cover.jpg
+cover: cover.png
 summary: "What I cannot create, I do not understand."
 ---
 

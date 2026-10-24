@@ -135,9 +135,9 @@ def about():
         </li>''')
     render("about", f'''
       <section class="about-hero">
-        <figure class="about-image theme-image" role="img" aria-label="林间休憩与花门前的精灵">
-          <img class="theme-image-day" src="../assets/images/about_day.jpg" width="2474" height="3500" alt="" decoding="async">
-          <img class="theme-image-night" src="../assets/images/about_night.jpeg" width="2474" height="3500" alt="" decoding="async">
+        <figure class="about-image theme-image" role="img" aria-label="白昼溪流与夜晚星河下的旅人">
+          <img class="theme-image-day" src="../assets/images/about_day.jpeg" width="992" height="1654" alt="" decoding="async">
+          <img class="theme-image-night" src="../assets/images/about_night.jpeg" width="992" height="1654" alt="" decoding="async">
         </figure>
         <div class="about-copy"><h1>About<span class="title-period">.</span></h1>
           <div class="about-pagination" role="group" aria-label="切换 About 文章" hidden>
@@ -151,9 +151,9 @@ def about():
       </section>
       <section class="about-background" aria-labelledby="background-heading">
         <div class="about-background-copy"><h2 id="background-heading">Background</h2><ol class="education-timeline" role="list">{''.join(education)}</ol></div>
-        <figure class="about-image background-image theme-image" role="img" aria-label="书架之间的精灵">
-          <img class="theme-image-day" src="../assets/images/background_day.jpeg" width="2474" height="3500" alt="" decoding="async">
-          <img class="theme-image-night" src="../assets/images/background_night.jpg" width="2474" height="3500" alt="" decoding="async">
+        <figure class="about-image background-image theme-image" role="img" aria-label="山林间的旅途与烛光下的壁画">
+          <img class="theme-image-day" src="../assets/images/background_day.jpeg" width="992" height="1654" alt="" decoding="async">
+          <img class="theme-image-night" src="../assets/images/background_night.jpeg" width="992" height="1654" alt="" decoding="async">
         </figure>
       </section>
     ''', "关于 Flowers for Tuesday：个人介绍、笔记、原创音乐、摄影与学术发表。", "About | " + DATA["name"])

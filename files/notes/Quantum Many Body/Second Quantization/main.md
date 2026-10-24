@@ -1,8 +1,8 @@
 ---
-title: "少废话，二次量子化！"
+title: "二次量子化"
 date: 2026-10-12
-cover: cover.png
-summary: "你才是挑战者！"
+cover: cover.jpg
+summary: "你才是挑战者"
 ---
 
 二次量子化本质是极致的线性代数

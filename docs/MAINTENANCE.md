@@ -89,9 +89,11 @@ About 页支持多篇介绍，在 `content/site.json` 的 `about.entries` 数组
 
 正文上方的左右箭头只在当前主题对应的文章中循环切换，计数也只计算这些文章；按钮获得焦点时可用键盘左右方向键切换。每种主题分别记住当前页面中的阅读位置。只有一篇时按钮置灰，没有匹配文章时显示留白提示。关闭 JavaScript 时跟随系统配色，按顺序展示该主题对应的所有文章。下方的 Background 学习经历由所有文章共用。
 
-About 的两处插图随主题变化：上方使用 `assets/images/about_day.jpg`／`about_night.jpeg`，下方使用 `background_day.jpeg`／`background_night.jpg`。两张图片叠放，目标图片解码完成后以 0.8 秒淡入淡出切换，图片区域尺寸保持固定。系统开启“减少动态效果”时关闭动画。直接替换对应文件即可更新配图。
+About 的两处插图随主题变化：上方使用 `assets/images/about_day.jpeg`／`about_night.jpeg`，下方使用 `background_day.jpeg`／`background_night.jpeg`。四图均为 992 × 1654，按原比例完整展示，桌面图片栏最大宽 320px，平板 240px，手机端最大宽 280px 并居中。两张图片叠放，目标图片解码完成后以 0.8 秒淡入淡出切换，图片区域尺寸保持固定。系统开启“减少动态效果”时关闭动画。替换为不同比例的图片时，同步更新 `scripts/build.py` 中的图片尺寸与 `assets/css/theme.css` 中的比例。
 
 About 页的学习经历在 `content/site.json` 的 `about.background` 数组中维护，按数组顺序显示为相连的时间线。添加经历时复制一项，填写 `years`（年份）、`school`（学校）、`program`（专业或项目），无需修改 HTML 或手动添加连接线。可选的 `logo` 填写相对项目根目录的图片路径，例如 `assets/images/pku-logo.png`；省略该字段时只显示经历内容。
+
+桌面端 Background 标题与右侧图片顶部对齐，时间线位于图左侧，年份、学校和专业在时间线左侧右对齐；连线沿图片高度延伸。手机端保留上下排列，文字在前、图片在后。
 
 学校标识保存在本地：北京大学校徽来自 https://www.pku.edu.cn/pku_logo_red.png ，Perimeter Institute 标识来自 https://landing.perimeterinstitute.ca/hubfs/Stacked_Perimeter%20English%20Logo%20Black-908x301.png 。
 

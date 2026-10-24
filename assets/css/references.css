@@ -12,8 +12,8 @@
 .reference-item.reference-highlight,
 :root:not(.references-enhanced) .reference-item:target { animation: reference-highlight 4s ease-out; }
 @keyframes reference-highlight {
-  0%, 75% { background-color: color-mix(in srgb, var(--accent) 10%, var(--paper)); box-shadow: 0 0 0 1px var(--accent); }
-  100% { background-color: transparent; box-shadow: 0 0 0 1px transparent; }
+  0%, 75% { background-color: color-mix(in srgb, var(--accent) 10%, var(--paper)); }
+  100% { background-color: transparent; }
 }
 .note-references { margin-top: 55px; scroll-margin-top: 28px; }
 .note-references > header { margin-bottom: 24px; }

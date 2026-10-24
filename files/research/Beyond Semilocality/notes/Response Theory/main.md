@@ -511,7 +511,7 @@ $$
 \delta n=\chi_s\delta v_s.
 $$
 
-代入[@mao_testing_2021; @carrascal_hubbard_2015]
+代入
 
 $$
 \delta n
