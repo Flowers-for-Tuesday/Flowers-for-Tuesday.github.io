@@ -6,6 +6,8 @@ from string import Template
 from urllib.parse import urlsplit
 from notes import build_notes
 from projects import build_projects
+from gallery import build_gallery
+from about import load_about_entries
 
 BASE = Path(__file__).resolve().parents[1]
 DATA = json.loads((BASE / "content/site.json").read_text(encoding="utf-8"))
@@ -68,8 +70,8 @@ def home():
     cards = ""
     for number, slug, label, chinese in [
         ("01", "note", "Note", "学习笔记"),
-        ("02", "music", "Music", "原创音乐"),
-        ("03", "gallery", "Gallery", "摄影作品"),
+        ("02", "music", "Music", "音乐作品"),
+        ("03", "gallery", "Gallery", "旅行碎片"),
         ("04", "research", "Research", "研究课题"),
     ]:
         cards += f'''<a class="directory-card{' is-expanded' if slug == 'note' else ''}" href="./{slug}/" aria-labelledby="card-{slug}">
@@ -108,19 +110,9 @@ def profile_icon(link):
 
 def about():
     articles = []
-    for index, item in enumerate(DATA["about"]["entries"]):
-        subtitle = item["subtitle"]
-        if isinstance(subtitle, dict):
-            period = subtitle.get("period", "").strip()
-            subtitle = "，".join(subtitle.get(key, "").strip() for key in ("date", "period", "location") if subtitle.get(key, "").strip())
-        else:
-            # Keep existing string subtitles working; match the period, not the place name.
-            parts = subtitle.replace(",", "，").split("，")
-            period = parts[1].strip() if len(parts) > 1 else ""
-        theme = {"晨": "light", "午": "light", "夜": "dark"}.get(period, "all")
-        paragraphs = "".join(f'<p>{e(p)}</p>' for p in item["paragraphs"])
-        articles.append(f'''<article class="about-entry" data-entry-theme="{theme}" aria-labelledby="about-subtitle-{index}">
-          <p class="page-subtitle" id="about-subtitle-{index}">{e(subtitle)}</p>{paragraphs}
+    for index, item in enumerate(load_about_entries(BASE)):
+        articles.append(f'''<article class="about-entry" data-entry-theme="{item['theme']}" aria-labelledby="about-subtitle-{index}">
+          <p class="page-subtitle" id="about-subtitle-{index}">{e(item['subtitle'])}</p>{item['html']}
         </article>''')
     education = []
     for item in DATA["about"]["background"]:
@@ -186,7 +178,7 @@ if __name__ == "__main__":
     about()
     build_notes(BASE, render)
     collection("music", "music", "Music", "原创音乐", "一些旋律，一些未说出口的话。这里收藏我自己写的歌曲。", "让旋律，慢慢响起。", "原创歌曲正在整理中，之后可以在这里聆听与阅读。")
-    collection("gallery", "gallery", "Gallery", "摄影作品", "一些星光，一些夜色。这里收藏我的摄影作品，记录镜头中的宇宙与日常。", "把星光，留在这里。", "摄影作品正在整理中，之后会在这里分享我的天文摄影与拍摄记录。")
+    build_gallery(BASE, render, DATA["name"])
     build_projects(BASE, render)
     render("404", '<section class="not-found"><h1>这一页，还未写下。</h1><p class="muted">你寻找的页面不存在，或已搬到别处。</p><a class="text-link" href="/">返回主页 ↗</a></section>', "页面未找到", "404 | " + DATA["name"])
     # GitHub Pages serves 404.html at arbitrary paths, so its assets need absolute URLs.

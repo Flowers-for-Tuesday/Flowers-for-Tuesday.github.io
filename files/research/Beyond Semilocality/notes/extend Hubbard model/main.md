@@ -3,7 +3,7 @@ title: "论文笔记 / extend Hubbard model的临界性分析"
 category: Research Notes
 date: 2026-10-24
 cover: cover.jpg
-summary: "不会，任人践踏。"
+summary: "真正严肃的哲学问题只有一个。"
 ---
 
 # Beyond Semilocality: Quantum-Critical Constraints and Corrections for Density Functionals

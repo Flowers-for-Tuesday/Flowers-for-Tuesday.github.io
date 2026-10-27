@@ -1,5 +1,7 @@
 # Flowers for Tuesday 维护说明
 
+Gallery 图文笔记、图片与足迹地图的维护方式见 [GALLERY.md](GALLERY.md)。
+
 这是一个适合 GitHub Pages 的静态博客。生成页面需要 Python 3.10+ 和 Node.js 18+；Markdown 解析依赖见 `requirements.txt`，公式排版组件已放入仓库，不需要运行 npm install。所有正文与公式在生成时完成排版，关闭 JavaScript 仍可阅读和导航。
 
 ## 快捷预览与发布
@@ -41,7 +43,9 @@ README.md               入场动画的两行原文
 preview.cmd             Windows 双击预览入口
 publish.cmd             Windows 双击提交与部署入口
 .vscode/                本地预览、生成、发布任务与 Edge 调试配置
-content/site.json       首页引文、个人介绍、账号链接、歌曲、论文数据
+content/site.json       首页引文、学习经历、账号链接、歌曲数据
+files/about/*.md        About 文章，每篇独立存储正文与元数据
+scripts/about.py        读取 About Markdown、排序并匹配昼夜主题
 content/note-categories.json 笔记分类的显示名称
 templates/base.html    共用页头、导航、页脚
 scripts/build.py        静态页面生成入口
@@ -78,14 +82,23 @@ favicon.ico            原有网站 logo
 
 主题初始化与切换在 `assets/js/theme.js`，配色和控件样式在 `assets/css/theme.css`。初始化脚本在页面内容渲染前执行，避免深色模式闪白。代码高亮的浅色／深色样式由 `scripts/notes.py` 生成到 `assets/css/code.css`；修改后需重新构建。
 
-About 页支持多篇介绍，在 `content/site.json` 的 `about.entries` 数组中维护，每篇包含 `subtitle` 和 `paragraphs`（正文段落数组）。副标题拆成 `date`（日期）、`period`（时段）、`location`（地点），显示时用中文逗号连接。`period` 为“晨”或“午”时只在浅色模式出现，为“夜”时只在深色模式出现；未指定或其他时段在两种模式均可见。旧的字符串副标题仍然兼容，取逗号分隔后的第二部分作为时段。保存后重新生成页面即可生效。
+About 文章保存在 `files/about/`，每篇对应一个 `.md` 文件，不再放在 `content/site.json` 中。新增文章时复制一份 Markdown，修改文件名、顶部 YAML 元数据和正文即可。构建按 `order` 从小到大排列，省略时默认为 0，相同顺序按文件名排列。预览运行时，新增、修改或删除文件都会触发重新生成。
 
-```json
-"entries": [
-  {"subtitle": {"date": "2025/12/7", "period": "晨", "location": "于北京"}, "paragraphs": ["白天的第一段。", "白天的第二段。"]},
-  {"subtitle": {"date": "2026/10/10", "period": "夜", "location": "于北京"}, "paragraphs": ["夜晚的正文。"]}
-]
+```markdown
+---
+order: 3
+subtitle:
+  date: "2026/10/24"
+  period: "午"
+  location: "于北京"
+---
+
+第一段正文。
+
+第二段正文，支持 **加粗**、*斜体*、链接和列表等 Markdown 格式。
 ```
+
+`subtitle` 保留日期 `date`、时段 `period`、地点 `location` 三项，均使用带引号的字符串，显示时用中文逗号连接。`period` 为“晨”或“午”时仅在浅色模式出现，为“夜”时仅在深色模式出现；空字符串或其他时段在两种模式均可见。正文段落之间空一行。原有两篇已迁移为 `01-2025-12-07.md` 和 `02-2026-10-10.md`，正文及元数据保持不变。
 
 正文上方的左右箭头只在当前主题对应的文章中循环切换，计数也只计算这些文章；按钮获得焦点时可用键盘左右方向键切换。每种主题分别记住当前页面中的阅读位置。只有一篇时按钮置灰，没有匹配文章时显示留白提示。关闭 JavaScript 时跟随系统配色，按顺序展示该主题对应的所有文章。下方的 Background 学习经历由所有文章共用。
 
@@ -104,7 +117,8 @@ About 页的学习经历在 `content/site.json` 的 `about.background` 数组中
 
 | 想修改的内容 | 对应文件 |
 | --- | --- |
-| 个人介绍、个人账号、歌曲、摄影作品和论文 | `content/site.json` |
+| About 介绍文章及日期、时段、地点 | `files/about/*.md` |
+| 学习经历、个人账号、歌曲 | `content/site.json` |
 | 主页引文、页脚文字 | `content/site.json` 中的 `home`；`quote` 数组每项显示为一行 |
 | 主页栏目卡片配图 | `assets/images/note.jpg`、`music.jpg`、`gallery.jpg`、`research.jpg` |
 | 笔记正文、公式与图片 | `files/notes/分类/笔记/main.md` 及同目录图片 |
