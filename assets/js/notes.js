@@ -7,20 +7,34 @@
   const categoryLinks = [...document.querySelectorAll('.note-categories [data-category-filter]')];
   const layout = document.querySelector('#notes');
   const result = document.querySelector('#note-results');
+  const libraryCount = document.querySelector('.note-library-count');
+  const totalCount = categoryLinks.find(link => !link.dataset.categoryFilter)?.querySelector('span');
   let category = '';
   const normalize = text => text.normalize('NFKC').toLocaleLowerCase();
   const searchable = new Map(cards.map(card => [card, normalize(card.dataset.search)]));
+  const availableInTheme = element => !element.dataset.noteTheme || element.dataset.noteTheme === document.documentElement.dataset.theme;
+  const padded = count => String(count).padStart(2, '0');
   const update = () => {
+    for (const link of categoryLinks) link.hidden = !availableInTheme(link);
+    if (category && categoryLinks.some(link => link.dataset.categoryFilter === category && link.hidden)) {
+      category = '';
+      history.replaceState(null, '', '#notes');
+    }
+    const availableCards = cards.filter(availableInTheme);
+    const availableCategories = categoryLinks.filter(link => link.dataset.categoryFilter && !link.hidden);
+    if (totalCount) totalCount.textContent = padded(availableCards.length);
+    if (libraryCount) libraryCount.textContent = `${padded(availableCategories.length)} 个主题 · ${padded(availableCards.length)} 篇笔记`;
     layout.classList.toggle('notes-overview', !category);
     const words = normalize(search.value).trim().split(/\s+/).filter(Boolean);
     let count = 0;
     for (const card of cards) {
-      const visible = (!category || card.dataset.category === category) && words.every(word => searchable.get(card).includes(word));
+      const visible = availableInTheme(card) && (!category || card.dataset.category === category) && words.every(word => searchable.get(card).includes(word));
       card.hidden = !visible;
       if (visible) count++;
     }
     for (const group of groups) {
-      group.hidden = !group.querySelector('[data-note]:not([hidden])');
+      const showEmptyCategory = group.dataset.emptyCategory && !words.length && (!category || category === group.dataset.emptyCategory);
+      group.hidden = !showEmptyCategory && !group.querySelector('[data-note]:not([hidden])');
       group.querySelector('.note-grid').tabIndex = category ? -1 : 0;
     }
     for (const filter of categoryLinks) {
@@ -28,7 +42,7 @@
       else filter.removeAttribute('aria-current');
     }
     result.textContent = `找到 ${count} 篇笔记`;
-    document.querySelector('.note-no-results').hidden = count !== 0;
+    document.querySelector('.note-no-results').hidden = count !== 0 || groups.some(group => !group.hidden && group.dataset.emptyCategory);
   };
   document.querySelector('.note-search').hidden = false;
   search.addEventListener('input', update);
@@ -54,5 +68,6 @@
     update();
   };
   window.addEventListener('hashchange', readHash);
+  window.addEventListener('themechange', update);
   readHash();
 })();

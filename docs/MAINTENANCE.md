@@ -2,6 +2,8 @@
 
 Gallery 图文笔记、图片与足迹地图的维护方式见 [GALLERY.md](GALLERY.md)。
 
+Music 栏目的分类笔记与原创专辑维护方式见 [MUSIC.md](MUSIC.md)。
+
 这是一个适合 GitHub Pages 的静态博客。生成页面需要 Python 3.10+ 和 Node.js 18+；Markdown 解析依赖见 `requirements.txt`，公式排版组件已放入仓库，不需要运行 npm install。所有正文与公式在生成时完成排版，关闭 JavaScript 仍可阅读和导航。
 
 ## 快捷预览与发布
@@ -39,11 +41,12 @@ python scripts/manage.py status
 ## 文件结构
 
 ```text
-README.md               入场动画的两行原文
+README.md               项目简介
 preview.cmd             Windows 双击预览入口
 publish.cmd             Windows 双击提交与部署入口
 .vscode/                本地预览、生成、发布任务与 Edge 调试配置
-content/site.json       首页引文、学习经历、账号链接、歌曲数据
+content/site.json       首页引文、学习经历、账号链接
+content/links.json      Links 页面的网址收藏，按数组顺序显示
 files/about/*.md        About 文章，每篇独立存储正文与元数据
 scripts/about.py        读取 About Markdown、排序并匹配昼夜主题
 content/note-categories.json 笔记分类的显示名称
@@ -58,10 +61,11 @@ assets/js/site.js       手机导航、可跳过的入场动画
 assets/css/notes.css    笔记目录与正文样式
 assets/js/notes.js      笔记搜索、分类筛选
 assets/vendor/katex/   公式排版组件、样式、字体与授权文件
-assets/fonts/          东京街角的小浪漫网页字体
+assets/fonts/          汉仪明禅刻本、Sondra、A1 明朝、Bodoni Moda 网页字体
 assets/images/         头像、栏目配图及 About 的 day/night 图片
 files/notes/           笔记源文件、封面、插图与附件
-files/music/           歌曲音频、歌词、乐谱
+files/music/notes/     按 Classical、R&B 等类别归档的音乐笔记
+files/music/albums/    原创专辑介绍、封面与音频
 files/gallery/         摄影作品原图
 files/research/    研究课题源文件（每个课题一个目录）
 index.html             生成的主页
@@ -69,7 +73,7 @@ about/index.html       生成的个人介绍
 files/notes/分类/笔记/main.md 笔记源文件（同目录放封面与插图）
 note/index.html        自动生成的分类目录
 note/分类/笔记/index.html 自动生成的阅读页面
-music/index.html       生成的原创音乐列表
+music/index.html       音乐笔记与原创专辑入口
 gallery/index.html     生成的摄影作品列表
 research/index.html 生成的课题列表（课题主页和笔记在其子目录）
 404.html               找不到页面时的提示
@@ -82,13 +86,19 @@ favicon.ico            原有网站 logo
 
 主题初始化与切换在 `assets/js/theme.js`，配色和控件样式在 `assets/css/theme.css`。初始化脚本在页面内容渲染前执行，避免深色模式闪白。代码高亮的浅色／深色样式由 `scripts/notes.py` 生成到 `assets/css/code.css`；修改后需重新构建。
 
+点击页头的调色盘按钮切换到下一组配色，377 组按数组顺序依次循环。页脚的 Color 入口打开 `/color/`，列出每组的序号、标题、四色色块和 HEX 色值；顶部显示当前方案、`samples` 中的对应样图，以及四种颜色的英文名和 HEX 色值。列表中用“使用中”标记，点击任一方案即可应用，样图和色名同步更新。按钮也支持 Enter / 空格键。第 0001 组作为首次访问的默认配色；深浅模式独立切换。配色保存在 `flowers-for-tuesday:palette` 本地存储项中，页面跳转、刷新和同源标签页保持同步；清除本地存储或遇到失效的旧选项时恢复默认组。打印继续使用原来的浅色样式，照片与文档附件保留各自的颜色。
+
+`assets/color/color-palettes.json` 是唯一的配色数据源，每组包含正整数序号 `id`、标题 `title`、四色数组 `colors` 和样图路径 `image`。每个颜色使用 `{"name": "Indigo Night", "hex": "#16202b"}` 的格式，样图路径如 `samples/0001.png`，相对于 `assets/color/`。构建校验四种颜色、英文名及图片文件，并直接读取仓库内这份 JSON，不依赖桌面目录或其他外部文件。数组首项为默认配色，数组顺序决定循环顺序；网页配色 ID 从序号生成（如 `1` 对应 `palette-0001`），修改标题或排列顺序不会改变已保存的选择。Color 页面仅加载当前方案的样图。
+
+`scripts/palettes.py` 在正常构建时生成 `assets/css/palettes.css` 和 `assets/js/palettes.js`，页面加载这两个生成文件，不要直接编辑它们。构建时按 HEX 换算 RGB，自动选取 RGB 最大、最小通道差值最大的颜色作为强调色，差值相同时取靠前的颜色。浅色纸面和深色纸面从组内明暗色推导，文字颜色按对比度调整，分隔线使用中性灰。原图色值完整保留在 JSON 中。新增或调整色系后运行 `python scripts/build.py` 和 `python -m unittest discover -s tests -p test_palettes.py`，检查两种模式下正文、辅助文字和链接的对比度。
+
 About 文章保存在 `files/about/`，每篇对应一个 `.md` 文件，不再放在 `content/site.json` 中。新增文章时复制一份 Markdown，修改文件名、顶部 YAML 元数据和正文即可。构建按 `order` 从小到大排列，省略时默认为 0，相同顺序按文件名排列。预览运行时，新增、修改或删除文件都会触发重新生成。
 
 ```markdown
 ---
 order: 3
 subtitle:
-  date: "2026/10/24"
+  date: 2026-10-24
   period: "午"
   location: "于北京"
 ---
@@ -98,7 +108,7 @@ subtitle:
 第二段正文，支持 **加粗**、*斜体*、链接和列表等 Markdown 格式。
 ```
 
-`subtitle` 保留日期 `date`、时段 `period`、地点 `location` 三项，均使用带引号的字符串，显示时用中文逗号连接。`period` 为“晨”或“午”时仅在浅色模式出现，为“夜”时仅在深色模式出现；空字符串或其他时段在两种模式均可见。正文段落之间空一行。原有两篇已迁移为 `01-2025-12-07.md` 和 `02-2026-10-10.md`，正文及元数据保持不变。
+`subtitle` 保留日期 `date`、时段 `period`、地点 `location` 三项。`date` 与 Note 一样使用 `YYYY-MM-DD`，无需引号，页面显示为 `Oct 24,2026`；旧的带引号斜杠日期仍兼容。`period` 和 `location` 使用字符串，显示时用中文逗号连接。`period` 为“晨”或“午”时仅在浅色模式出现，为“夜”时仅在深色模式出现；空字符串或其他时段在两种模式均可见。正文段落之间空一行。当前两篇为 `01.md` 和 `02.md`。
 
 正文上方的左右箭头只在当前主题对应的文章中循环切换，计数也只计算这些文章；按钮获得焦点时可用键盘左右方向键切换。每种主题分别记住当前页面中的阅读位置。只有一篇时按钮置灰，没有匹配文章时显示留白提示。关闭 JavaScript 时跟随系统配色，按顺序展示该主题对应的所有文章。下方的 Background 学习经历由所有文章共用。
 
@@ -110,7 +120,7 @@ About 页的学习经历在 `content/site.json` 的 `about.background` 数组中
 
 学校标识保存在本地：北京大学校徽来自 https://www.pku.edu.cn/pku_logo_red.png ，Perimeter Institute 标识来自 https://landing.perimeterinstitute.ca/hubfs/Stacked_Perimeter%20English%20Logo%20Black-908x301.png 。
 
-首页个人区域的账号导航在 `social_links` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）；页脚复用同一份配置。首页链接竖向排列，末尾的 Email 读取顶层 `email` 字段，并显示 `assets/icons/email.svg` 邮箱图标。
+首页个人区域的账号导航在 `social_links` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。首页链接竖向排列，末尾的 Email 读取顶层 `email` 字段，并显示 `assets/icons/email.svg` 邮箱图标。页脚独立显示 Email、Links 与 Log，收藏网址在 `content/links.json` 中维护，网站更新日志在 `content/log.json` 中维护。
 可选的 `icon` 字段支持 `github`、`zhihu`、`bilibili`，对应 `assets/icons/` 下的 SVG 图标；生成时内嵌到 HTML，使用 `currentColor` 随链接文字变色，无需额外加载图标文件。不设置 `icon` 时只显示文字链接。
 
 根据修改目的编辑以下源文件：
@@ -120,16 +130,16 @@ About 页的学习经历在 `content/site.json` 的 `about.background` 数组中
 | About 介绍文章及日期、时段、地点 | `files/about/*.md` |
 | 学习经历、个人账号、歌曲 | `content/site.json` |
 | 主页引文、页脚文字 | `content/site.json` 中的 `home`；`quote` 数组每项显示为一行 |
-| 主页栏目卡片配图 | `assets/images/note.jpg`、`music.jpg`、`gallery.jpg`、`research.jpg` |
+| 主页栏目卡片配图 | `assets/images/about.jpg`、`note.jpg`、`music.jpg`、`gallery.jpg`、`research.jpg` |
 | 笔记正文、公式与图片 | `files/notes/分类/笔记/main.md` 及同目录图片 |
 | 笔记分类的显示名称 | `content/note-categories.json` |
 | 导航栏、共用页头和页脚 | `templates/base.html` |
 | 字体大小、间距、颜色、页面布局 | `assets/css/site.css`、`assets/css/notes.css` |
 | 入场动画、卡片交互、移动端导航、笔记筛选 | `assets/js/site.js`、`assets/js/notes.js` |
-| 入场的两行文字 | `README.md` |
+| 入场文字 | `scripts/build.py` 的 `INTRO_TEXT` |
 | 主页与各栏目的页面结构 | `scripts/build.py`；笔记页面结构在 `scripts/notes.py` |
 
-首页桌面端左侧显示圆形头像、姓名、引文和个人账号链接，右侧为手风琴式图片卡片：默认展开 Note，悬停或键盘聚焦其他分类时展开对应图片，其余三张收窄为带竖排分类文字的缩略图。展开图保持原始比例，宽屏下与左侧个人区域等高，四张卡片始终共同铺满右栏；窄屏会适当降低图片高度。鼠标移出后保留当前展开项。手机端个人信息在上方，卡片在下方，轻触收起的卡片展开，再次轻触进入栏目。键盘可用 Tab、左右方向键、Home / End 切换焦点，Enter 进入栏目；系统开启“减少动态效果”时关闭过渡动画。卡片配图与栏目同名，可直接替换 `assets/images/` 中对应的 JPG。引文读取 `home.quote`，同时用作首页的描述元数据。开场动画的文字仍独立读取 `README.md`。
+首页桌面端左侧显示圆形头像、姓名、引文和个人账号链接，右侧为手风琴式图片卡片：默认展开 Note，悬停或键盘聚焦其他分类时展开对应图片，其余三张收窄为带竖排分类文字的缩略图。展开图保持原始比例，宽屏下与左侧个人区域等高，四张卡片始终共同铺满右栏；窄屏会适当降低图片高度。鼠标移出后保留当前展开项。手机端个人信息在上方，卡片在下方，轻触收起的卡片展开，再次轻触进入栏目。键盘可用 Tab、左右方向键、Home / End 切换焦点，Enter 进入栏目；系统开启“减少动态效果”时关闭过渡动画。卡片配图与栏目同名，可直接替换 `assets/images/` 中对应的 JPG。引文读取 `home.quote`，同时用作首页的描述元数据。开场动画的文字独立配置在 `scripts/build.py` 的 `INTRO_TEXT`。
 
 推荐用快捷预览工具监听修改：
 
@@ -139,6 +149,24 @@ python scripts/manage.py preview --open
 
 浏览器访问 `http://127.0.0.1:8000`。停止预览按 Ctrl+C。
 修改应保存在源文件中，直接修改生成的 `index.html` 等文件会在下次生成时被覆盖。发布工具会自动重新生成并提交 HTML。右下角的本地预览状态与刷新脚本只在预览服务器中临时加入，不会写入生成文件或部署到线上。
+
+## 收藏网址（Links）
+
+全站页脚只保留 Email 和 Links。Email 读取 `content/site.json` 的 `email`；Links 指向 `/links/`。
+
+在 `content/links.json` 中添加网址，按数组顺序展示。`label` 和 `url` 必填，`description` 可省略。外部网址使用完整的 HTTPS 地址，例如：
+
+```json
+[
+  {
+    "label": "网站名称",
+    "url": "https://example.com/",
+    "description": "这个网站有什么用"
+  }
+]
+```
+
+保存后通过 `preview.cmd` 自动重新生成，或运行 `python scripts/manage.py build`。空数组 `[]` 显示收藏提示，不添加示例网址到实际页面。
 
 ## 添加 Markdown 笔记
 
@@ -178,19 +206,23 @@ draft: false # true 时不生成页面、不进入目录
 
 无元数据时从一级标题或文件名推断标题。文章按日期从新到旧排列，没有日期时显示“未标注日期”。直接放在 `files/notes/` 根目录的笔记属于“未分类”；其中 `index.md` 生成 `note/index-note.html`，避免覆盖目录页。分类会随笔记自动出现，也可在 `content/note-categories.json` 配置中文名称。现有“Computational Physics”显示为“计算物理”。列表展示封面、日期、标题、可选的 summary 和阅读入口。
 
+Note 标题右侧的热力图按每篇笔记的 `date` 统计每日新增数量，覆盖构建当天（北京时间）及此前 364 天，重新构建时更新。草稿、未填日期和未来日期不计入；修改正文不会重复计数。颜色依次代表 0、1、2、3、4 篇及以上，沿用网站配色并随深浅主题变化。悬停、点击或使用方向键可查看日期和篇数；手机上移至标题下方并支持横向滚动。统计覆盖 Note 全部类别，不随搜索或主题筛选改变，Music 笔记不计入。
+
 `summary` 填写在 Markdown 文件开头的 YAML 元数据中，按纯文本显示在预览卡片的标题下，并参与列表搜索；不会插入文章标题区或正文。省略、留空或仅填写空白时不显示摘要，也不会自动截取正文填充卡片。较长内容可用 YAML 的 `summary: >-` 分行填写。页面描述元数据仍可使用摘要，未填写时沿用自动提取的描述。
 
 支持标题、段落、粗体、斜体、引用、列表、任务列表、表格、代码高亮、脚注、图片与链接。原始 HTML 作为文本展示。正文图片使用相对路径，例如 `![图示说明](1.png)`；含空格的路径用 `![说明](<figure 1.png>)`。建议填写图片说明供辅助阅读。跨笔记链接可写 `[另一篇笔记](../另一篇/main.md)`，生成器自动转换为网页链接，并对空格与中文路径编码。
 
 公式支持 `$...$` 与 `$$...$$`（包括矩阵、多行 aligned 等 KaTeX 支持的语法）。公式在生成时转换为 HTML 与 MathML，字体由本站提供；长公式可独立横向滚动，不会撑宽手机页面。错误的公式或缺失的本地图片会给出构建错误，避免静默发布损坏页面。
 
-正文页提供章节目录、分类返回、Markdown 下载及同类笔记推荐；目录页支持分类与全文关键词搜索。关闭 JavaScript 时所有已发布笔记和分类仍可直接浏览。
+正文页提供章节目录、分类返回、Markdown 下载及同类笔记推荐；目录页支持分类与全文关键词搜索。`content/note-categories.json` 中的分类可设置 `"theme": "dark"`，使其目录入口和笔记卡片仅在深色模式下显示；目前用于“天文学”彩蛋。搜索结果和数量统计随主题同步更新，浏览该分类时切回浅色会返回全部笔记。关闭 JavaScript 时仍可浏览目录，深色专属分类的显隐跟随系统主题。
 
 开启快捷预览时，修改 Markdown 或资源会自动生成；也可手动运行 `python scripts/manage.py build`。自动生成的页面不应手动编辑；移除源文件后重新生成，会根据 `note/.generated-pages.json` 清理对应的旧阅读页，原始文件不受影响。
 
-## 添加歌曲、摄影作品与论文
+各类笔记的 `date` 字段在页面上统一显示为英文月份缩写，例如 `2026-10-12` 显示为 `Oct 12,2026`。格式由 `scripts/dates.py` 统一处理，不受电脑语言或时区影响。源文件、排序数据和 HTML 的 `datetime` 属性保留原始公历日期；正文、日志标题、参考文献与教育经历中的日期或年份不作替换。
 
-在 `content/site.json` 的对应数组添加对象，将附件放入对应的 `files` 子目录，然后重新生成页面。
+## 摄影作品与论文
+
+摄影作品和课题分别见 [GALLERY.md](GALLERY.md) 与下文的课题说明。
 
 笔记附件与 Markdown 源文件一起放在 `files/notes/` 中，可继续使用相对路径引用同目录图片或其他笔记。生成器会自动换算网页中的图片地址、跨笔记链接和 Markdown 下载地址。
 
@@ -198,18 +230,6 @@ draft: false # true 时不生成页面、不进入目录
 
 ```powershell
 .venv\Scripts\python.exe -m unittest discover -s tests -v
-```
-
-歌曲（添加到 `music`，`audio` 可选）：
-
-```json
-{
-  "title": "歌曲标题",
-  "date": "2026-10-10",
-  "description": "这首歌的创作说明。",
-  "audio": "../files/music/example.mp3",
-  "links": [{"label": "歌词与乐谱", "url": "../files/music/example.pdf"}]
-}
 ```
 
 摄影作品（添加到 `gallery`，照片放入 `files/gallery/`，点击照片可查看原图）：
@@ -361,11 +381,29 @@ files/notes/Quantum Many Body/CQPT/
 
 每篇普通笔记只读取与 Markdown 同目录的文献库，不读取父目录或其他笔记的文献库。同目录有多篇 Markdown 时共用该目录的 `references.bib`。文件缺失或内容为空时不显示文献分区；未放置该文件的普通笔记保留原有 Markdown 解析。Research Notes 共用所属课题的 `assets/references.bib`，在各自正文底部显示参考文献，引用在本页内跳转；无需在课题笔记目录中另放文献库。共享文献库的排序和编号在课题主页及各篇笔记中保持一致。
 
+## 网站更新日志
+
+全站页脚的 **Log** 链接指向 `/log/`，用于记录重要功能、内容与体验的更新。日志内容维护在 `content/log.json`，生成页面为 `log/index.html`，无需手动编辑 HTML。
+
+每条记录包含 `date`（`YYYY-MM-DD` 日期）、`title`（更新标题）和 `changes`（更新说明数组）。例如：
+
+```json
+{
+  "date": "2026-11-19",
+  "title": "新增网站更新日志",
+  "changes": [
+    "在页脚加入 Log 入口，集中记录网站的重要更新。"
+  ]
+}
+```
+
+将新记录加入数组即可；构建时自动按日期倒序排列，同一天的记录保留文件中的顺序。内容使用纯文本，不解析 HTML。日期填写更新实际发生的日期；没有记录时页面显示空状态。保存后本地预览会自动重新生成，发布流程也会包含日志页。
+
 ## 入场动画与字体
 
-生成脚本读取 README 前两行非空文本。动画在当前浏览器标签页首次访问主页时显示，可点击“进入主页”或按 Escape 跳过；页脚“重看开场”可重播。系统开启“减少动态效果”时不会自动播放。无 JavaScript 时不会遮挡正文。
+入场为单行“将我的爱，弃置于此。”，文案定义在 `scripts/build.py` 的 `INTRO_TEXT`。沿用原字体及最初的整行淡入、轻微上移效果，显示约 4.2 秒后淡出。动画在当前浏览器标签页首次访问主页时显示，可点击“进入主页”或按 Escape 跳过。系统开启“减少动态效果”时不会自动播放。无 JavaScript 时不会遮挡正文。
 
-字体来自本机安装的“东京街角的小浪漫”，已转换为 WOFF2，保留全部字形并优先使用已安装的同名字体，未安装字体的设备会读取仓库中的文件。
+中文使用汉仪明禅刻本，英文和西班牙文使用 Sondra，日文使用 A1 明朝，法文和德文使用 Bodoni Moda，均提供 WOFF2 网页字体。中英混排按字形范围自动分配字体；中日共用汉字以及法德语区域通过 `lang` 标记区分，字体配置见 `assets/css/site.css`。
 
 ## GitHub Pages
 

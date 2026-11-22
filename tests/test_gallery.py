@@ -8,7 +8,7 @@ import unittest
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from gallery import GalleryLibrary, MARKER, build_gallery
+from gallery import DEFAULT_MAP, GalleryLibrary, MARKER, build_gallery, map_settings
 
 
 class GalleryTests(unittest.TestCase):
@@ -49,6 +49,53 @@ class GalleryTests(unittest.TestCase):
         self.assertEqual(len(library.notes), 2)
         html = library.directory()
         self.assertLess(html.index('data-journal="new"'), html.index('data-journal="old"'))
+
+    def test_online_map_config_and_only_relevant_country_bounds_are_embedded(self):
+        self.write()
+        geography = self.base / 'assets/maps/world.geojson'
+        geography.parent.mkdir(parents=True)
+        geography.write_text(json.dumps({'features': [
+            {'properties': {'ISO_A2_EH': code}, 'bbox': bbox}
+            for code, bbox in [('CN', [73, 18, 135, 53]), ('CN', [110, 17, 120, 21]),
+                               ('JP', [122, 24, 146, 46])]
+        ]}), encoding='utf-8')
+        html = self.load().directory()
+        config = json.loads(html.split('id="gallery-map-config">')[1].split('</script>')[0])
+        self.assertEqual(config['country_bounds'], {'CN': [[17, 73], [53, 135]]})
+        self.assertEqual(config['tile_url'], DEFAULT_MAP['tile_url'])
+        self.assertEqual(config['max_zoom'], 19)
+        self.assertIn('id="retry-map" hidden', html)
+
+    def test_custom_map_settings_are_validated(self):
+        source = self.base / 'content/gallery-map.json'
+        source.parent.mkdir()
+        for change in [
+            {'tile_url': 'http://example.org/{z}/{x}/{y}.png'},
+            {'tile_url': 'https://example.org/{z}/{x}.png'},
+            {'tile_url': 'https://user:password@example.org/{z}/{x}/{y}.png'},
+            {'attribution_url': 'javascript:alert(1)'},
+            {'attribution_url': 'https://example.org/"bad'},
+            {'max_zoom': True}, {'max_zoom': 0}, {'max_zoom': 23},
+            {'attribution_text': ''}, {'unknown': 'value'},
+        ]:
+            with self.subTest(change=change):
+                source.write_text(json.dumps({**DEFAULT_MAP, **change}), encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, 'gallery-map.json'):
+                    map_settings(self.base)
+        settings = {**DEFAULT_MAP, 'tile_url': 'https://example.org/{z}/{x}/{y}.png', 'max_zoom': 18}
+        source.write_text(json.dumps(settings), encoding='utf-8')
+        self.assertEqual(map_settings(self.base), settings)
+
+    def test_map_attribution_cannot_escape_embedded_json(self):
+        self.write()
+        source = self.base / 'content/gallery-map.json'
+        source.parent.mkdir()
+        label = '</script><script>alert(1)</script> & provider'
+        source.write_text(json.dumps({**DEFAULT_MAP, 'attribution_text': label}), encoding='utf-8')
+        html = self.load().directory()
+        self.assertNotIn(label, html)
+        config = json.loads(html.split('id="gallery-map-config">')[1].split('</script>')[0])
+        self.assertEqual(config['attribution_text'], label)
 
     def test_invalid_metadata_fails_with_source(self):
         for values in (

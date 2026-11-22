@@ -1,0 +1,62 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pku}[2026/11/18 v2.0 Unified academic document style]
+\RequirePackage{iftex}
+\RequireXeTeX
+\RequirePackage{etoolbox}
+\RequirePackage{graphicx}
+\RequirePackage{pku-palette}
+\RequirePackage{fontspec}
+\RequirePackage{xeCJK}
+\RequirePackage{microtype}
+\RequirePackage{hyperref}
+\RequirePackage{listings}
+\RequirePackage{booktabs}
+\RequirePackage{colortbl}
+% Portable TeX Live fonts. Override after loading this package if required.
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}[Scale=MatchLowercase]
+\setmonofont{TeX Gyre Cursor}[Scale=MatchLowercase]
+\setCJKmonofont{FandolFang-Regular.otf}
+\IfFontExistsTF{Noto Serif CJK SC}
+  {\setCJKmainfont{Noto Serif CJK SC}}
+  {\IfFontExistsTF{SimSun}{\setCJKmainfont{SimSun}}
+    {\setCJKmainfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf]}}
+\IfFontExistsTF{Noto Sans CJK SC}
+  {\setCJKsansfont{Noto Sans CJK SC}}
+  {\IfFontExistsTF{Microsoft YaHei}{\setCJKsansfont{Microsoft YaHei}}
+    {\setCJKsansfont{FandolHei-Regular.otf}[BoldFont=FandolHei-Bold.otf]}}
+\newcommand\pku@error[1]{\PackageError{pku}{#1}{}}
+\newcommand\pku@once[1]{%
+  \expandafter\def\csname #1\endcsname{\pku@error{#1 can only be used once}}}
+\newcommand{\pkulogo}[1]{\includegraphics[width=#1]{../../assets/logo.png}}
+\newcommand{\HRule}[1]{{\color{pku-line}\rule{\linewidth}{#1}}}
+\newcommand{\pkukicker}[1]{{\sffamily\small\color{pku-primary}\MakeUppercase{#1}}}
+\newcommand{\pkuTableHead}{\rowcolor{pku-surface}}
+\linespread{1.10}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\emergencystretch=1.5em
+\raggedbottom
+\hypersetup{colorlinks=true,allcolors=pku-primary,pdfborder={0 0 0}}
+\AtBeginDocument{%
+  \color{pku-ink}%
+  \global\let\default@color\current@color
+  \arrayrulecolor{pku-line}%
+  \renewcommand{\arraystretch}{1.22}%
+}
+\lstdefinestyle{pku}{
+  backgroundcolor=\color{pku-surface},
+  basicstyle=\ttfamily\footnotesize\color{pku-ink},
+  keywordstyle=\color{pku-primary}\bfseries,
+  commentstyle=\color{pku-muted}\itshape,
+  stringstyle=\color{pku-secondary},
+  numberstyle=\tiny\color{pku-muted},
+  breaklines=true,breakatwhitespace=false,keepspaces=true,
+  showspaces=false,showstringspaces=false,showtabs=false,
+  tabsize=2,numbers=none,frame=l,rulecolor=\color{pku-primary},
+  framerule=.7pt,framesep=8pt,xleftmargin=9pt,
+  aboveskip=10pt,belowskip=10pt,captionpos=b
+}
+\lstset{style=pku}
+\endinput

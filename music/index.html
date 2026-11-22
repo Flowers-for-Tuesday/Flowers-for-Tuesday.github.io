@@ -3,22 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="一些旋律，一些未说出口的话。这里收藏我自己写的歌曲。">
+  <meta name="description" content="音乐笔记与原创专辑。按 Classical、R&amp;B 等类别阅读音乐笔记，聆听原创作品。">
   <meta name="theme-color" content="#f8f9f6">
+  <script src="../assets/js/palettes.js"></script>
   <script src="../assets/js/theme.js"></script>
   <title>Music | 礼拜二的花束</title>
   <link rel="icon" href="../favicon.ico" sizes="any">
-  <link rel="preload" href="../assets/fonts/tokyo-romance.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/sondra-regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../assets/css/site.css">
-
+  <link rel="stylesheet" href="../assets/css/notes.css"><link rel="stylesheet" href="../assets/css/music.css">
+<script src="../assets/js/notes.js" defer></script>
   <link rel="stylesheet" href="../assets/css/theme.css">
+  <link rel="stylesheet" href="../assets/css/palettes.css">
   <script src="../assets/js/site.js" defer></script>
 </head>
 <body data-page="music">
   <a class="skip-link" href="#main">跳至正文</a>
   <header class="site-header wrap">
     <a class="site-brand" href="../" aria-label="Flowers for Tuesday 主页">
-      <img src="../favicon.ico" width="34" height="34" alt="">
+      <img src="../assets/images/site-mark.png" width="34" height="34" alt="">
       <span>Flowers for Tuesday</span>
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>菜单 <span aria-hidden="true">☰</span></button>
@@ -27,18 +30,24 @@
 <a href="../music/" aria-current="page">Music</a>
 <a href="../gallery/">Gallery</a>
 <a href="../research/">Research</a></nav>
+    <button class="palette-toggle" type="button" aria-label="下一组配色" title="下一组配色" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.6-3.2 1.5 1.5 0 0 1 1.2-2.4h1.4A3.8 3.8 0 0 0 21 11.6 8.8 8.8 0 0 0 12 3Z"/><circle cx="7.5" cy="10" r=".8"/><circle cx="11" cy="6.8" r=".8"/><circle cx="15.5" cy="8" r=".8"/></svg>
+    </button>
     <button class="theme-toggle" type="button" aria-label="深色模式" aria-pressed="false" title="切换到深色模式" hidden>
       <svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 0 1 10.7 3.5a8.5 8.5 0 1 0 9.8 9.8Z"/></svg>
       <svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
     </button>
   </header>
-  <main id="main" class="wrap" tabindex="-1">
-      <header class="page-heading"><p class="eyebrow">原创音乐</p><h1>Music<span class="title-period">.</span></h1></header>
-      <section class="collection" aria-label="原创音乐列表"><div class="collection-heading"><h2>原创音乐</h2><span>00 首作品</span></div><div class="empty-state"><span class="empty-ornament" aria-hidden="true">✳</span><h2>让旋律，慢慢响起。</h2><p>原创歌曲正在整理中，之后可以在这里聆听与阅读。</p></div></section>
-    </main>
+  <p class="palette-status visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+  <main id="main" class="wrap" tabindex="-1"><header class="page-heading"><p class="eyebrow" lang="ja">音楽</p><h1 lang="en">Music<span class="title-period">.</span></h1></header>
+      <section id="music-notes" class="music-section" aria-labelledby="music-notes-heading"><header class="music-section-heading"><h2 id="music-notes-heading">笔记</h2><p>00 篇</p></header>
+          <div class="notes-layout notes-overview" id="notes"><aside class="note-sidebar"><nav class="note-categories" aria-label="笔记分类"><a href="#notes" data-category-filter="" aria-current="true">全部笔记 <span>00</span></a><a href="#category-1" data-category-filter="Classical">古典 <span>00</span></a><a href="#category-2" data-category-filter="Band">乐队 <span>00</span></a></nav><p class="note-library-count">02 个主题 · 00 篇笔记</p></aside>
+          <div class="note-list"><div class="note-search" hidden><label for="note-search">搜索笔记</label><div class="note-search-field"><input id="note-search" type="search" placeholder="标题、关键词或正文…" autocomplete="off"><button type="button" id="clear-note-search" aria-label="清空搜索">清空</button></div><p id="note-results" role="status" aria-live="polite">共 0 篇笔记</p></div>
+          <section class="note-group" id="category-1" data-note-group data-empty-category="Classical"><header class="note-group-heading"><div><p class="eyebrow">Classical</p><h2 id="category-1-heading" tabindex="-1">古典 <span>00</span></h2></div><a class="note-more" href="#category-1" data-category-filter="Classical" aria-label="更多古典笔记">更多 <span aria-hidden="true">→</span></a></header><div class="note-grid" role="region" aria-labelledby="category-1-heading" tabindex="0"><p class="music-category-empty">该类别暂无笔记。</p></div></section><section class="note-group" id="category-2" data-note-group data-empty-category="Band"><header class="note-group-heading"><div><p class="eyebrow">Band</p><h2 id="category-2-heading" tabindex="-1">乐队 <span>00</span></h2></div><a class="note-more" href="#category-2" data-category-filter="Band" aria-label="更多乐队笔记">更多 <span aria-hidden="true">→</span></a></header><div class="note-grid" role="region" aria-labelledby="category-2-heading" tabindex="0"><p class="music-category-empty">该类别暂无笔记。</p></div></section><div class="note-no-results" hidden><h2>还没有找到这篇笔记</h2><p>试试其他关键词，或切换到全部笔记。</p></div></div></div></section>
+      <section id="albums" class="music-section" aria-labelledby="albums-heading"><header class="music-section-heading"><h2 id="albums-heading">原创作品</h2><p>00 张专辑</p></header><div class="music-album-grid"><div class="music-albums-empty"><p>暂无原创专辑</p></div></div></section></main>
   <footer class="site-footer wrap">
     <p>@礼拜二的花束</p>
-    <div class="footer-links"><a href="https://github.com/Flowers-for-Tuesday">GitHub <span aria-hidden="true">↗</span></a><a href="https://www.zhihu.com/people/flowersfortuesday">Zhihu <span aria-hidden="true">↗</span></a><a href="https://space.bilibili.com/393925947">Bilibili <span aria-hidden="true">↗</span></a><a href="mailto:flowersfortuesday@gmail.com" title="flowersfortuesday@gmail.com">Email <span aria-hidden="true">↗</span></a><a href="#main">回到顶部 <span aria-hidden="true">↑</span></a></div>
+    <div class="footer-links"><a href="mailto:flowersfortuesday@gmail.com" title="flowersfortuesday@gmail.com">Email <span aria-hidden="true">↗</span></a><a href="../links/" lang="en">Links <span aria-hidden="true">↗</span></a><a href="../color/" lang="en">Color <span aria-hidden="true">↗</span></a><a href="../log/" lang="en" aria-label="Log · 网站更新日志">Log <span aria-hidden="true">↗</span></a></div>
   </footer>
 
 </body>

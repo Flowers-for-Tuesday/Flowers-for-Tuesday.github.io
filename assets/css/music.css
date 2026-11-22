@@ -1,0 +1,37 @@
+.music-section { border-top: 1px solid var(--line); padding-top: 28px; margin-bottom: 64px; scroll-margin-top: 28px; }
+.music-section-heading { display: flex; align-items: baseline; gap: 20px; padding-bottom: 32px; }
+.music-section-heading h2 { font-size: 30px; line-height: 1.5; }
+.music-section-heading > p { margin-left: auto; color: var(--muted); font-size: 14px; white-space: nowrap; }
+.music-section .notes-layout { padding-bottom: 0; }
+.music-section .note-categories { margin-top: 0; }
+.music-category-empty { padding-block: 24px; color: var(--muted); font-size: 17px; }
+.music-album-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 32px; }
+.music-album { min-width: 0; }
+.music-album > a { display: block; text-decoration: none; }
+.music-album-cover { aspect-ratio: 1; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+.music-album-cover img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
+.music-album a:hover img { transform: scale(1.025); }
+.music-cover-placeholder { height: 100%; display: grid; place-items: center; color: var(--muted); font-size: 72px; }
+.music-album-meta { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; color: var(--muted); font-size: 14px; }
+.music-album h3 { margin-top: 10px; font-size: 25px; line-height: 1.5; overflow-wrap: anywhere; }
+.music-album-summary { margin-top: 8px; color: var(--muted); font-size: 17px; overflow-wrap: anywhere; }
+.music-albums-empty { grid-column: 1 / -1; min-height: 220px; display: grid; place-items: center; border-block: 1px solid var(--line); color: var(--muted); background: var(--surface); }
+.music-album-detail .article-cover { aspect-ratio: 1; width: 240px; }
+@media (max-width: 1000px) {
+  .music-album-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .music-section { margin-bottom: 40px; }
+  .music-section-heading { gap: 12px; flex-wrap: wrap; }
+  .music-section-heading h2 { font-size: 25px; }
+  .music-album-grid { gap: 28px 20px; }
+}
+@media (max-width: 480px) {
+  .music-album-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-album-cover img { transition: none; }
+}
+@media print {
+  .music-album { break-inside: avoid; }
+}

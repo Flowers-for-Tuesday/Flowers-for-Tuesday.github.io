@@ -1,0 +1,6 @@
+{
+  "tile_url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "max_zoom": 19,
+  "attribution_text": "© OpenStreetMap contributors",
+  "attribution_url": "https://www.openstreetmap.org/copyright"
+}

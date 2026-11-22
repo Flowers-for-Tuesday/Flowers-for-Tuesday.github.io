@@ -1,0 +1,104 @@
+\section{Question}
+\begin{frame}{A question, a model, a comparison}
+  \begin{columns}[T,onlytextwidth]
+    \column{.57\textwidth}
+    {\Large How does a decay rate\\change an oscillating response?}\par
+    \vspace{6mm}
+    \begin{enumerate}
+      \item Define the variables and assumptions.
+      \item Compare the response over time.
+      \item Report a reproducible result.
+    \end{enumerate}
+    \column{.37\textwidth}
+    \begin{block}{Scope}
+      An analytic example for demonstrating document design. No experimental
+      or simulation data are presented.
+    \end{block}
+    \begin{exampleblock}{One visual language}
+      Clear headings, quiet backgrounds and a small set of consistent colors.
+    \end{exampleblock}
+  \end{columns}
+\end{frame}
+
+\section{Model}
+\begin{frame}{Define the response before interpreting it}
+  \begin{columns}[T,onlytextwidth]
+    \column{.55\textwidth}
+    \begin{equation*}
+      \boxed{u(t;\gamma)=e^{-\gamma t}\cos t}
+    \end{equation*}
+    \vspace{4mm}
+    \begin{itemize}
+      \item $t\geq0$: dimensionless time.
+      \item $\gamma>0$: decay rate.
+      \item $u(0;\gamma)=1$: initial normalization.
+    \end{itemize}
+    \column{.39\textwidth}
+    \begin{block}{Envelope}
+      $A(t)=e^{-\gamma t}$ decreases monotonically.
+    \end{block}
+    \begin{alertblock}{Characteristic time}
+      $\tau=1/\gamma$ sets the decay scale.
+      The oscillation period remains $2\pi$.
+    \end{alertblock}
+  \end{columns}
+\end{frame}
+
+\section{Comparison}
+\begin{frame}{Stronger damping reduces the envelope}
+  \centering
+  \pkuResponsePlot{.91\textwidth}{.62\textheight}\par
+  {\footnotesize\color{pku-muted}Analytic curves. Markers and line patterns preserve series identity in grayscale.}
+\end{frame}
+
+\begin{frame}{Report quantities that can be checked}
+  \begin{table}
+  \centering
+  \begin{tabularx}{.95\linewidth}{@{}Xrrr@{}}
+    \toprule
+    \pkuTableHead \textbf{Series} & $\gamma$ & $\tau$ & $A(6)$\\
+    \midrule
+    Slow decay & 0.12 & 8.333 & 0.487\\
+    Moderate decay & 0.25 & 4.000 & 0.223\\
+    \rowcolor{pku-tint} Fast decay & 0.45 & 2.222 & 0.067\\
+    \bottomrule
+  \end{tabularx}
+  \end{table}
+  \vspace{5mm}
+  \begin{block}{Interpretation}
+    Increasing $\gamma$ shortens the decay time. The table reports the
+    exponential envelope, rather than the oscillating response itself.
+  \end{block}
+\end{frame}
+
+\section{Reproducibility}
+\begin{frame}[fragile]{Keep the implementation close to the result}
+\begin{lstlisting}[language=Python]
+import numpy as np
+
+def response(t, gamma):
+    return np.exp(-gamma * t) * np.cos(t)
+
+time = np.linspace(0.0, 12.0, 121)
+curves = {g: response(time, g) for g in (0.12, 0.25, 0.45)}
+\end{lstlisting}
+  \vspace{3mm}
+  \begin{itemize}
+    \item State the function, range and parameter values.
+    \item Keep units and labels identical in every output.
+    \item Replace illustrative examples with your own evidence.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Takeaways}
+  \relax
+  {\Large A small set of consistent decisions\\makes results easier to read.}\par
+  \vspace{8mm}
+  \begin{enumerate}
+    \item Lead with the research question.
+    \item Let figures and equations carry the argument.
+    \item Use color to distinguish roles, not to fill space.
+  \end{enumerate}
+  \vfill
+  {\color{pku-primary}\large Questions \& discussion}
+\end{frame}

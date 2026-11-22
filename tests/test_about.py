@@ -20,7 +20,7 @@ class AboutTests(unittest.TestCase):
 
     def write(self, name, period="晨", order=1, body="正文。"):
         path = self.base / "files/about" / name
-        path.write_text(f'---\norder: {order}\nsubtitle:\n  date: "2026/10/24"\n  period: "{period}"\n  location: "于北京"\n---\n\n{body}\n', encoding="utf-8")
+        path.write_text(f'---\norder: {order}\nsubtitle:\n  date: 2026-10-24\n  period: "{period}"\n  location: "于北京"\n---\n\n{body}\n', encoding="utf-8")
         return path
 
     def test_order_and_theme_mapping(self):
@@ -31,7 +31,7 @@ class AboutTests(unittest.TestCase):
         entries = load_about_entries(self.base)
         self.assertEqual([e["source"].name for e in entries], ["a.md", "b.md", "c.md", "d.md"])
         self.assertEqual([e["theme"] for e in entries], ["light", "dark", "light", "all"])
-        self.assertEqual(entries[0]["subtitle"], "2026/10/24，午，于北京")
+        self.assertEqual(entries[0]["subtitle"], "Oct 24,2026，午，于北京")
 
     def test_markdown_body(self):
         self.write("a.md", body="第一段。\n\n**强调**与[链接](https://example.com)。\n\n- 列表\n\n<script>bad()</script>")
@@ -41,6 +41,13 @@ class AboutTests(unittest.TestCase):
         self.assertIn('<a href="https://example.com">链接</a>', html)
         self.assertIn("<li>列表</li>", html)
         self.assertNotIn("<script>", html)
+
+    def test_date_formats_share_note_parsing_and_preserve_legacy_dates(self):
+        for value in ('2026-10-24', '"2026-10-24"', '"2026/10/24"', '"2026-10-24 8:40"'):
+            with self.subTest(date=value):
+                path = self.write("date.md")
+                path.write_text(path.read_text(encoding="utf-8").replace("date: 2026-10-24", f"date: {value}"), encoding="utf-8")
+                self.assertEqual(load_about_entries(self.base)[0]["subtitle"], "Oct 24,2026，晨，于北京")
 
     def test_invalid_metadata_reports_file(self):
         path = self.write("invalid.md", order="wrong")
@@ -58,7 +65,7 @@ class AboutTests(unittest.TestCase):
             build.about()
         main = render.call_args.args[1]
         self.assertIn('data-entry-theme="dark"', main)
-        self.assertIn("2026/10/24，夜，于北京", main)
+        self.assertIn("Oct 24,2026，夜，于北京", main)
         self.assertIn("<strong>来自 Markdown</strong>", main)
         path.unlink()
         self.assertNotEqual(before, source_snapshot(self.base))

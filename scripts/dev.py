@@ -9,9 +9,9 @@ import webbrowser
 
 from manage import BASE, build_lock, generate, say
 
-PUBLIC_DIRECTORIES = {"about", "note", "music", "gallery", "research", "assets", "files"}
+PUBLIC_DIRECTORIES = {"about", "links", "color", "log", "note", "music", "gallery", "research", "assets", "files"}
 PUBLIC_FILES = {"index.html", "404.html", "favicon.ico", "robots.txt", "sitemap.xml"}
-IGNORED = {"__pycache__", "code.css"}
+IGNORED = {"__pycache__", "code.css", "palettes.css", "palettes.js"}
 RELOAD_SCRIPT = r"""
 <script data-local-preview>
 (() => {

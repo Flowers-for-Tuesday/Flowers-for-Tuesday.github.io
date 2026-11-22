@@ -1,0 +1,98 @@
+{
+  "source": "Archived copy of the former website palette-12; independent of the current website palettes.",
+  "palette": {
+    "id": "palette-12",
+    "source_image": "2025-07-07_14.55.43_玛涯全案设计中心_配色分享丨激发你的色彩灵感🎨_12.jpeg",
+    "source_index": 12,
+    "accent_index": 1,
+    "colors": [
+      {
+        "name": "COTTON",
+        "hex": "#EDEBDD",
+        "rgb": [
+          237,
+          235,
+          221
+        ],
+        "source_rgb": [
+          237,
+          235,
+          221
+        ],
+        "source_cmyk": [
+          0,
+          1,
+          7,
+          7
+        ]
+      },
+      {
+        "name": "CHERRY RED",
+        "hex": "#810100",
+        "rgb": [
+          129,
+          1,
+          0
+        ],
+        "source_rgb": [
+          129,
+          1,
+          0
+        ],
+        "source_cmyk": [
+          0,
+          99,
+          100,
+          49
+        ]
+      },
+      {
+        "name": "MAROON",
+        "hex": "#630000",
+        "rgb": [
+          99,
+          0,
+          0
+        ],
+        "source_rgb": [
+          99,
+          0,
+          0
+        ],
+        "source_cmyk": [
+          0,
+          100,
+          100,
+          61
+        ]
+      },
+      {
+        "name": "NOIR BLACK",
+        "hex": "#1B1717",
+        "rgb": [
+          27,
+          23,
+          23
+        ],
+        "source_rgb": [
+          27,
+          23,
+          23
+        ],
+        "source_cmyk": [
+          0,
+          15,
+          15,
+          89
+        ]
+      }
+    ]
+  },
+  "roles": {
+    "primary": "#810100",
+    "secondary": "#630000",
+    "ink": "#1B1717",
+    "cotton": "#EDEBDD"
+  },
+  "note": "Exact HEX source colors; tints are defined in style/pku-palette.sty. Custom editorial palette, not an official brand standard."
+}

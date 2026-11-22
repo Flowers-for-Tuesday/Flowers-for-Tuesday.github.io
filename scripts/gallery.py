@@ -1,6 +1,7 @@
 """Build photo journals and a coordinate-driven, progressively enhanced gallery."""
 from dataclasses import dataclass, field
 from datetime import date
+from dates import display_date
 import json
 import math
 from pathlib import Path
@@ -15,6 +16,34 @@ HEAD = '''<link rel="stylesheet" href="{root}/assets/css/gallery.css">
 MAP_HEAD = '''<link rel="stylesheet" href="{root}/assets/vendor/leaflet/leaflet.css">
 <script src="{root}/assets/vendor/leaflet/leaflet.js" defer></script>
 <script src="{root}/assets/js/gallery.js" defer></script>'''
+DEFAULT_MAP = {
+    "tile_url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "max_zoom": 19,
+    "attribution_text": "© OpenStreetMap contributors",
+    "attribution_url": "https://www.openstreetmap.org/copyright",
+}
+
+
+def map_settings(base):
+    source = Path(base) / "content/gallery-map.json"
+    settings = json.loads(source.read_text(encoding="utf-8")) if source.exists() else dict(DEFAULT_MAP)
+    if not isinstance(settings, dict) or set(settings) != set(DEFAULT_MAP):
+        raise ValueError(f"{source}: use tile_url, max_zoom, attribution_text and attribution_url")
+    for key in ("tile_url", "attribution_url"):
+        url = settings[key]
+        if not isinstance(url, str) or any(c.isspace() or c in '<>\\\"' for c in url):
+            raise ValueError(f"{source}: {key} must be an HTTPS URL")
+        parts = urlsplit(url)
+        if parts.scheme != "https" or not parts.netloc or parts.username or parts.password:
+            raise ValueError(f"{source}: {key} must be an HTTPS URL without embedded credentials")
+    if not all(token in settings["tile_url"] for token in ("{z}", "{x}", "{y}")):
+        raise ValueError(f"{source}: tile_url must include {{z}}, {{x}} and {{y}}")
+    zoom = settings["max_zoom"]
+    if isinstance(zoom, bool) or not isinstance(zoom, int) or not 1 <= zoom <= 22:
+        raise ValueError(f"{source}: max_zoom must be an integer from 1 to 22")
+    if not isinstance(settings["attribution_text"], str) or not settings["attribution_text"].strip():
+        raise ValueError(f"{source}: attribution_text is required")
+    return settings
 
 
 @dataclass
@@ -32,6 +61,8 @@ class GalleryLibrary(NoteLibrary):
         self.source_root = self.base / "files/gallery"
         self.journals = []
         self.country_names = {"CN": "中国", "JP": "日本"}
+        self.country_bounds = {}
+        self.map_settings = map_settings(self.base)
         geography = self.base / "assets/maps/world.geojson"
         if geography.exists():
             for feature in json.loads(geography.read_text(encoding="utf-8"))["features"]:
@@ -39,6 +70,13 @@ class GalleryLibrary(NoteLibrary):
                 code = properties.get("ISO_A2_EH") or properties.get("ISO_A2")
                 if code and len(code) == 2:
                     self.country_names.setdefault(code, properties.get("NAME_ZH") or properties.get("ADMIN") or code)
+                    # Only small bounding boxes reach the browser, not local map geometry.
+                    bbox = feature.get("bbox")
+                    if bbox and len(bbox) == 4:
+                        west, south, east, north = bbox
+                        previous = self.country_bounds.get(code, [[south, west], [north, east]])
+                        self.country_bounds[code] = [[min(south, previous[0][0]), min(west, previous[0][1])],
+                                                     [max(north, previous[1][0]), max(east, previous[1][1])]]
 
     def discover(self):
         for source in sorted(self.source_root.glob("*/main.md")):
@@ -107,7 +145,7 @@ class GalleryLibrary(NoteLibrary):
           <a class="journal-link" href="{relative_url(note.output, self.root)}" data-open-journal="{journal.slug}">
             <div class="journal-cover"><img src="{esc(self.photo_url(journal, image))}" alt="{esc(image['alt'])}" loading="lazy" decoding="async">
               <span class="photo-count" aria-label="{len(journal.images)} 张图片">▧ {len(journal.images):02d}</span></div>
-            <div class="journal-copy"><p class="journal-date"><time datetime="{note.published}">{note.published.replace('-', '.')}</time><span>↗</span></p>
+            <div class="journal-copy"><p class="journal-date"><time datetime="{note.published}" lang="en">{display_date(note.published)}</time><span>↗</span></p>
               <h2>{esc(note.title)}</h2><p class="journal-summary">{esc(note.summary)}</p>
               <p class="journal-place"><span aria-hidden="true">⌖</span> {esc(journal.place['name'])}</p></div>
           </a></article>'''
@@ -126,14 +164,14 @@ class GalleryLibrary(NoteLibrary):
             </div><div class="carousel-dots" role="group" aria-label="选择图片" hidden></div>
           </section>
           <div class="entry-copy"><header><h1 id="entry-title">{esc(note.title)}</h1>
-            <p class="journal-date"><time datetime="{note.published}">{note.published.replace('-', '.')}</time> · {esc(place['name'])}</p>
+            <p class="journal-date"><time datetime="{note.published}" lang="en">{display_date(note.published)}</time> · {esc(place['name'])}</p>
             <p class="entry-coordinates">{place['lat']:.4f}°, {place['lng']:.4f}°</p></header>
             <div class="markdown-body">{note.html}</div>
             <div class="entry-links"><a href="../index.html?place={journal.slug}#footprints">在足迹地图中查看 ↗</a><a href="{relative_url(note.source, note.output.parent)}">Markdown 源文件 ↓</a></div>
           </div></article>'''
 
     def directory(self):
-        data = [{"id": j.slug, "title": j.note.title, "date": j.note.published, "place": j.place,
+        data = [{"id": j.slug, "title": j.note.title, "date": j.note.published, "displayDate": display_date(j.note.published), "place": j.place,
                  "search": j.note.search + " " + j.place["name"] + " " + self.country_names.get(j.place["country"], j.place["country"]),
                  "url": relative_url(j.note.output, self.root), "count": len(j.images)} for j in self.journals]
         payload = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c").replace("&", "\\u0026")
@@ -142,19 +180,22 @@ class GalleryLibrary(NoteLibrary):
         years = sorted({j.note.published[:4] for j in self.journals}, reverse=True)
         options = "".join(f'<option value="{year}">{year}</option>' for year in years)
         country_codes = sorted({j.place["country"] for j in self.journals})
+        map_data = {**self.map_settings, "country_bounds": {code: self.country_bounds[code] for code in country_codes if code in self.country_bounds}}
+        map_payload = json.dumps(map_data, ensure_ascii=False).replace("<", "\\u003c").replace("&", "\\u0026")
         country_tabs = ''.join(f'<button type="button" data-scope="{code}" aria-pressed="false">{esc(self.country_names.get(code, code))}</button>' for code in country_codes)
         return f'''{MARKER}
-          <header class="page-heading gallery-heading"><p class="eyebrow">旅行碎片</p><h1>Gallery<span class="title-period">.</span></h1></header>
+          <header class="page-heading gallery-heading"><p class="eyebrow" lang="ja">旅路</p><h1>Gallery<span class="title-period">.</span></h1></header>
           <section class="footprint-panel" id="footprints" aria-labelledby="footprint-title"><header class="footprint-heading"><h2 id="footprint-title">我的足迹</h2>
             <div class="map-toolbar" hidden><label><input type="checkbox" id="show-route" checked> 显示连线</label><button type="button" id="fit-footprints" title="缩放至当前筛选的足迹">定位足迹 ↗</button></div></header>
-            <div id="footprint-map" aria-label="个人足迹交互地图"></div><p id="map-status" class="map-status" role="status">开启 JavaScript 可查看地图。</p>
+            <div id="footprint-map" aria-label="个人足迹在线地图，可拖动和缩放"></div><div id="map-status" class="map-status"><p id="map-status-message" role="status">开启 JavaScript 可查看地图。</p><button type="button" id="retry-map" hidden>重试加载</button></div>
           </section>
           <div class="gallery-topline"><p>图文笔记</p><p class="gallery-totals">{len(self.journals):02d} 篇笔记 <span>·</span> {photos:02d} 张图片 <span>·</span> {countries:02d} 个国家 / 地区</p></div>
           <div class="gallery-filters" hidden><div class="gallery-tabs" role="group" aria-label="按国家筛选"><button type="button" data-scope="all" aria-pressed="true">全部</button>{country_tabs}</div>
             <div class="gallery-search"><label for="gallery-year">年份</label><select id="gallery-year"><option value="">全部年份</option>{options}</select><label class="visually-hidden" for="gallery-search">搜索笔记、地点或国家</label><input id="gallery-search" type="search" placeholder="搜索笔记、地点…" autocomplete="off"></div></div>
           <section class="gallery-layout" aria-label="图文笔记"><p class="gallery-result" id="gallery-result" role="status">{len(self.journals)} 篇笔记 · 按最新时间排列</p><div class="journal-grid">{''.join(self.card(j) for j in self.journals)}</div><div class="gallery-empty" {'hidden' if self.journals else ''}><p>暂无符合条件的笔记。</p><button type="button" id="gallery-reset" hidden>清除筛选</button></div></section>
           <dialog class="journal-dialog" aria-label="阅读图文笔记"><button type="button" class="dialog-close" aria-label="关闭笔记" autofocus>×</button><div class="dialog-content"></div></dialog>
-          <script type="application/json" id="gallery-data">{payload}</script>'''
+          <script type="application/json" id="gallery-data">{payload}</script>
+          <script type="application/json" id="gallery-map-config">{map_payload}</script>'''
 
 
 def build_gallery(base, render, site_name="Flowers for Tuesday"):

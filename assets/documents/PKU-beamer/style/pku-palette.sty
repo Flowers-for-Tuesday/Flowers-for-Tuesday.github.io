@@ -1,0 +1,30 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pku-palette}[2026/11/18 Unified palette from source image 12]
+\RequirePackage{xcolor}
+% Archived document palette: ../assets/palette.json, id palette-12.
+% A custom editorial palette, not a claim of official PKU brand colors.
+\definecolor{pku-cotton}{HTML}{EDEBDD}
+\definecolor{pku-cherry}{HTML}{810100}
+\definecolor{pku-maroon}{HTML}{630000}
+\definecolor{pku-noir}{HTML}{1B1717}
+\colorlet{pku-paper}{pku-cotton!20!white}
+\colorlet{pku-ink}{pku-noir}
+\colorlet{pku-primary}{pku-cherry}
+\colorlet{pku-secondary}{pku-maroon}
+\colorlet{pku-muted}{pku-noir!68!white}
+\colorlet{pku-line}{pku-noir!18!white}
+\colorlet{pku-surface}{pku-cotton!42!white}
+\colorlet{pku-tint}{pku-cherry!6!white}
+% Compatibility names for existing documents; all come from the same quartet.
+\colorlet{pku-red100}{pku-cherry}
+\colorlet{pku-gold100}{pku-noir!72!white}
+\colorlet{pku-blue100}{pku-maroon}
+\@for\pku@hue:=red,gold,blue\do{%
+  \@for\pku@shade:=70,50,30,15,10\do{%
+    \colorlet{pku-\pku@hue\pku@shade}{pku-\pku@hue100!\pku@shade!white}%
+  }%
+}
+\colorlet{pkured}{pku-primary}
+\colorlet{lightred}{pku-tint}
+\colorlet{lightgold}{pku-surface}
+\endinput

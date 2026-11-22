@@ -1,23 +1,34 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{arxiv}[2026/10/20 Flowers for Tuesday preprint style]
+\ProvidesPackage{arxiv}[2026/11/16 Flowers for Tuesday preprint style]
 
 \newif\ifarxiv@print
 \DeclareOption{print}{\arxiv@printtrue}
 \ProcessOptions\relax
 
-% Shared with assets/css/site.css and assets/css/theme.css (light theme).
+% Four-color palette from assets/images/color.jpg.
 % Override these named colors after loading arxiv to personalize the palette.
 \RequirePackage{xcolor}
 \RequirePackage{colortbl}
-\definecolor{paperBackground}{HTML}{F8F9F6}
-\definecolor{paperInk}{HTML}{263D43}
-\definecolor{paperMuted}{HTML}{637278}
-\definecolor{paperAccent}{HTML}{416F74}
-\definecolor{paperSage}{HTML}{87A79A}
-\definecolor{paperLine}{HTML}{D9E0DC}
-\definecolor{paperSurface}{HTML}{EDF2ED}
+\definecolor{paperAlmond}{HTML}{D6BD98}
+\definecolor{paperMatcha}{HTML}{677D6A}
+\definecolor{paperForest}{HTML}{40534C}
+\definecolor{paperEclipse}{HTML}{1A3636}
+\definecolor{paperBackground}{HTML}{F8F7F2}
 \ifarxiv@print
   \colorlet{paperBackground}{white}
+  \colorlet{paperAlmond}{black!20}
+  \colorlet{paperMatcha}{black!45}
+  \colorlet{paperForest}{black!70}
+  \colorlet{paperEclipse}{black!90}
+\fi
+% Semantic roles keep existing documents compatible with the new palette.
+\colorlet{paperInk}{paperEclipse}
+\colorlet{paperMuted}{paperForest!85!paperBackground}
+\colorlet{paperAccent}{paperForest}
+\colorlet{paperSage}{paperMatcha}
+\colorlet{paperLine}{paperMatcha!25!paperBackground}
+\colorlet{paperSurface}{paperAlmond!22!paperBackground}
+\ifarxiv@print
   \colorlet{paperInk}{black}
   \colorlet{paperMuted}{black!70}
   \colorlet{paperAccent}{black}
@@ -217,6 +228,68 @@
               \labelwidth\leftmarginvi
               \advance\labelwidth-\labelsep}
 
+% Shared author layout for the cover and the article title.
+\newcommand{\arxiv@authors}[1][]{%
+  \def\And{%
+    \end{tabular}\hfil\linebreak[0]\hfil
+    \begin{tabular}[t]{c}\bfseries\rule{\z@}{24\p@}\ignorespaces
+  }%
+  \def\AND{%
+    \end{tabular}\hfil\linebreak[4]\hfil
+    \begin{tabular}[t]{c}\bfseries\rule{\z@}{24\p@}\ignorespaces
+  }%
+  \begin{tabular}[t]{c}\bfseries\rule{\z@}{24\p@}#1\@author\end{tabular}%
+}
+
+% Optional front cover. Metadata remains available to \maketitle.
+\def\arxiv@coverlabel{A Preprint}
+\let\arxiv@coversubtitle\@empty
+\let\arxiv@covernote\@empty
+\let\arxiv@covericon\@empty
+\newcommand{\coverlabel}[1]{\gdef\arxiv@coverlabel{#1}}
+\newcommand{\coversubtitle}[1]{\gdef\arxiv@coversubtitle{#1}}
+\newcommand{\covernote}[1]{\gdef\arxiv@covernote{#1}}
+\newcommand{\covericon}[1]{\gdef\arxiv@covericon{#1}}
+\newcommand{\makecover}{%
+  \begin{titlepage}
+    % Give hyperref a unique page anchor before article page 1.
+    \renewcommand{\thepage}{cover}%
+    \thispagestyle{empty}%
+    \setlength{\parskip}{0pt}%
+    \centering
+    % Author acknowledgments belong to the article's title page only.
+    \let\thanks\@gobble
+    \vspace*{0.15in}
+    {\color{paperAccent}\hrule height 1.2pt}
+    \ifx\arxiv@coverlabel\@empty\else
+      \vspace{0.22in}
+      {\color{paperMuted}\small\scshape\arxiv@coverlabel\par}
+    \fi
+    \vspace{0.65in plus 1fill}
+    \begin{minipage}{0.82\textwidth}
+      \centering
+      {\color{paperAccent}\fontsize{30}{36}\selectfont\scshape\@title\par}
+      \ifx\arxiv@coversubtitle\@empty\else
+        \vspace{0.24in}
+        {\color{paperMuted}\large\arxiv@coversubtitle\par}
+      \fi
+    \end{minipage}\par
+    \vspace{0.34in}
+    {\color{paperSage}\rule{0.18\textwidth}{1.5pt}\par}
+    \vspace{0.30in}
+    {\large\arxiv@authors[\arxiv@covericon]\par}
+    \vspace{0.65in plus 2fill}
+    {\color{paperMuted}\small\@date\par}
+    \vspace{0.22in}
+    {\color{paperSage}\hrule height 0.8pt}
+    \ifx\arxiv@covernote\@empty\else
+      \vspace{0.16in}
+      {\color{paperMuted}\small\arxiv@covernote\par}
+    \fi
+  \end{titlepage}%
+  \setcounter{page}{1}%
+}
+
 % create title
 \providecommand{\maketitle}{}
 \renewcommand{\maketitle}{%
@@ -249,7 +322,7 @@
 \newcommand{\@bottomtitlebar}{
   \vskip 0.29in
   \vskip -\parskip
-  {\color{paperSage}\hrule height 0.5\p@}
+  {\color{paperSage}\hrule height 0.8\p@}
   \vskip 0.09in%
 }
 
@@ -266,15 +339,7 @@
     \@bottomtitlebar
     {\color{paperMuted}\textsc{\undertitle}}\\
     \vskip 0.1in
-    \def\And{%
-      \end{tabular}\hfil\linebreak[0]\hfil%
-      \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\ignorespaces%
-    }
-    \def\AND{%
-      \end{tabular}\hfil\linebreak[4]\hfil%
-      \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\ignorespaces%
-    }
-    \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\@author\end{tabular}%
+    \arxiv@authors
   \vskip 0.4in \@minus 0.1in
   {\color{paperMuted}\small\@date\par}
   \vskip 0.2in

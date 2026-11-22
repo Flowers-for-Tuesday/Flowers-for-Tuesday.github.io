@@ -2,7 +2,7 @@
 title: "DFT的响应理论"
 date: 2026-10-09
 cover: cover.jpg
-summary: "若是我所持有之物，便能交付与你"
+summary: "僕が持ってるものなら、分けてあげられるけど。"
 ---
 
 ## 1 / DFT 的 Legendre-transform 结构

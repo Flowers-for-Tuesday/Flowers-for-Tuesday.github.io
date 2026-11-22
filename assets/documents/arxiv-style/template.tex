@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\usepackage{arxiv}         % website palette; use [print] for grayscale on white
+\usepackage{arxiv}         % color.jpg palette; use [print] for grayscale on white
 
 \usepackage{fontspec}       % load system fonts under XeLaTeX
 \usepackage{hyperref}       % hyperlinks
@@ -12,6 +12,8 @@
 \usepackage{cleveref}       % smart cross-referencing
 \usepackage{lipsum}         % Can be removed after putting your text content
 \usepackage{graphicx}
+\usepackage{pgfplots}       % editable example chart; omit if not needed
+\pgfplotsset{compat=1.18}
 \usepackage{natbib}
 \usepackage{doi}
 
@@ -23,11 +25,6 @@
 %\date{}
 
 \author{%
-	% Zero-width box keeps the author text centered independently of the icon.
-	\makebox[0pt][r]{%
-		\href{https://flowersfortuesday.com}{%
-			\raisebox{-0.25em}{\includegraphics[height=1.35em]{icon.pdf}}}%
-		\hspace{0.35em}}%
 	Flowers for Tuesday \\
 	Raya Lucaria Academy\\
 	\texttt{flowersfortuesday@gmail.com} \\
@@ -37,6 +34,18 @@
 \renewcommand{\headeright}{}
 \renewcommand{\undertitle}{}
 \renewcommand{\shorttitle}{}
+
+% Optional cover details; title, authors and date are reused automatically.
+\coverlabel{A Preprint}
+\coversubtitle{Notes on research and discovery}
+\covernote{}
+% The icon is exclusive to the cover; keep the author text centered.
+\covericon{%
+	\makebox[0pt][r]{%
+		\href{https://flowersfortuesday.com}{%
+			\raisebox{-0.25em}{\includegraphics[height=1.35em]{icon.pdf}}}%
+		\hspace{0.35em}}%
+}
 
 %%% Add PDF metadata to help others organize their library
 %%% Once the PDF is generated, you can check the metadata with
@@ -49,6 +58,7 @@ pdfkeywords={First keyword, Second keyword, More},
 }
 
 \begin{document}
+\makecover % Remove this line to omit the cover; article pages still start at 1.
 \maketitle
 
 \begin{abstract}
@@ -102,13 +112,32 @@ See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of th
 
 \begin{figure}
 	\centering
-	% Replace this placeholder with \includegraphics for your own figure.
-	{\setlength{\fboxsep}{0pt}%
-	\fcolorbox{paperSage}{paperSurface}{%
-		\parbox[c][4cm][c]{8cm}{\centering
-			\textcolor{paperAccent}{\large Figure placeholder}\\[6pt]
-			\textcolor{paperMuted}{Replace with your illustration}}}}
-	\caption{Sample figure caption.}
+	% Illustrative data only. Replace the values or use \includegraphics.
+	\begin{tikzpicture}
+		\begin{axis}[
+			width=11cm, height=5.5cm,
+			ybar, bar width=32pt, bar shift=0pt,
+			xmin=-0.6, xmax=3.6, ymin=0, ymax=100,
+			xtick={0,1,2,3},
+			xticklabels={Baseline,Variant A,Variant B,Proposed},
+			ytick={0,25,50,75,100}, ylabel={Score (\%)},
+			axis background/.style={fill=paperSurface},
+			axis line style={draw=paperSage},
+			axis x line*=bottom, axis y line*=left,
+			ymajorgrids=true, grid style={draw=paperLine},
+			tick style={draw=paperSage},
+			tick label style={font=\small, text=paperInk},
+			label style={font=\small, text=paperInk},
+			nodes near coords,
+			every node near coord/.append style={font=\small, text=paperInk},
+		]
+			\addplot[fill=paperAlmond, draw=paperForest] coordinates {(0,58)};
+			\addplot[fill=paperMatcha, draw=paperForest] coordinates {(1,72)};
+			\addplot[fill=paperForest, draw=paperForest] coordinates {(2,81)};
+			\addplot[fill=paperEclipse, draw=paperEclipse] coordinates {(3,89)};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Illustrative comparison using almond, matcha, forest, and eclipse tones. Values are sample data, not experimental results.}
 	\label{fig:fig1}
 \end{figure}
 
@@ -128,13 +157,16 @@ The documentation for \verb+booktabs+ (`Publication quality tables in LaTeX') is
 		\toprule
 		\multicolumn{2}{c}{Part}                   \\
 		\cmidrule(r){1-2}
-		\rowcolor{paperSurface}
-		\textcolor{paperAccent}{\bfseries Name}
-		         & \textcolor{paperAccent}{\bfseries Description}
-		                           & \textcolor{paperAccent}{\bfseries Size ($\mu$m)} \\
+		\rowcolor{paperForest}
+		\textcolor{paperBackground}{\bfseries Name}
+		         & \textcolor{paperBackground}{\bfseries Description}
+		                           & \textcolor{paperBackground}{\bfseries Size ($\mu$m)} \\
 		\midrule
+		\rowcolor{paperSurface}
 		Dendrite & Input terminal  & $\sim$100     \\
+		\rowcolor{paperMatcha!12!paperBackground}
 		Axon     & Output terminal & $\sim$10      \\
+		\rowcolor{paperSurface}
 		Soma     & Cell body       & up to $10^6$  \\
 		\bottomrule
 	\end{tabular}
