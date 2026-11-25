@@ -120,7 +120,8 @@ About 页的学习经历在 `content/site.json` 的 `about.background` 数组中
 
 学校标识保存在本地：北京大学校徽来自 https://www.pku.edu.cn/pku_logo_red.png ，Perimeter Institute 标识来自 https://landing.perimeterinstitute.ca/hubfs/Stacked_Perimeter%20English%20Logo%20Black-908x301.png 。
 
-首页个人区域的账号导航在 `social_links` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。首页链接竖向排列，末尾的 Email 读取顶层 `email` 字段，并显示 `assets/icons/email.svg` 邮箱图标。页脚独立显示 Email、Links 与 Log，收藏网址在 `content/links.json` 中维护，网站更新日志在 `content/log.json` 中维护。
+首页个人区域的账号导航在 `social_links` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。首页链接竖向排列，末尾的 Email 读取顶层 `email` 字段，并显示 `assets/icons/email.svg` 邮箱图标。页脚显示 Links、Color 和 Info。收藏网址在 `content/links.json` 中维护。Info 页显示域名、托管平台、源码链接、字体说明和更新日志，其中域名读取自 `CNAME`。
+Info 页的 IPv4 地址按域名保存在 `content/site.json` 的 `ipv4_by_domain` 中。域名的 DNS A 记录变更后，同步更新对应列表即可。
 可选的 `icon` 字段支持 `github`、`zhihu`、`bilibili`，对应 `assets/icons/` 下的 SVG 图标；生成时内嵌到 HTML，使用 `currentColor` 随链接文字变色，无需额外加载图标文件。不设置 `icon` 时只显示文字链接。
 
 根据修改目的编辑以下源文件：
@@ -152,7 +153,7 @@ python scripts/manage.py preview --open
 
 ## 收藏网址（Links）
 
-全站页脚只保留 Email 和 Links。Email 读取 `content/site.json` 的 `email`；Links 指向 `/links/`。
+页脚的 Links 入口指向 `/links/`。
 
 在 `content/links.json` 中添加网址，按数组顺序展示。`label` 和 `url` 必填，`description` 可省略。外部网址使用完整的 HTTPS 地址，例如：
 
@@ -383,7 +384,9 @@ files/notes/Quantum Many Body/CQPT/
 
 ## 网站更新日志
 
-全站页脚的 **Log** 链接指向 `/log/`，用于记录重要功能、内容与体验的更新。日志内容维护在 `content/log.json`，生成页面为 `log/index.html`，无需手动编辑 HTML。
+从全站页脚进入 **Info** 即可查看更新日志，也可直接访问 `/info/#log`。旧地址 `/log/` 会自动跳转到这个位置。日志内容维护在 `content/log.json`，构建时写入 `info/index.html`。
+
+发布新版本时，在 `content/site.json` 的 `releases` 中添加发布日期 `date` 和版本号 `version`。Info 显示最新版本，每条日志按自己的日期自动匹配当时已发布的版本。首个版本发布前的日志只显示日期。同一天发布多个版本时，将较新的版本放在前面，并在当日属于较早版本的日志上填写 `version`。
 
 每条记录包含 `date`（`YYYY-MM-DD` 日期）、`title`（更新标题）和 `changes`（更新说明数组）。例如：
 
@@ -397,11 +400,11 @@ files/notes/Quantum Many Body/CQPT/
 }
 ```
 
-将新记录加入数组即可；构建时自动按日期倒序排列，同一天的记录保留文件中的顺序。内容使用纯文本，不解析 HTML。日期填写更新实际发生的日期；没有记录时页面显示空状态。保存后本地预览会自动重新生成，发布流程也会包含日志页。
+将新记录加入数组即可。构建时自动按日期倒序排列，同一天的记录保留文件中的顺序。内容使用纯文本，不解析 HTML。日期填写更新实际发生的日期。没有记录时显示空状态，保存后本地预览会自动重新生成。
 
 ## 入场动画与字体
 
-入场为单行“将我的爱，弃置于此。”，文案定义在 `scripts/build.py` 的 `INTRO_TEXT`。沿用原字体及最初的整行淡入、轻微上移效果，显示约 4.2 秒后淡出。动画在当前浏览器标签页首次访问主页时显示，可点击“进入主页”或按 Escape 跳过。系统开启“减少动态效果”时不会自动播放。无 JavaScript 时不会遮挡正文。
+入场动画显示两行日语，文案定义在 `scripts/build.py` 的 `INTRO_TEXT`，每项对应一行。两行文字依次淡入并轻微上移，开场约 4.2 秒后淡出。动画在当前浏览器标签页首次访问主页时显示，可点击“进入主页”或按 Escape 跳过。系统开启“减少动态效果”时不会自动播放。无 JavaScript 时不会遮挡正文。
 
 中文使用汉仪明禅刻本，英文和西班牙文使用 Sondra，日文使用 A1 明朝，法文和德文使用 Bodoni Moda，均提供 WOFF2 网页字体。中英混排按字形范围自动分配字体；中日共用汉字以及法德语区域通过 `lang` 标记区分，字体配置见 `assets/css/site.css`。
 

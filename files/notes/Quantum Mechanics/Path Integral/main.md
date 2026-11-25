@@ -1,7 +1,7 @@
 ---
 title: "Notes about Path Integral"
 date: 2026-10-17
-cover: cover.jpeg
+cover: cover.png
 summary: "Think I wanna twist the plot this time."
 ---
 

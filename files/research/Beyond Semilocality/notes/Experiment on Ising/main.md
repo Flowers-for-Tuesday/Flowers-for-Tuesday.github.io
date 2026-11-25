@@ -1,7 +1,7 @@
 ---
 title: "TFIM的数值验证"
 category: Research Notes
-date: 2026-11-16
+date: 2026-11-15
 cover: cover.png
 summary: "We choose to go to the moon."
 ---

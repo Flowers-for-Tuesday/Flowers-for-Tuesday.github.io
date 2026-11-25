@@ -1,12 +1,17 @@
-/* Shared reading layout for the two footer collections. */
-body:is([data-page="links"], [data-page="log"]) { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
-body:is([data-page="links"], [data-page="log"]) > main { flex: 1; }
+/* Shared reading layout for footer pages. */
+body:is([data-page="links"], [data-page="info"]) { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
+body:is([data-page="links"], [data-page="info"]) > main { flex: 1; }
 .utility-layout { display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: start; gap: clamp(40px, 5vw, 72px); padding-block: 72px 96px; }
 .utility-layout .page-heading { padding: 0; }
-.utility-layout .page-heading h1 { margin: 0; font-size: clamp(3rem, 5vw, 4rem); line-height: 1.1; }
+.utility-layout .page-heading h1, .utility-layout .info-heading { margin: 0; font-size: clamp(3rem, 5vw, 4rem); line-height: 1.1; }
 .utility-layout > section { min-width: 0; }
 .utility-layout .empty-state { border-top: 1px solid var(--line); padding: 28px 0; text-align: left; }
 .footer-links a[aria-current="page"] { color: var(--accent); text-decoration: underline; }
+
+.site-info dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 1rem; margin: 0; border-bottom: 1px solid var(--line); }
+.site-info dl > div { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; padding-block: .85rem; border-top: 1px solid var(--line); }
+.site-info dt { color: var(--muted); }
+.site-info dd { margin: 0; overflow-wrap: anywhere; }
 
 .saved-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; list-style: none; margin: 0; padding: 0; }
 .saved-link { min-width: 0; border-top: 1px solid var(--line); }
@@ -32,6 +37,6 @@ body:is([data-page="links"], [data-page="log"]) > main { flex: 1; }
 }
 @media print {
   .utility-layout { display: block; padding-block: 24px; }
-  .utility-layout .page-heading { margin-bottom: 32px; }
+  .utility-layout .page-heading, .utility-layout .info-heading { margin-bottom: 32px; }
   .saved-link { break-inside: avoid; }
 }

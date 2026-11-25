@@ -15,7 +15,10 @@ from palettes import build_palettes, build_color_page
 BASE = Path(__file__).resolve().parents[1]
 DATA = json.loads((BASE / "content/site.json").read_text(encoding="utf-8"))
 TEMPLATE = Template((BASE / "templates/base.html").read_text(encoding="utf-8"))
-INTRO_TEXT = "将我的爱，弃置于此。"
+INTRO_TEXT = (
+    "刻まれた言葉が、心に浮かぶ",
+    "「我が愛を、ここに棄てる」",
+)
 NAV = [("about", "About"), ("note", "Note"), ("music", "Music"), ("gallery", "Gallery"), ("research", "Research")]
 
 
@@ -44,9 +47,10 @@ def render(page, main, description, title=None, *, output=None, extra_head=""):
     )
     intro = ""
     if page == "home":
+        lines = "\n            ".join(f'<p class="intro-line">{e(line)}</p>' for line in INTRO_TEXT)
         intro = f'''<dialog class="intro" aria-label="入场文字" aria-describedby="intro-words">
-          <div class="intro-inner">
-            <p id="intro-words" class="intro-line">{e(INTRO_TEXT)}</p>
+          <div id="intro-words" class="intro-inner" lang="ja">
+            {lines}
           </div>
           <button class="intro-skip" type="button" autofocus>进入主页 <span aria-hidden="true">↗</span></button>
         </dialog>'''
@@ -55,13 +59,39 @@ def render(page, main, description, title=None, *, output=None, extra_head=""):
         navigation=navigation, main=main, intro=intro,
         extra_head=extra_head.replace("{root}", root),
         footer_text=e(DATA["home"]["footer_text"]),
-        email=e(DATA["email"]),
-        log_current=' aria-current="page"' if page == "log" else "",
         links_current=' aria-current="page"' if page == "links" else "",
         color_current=' aria-current="page"' if page == "color" else "",
+        info_current=' aria-current="page"' if page == "info" else "",
     )
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(line.rstrip() for line in html.splitlines()) + "\n", encoding="utf-8")
+
+
+def info():
+    cname = BASE / "CNAME"
+    domain = cname.read_text(encoding="utf-8").strip() if cname.is_file() else ""
+    domain = domain or "flowers-for-tuesday.github.io"
+    releases = sorted(DATA["releases"], key=lambda release: release["date"], reverse=True)
+    addresses = DATA.get("ipv4_by_domain", {}).get(domain.lower(), [])
+    ip_row = '<div><dt>IPv4 地址</dt><dd>' + '<br>'.join(e(ip) for ip in addresses) + '</dd></div>' if addresses else ''
+    render("info", f'''<div class="utility-layout site-info">
+        <h1 class="info-heading" lang="en">Info<span class="title-period" aria-hidden="true">.</span></h1>
+        <dl aria-label="网站信息">
+          <div><dt>网站地址</dt><dd><a href="{safe_url("https://" + domain + "/")}">{e(domain)}</a></dd></div>
+          {ip_row}
+          <div><dt>网站版本</dt><dd>{e(releases[0]["version"])}</dd></div>
+          <div><dt>托管平台</dt><dd lang="en">GitHub Pages</dd></div>
+          <div><dt lang="en">Source Code</dt><dd><a href="https://github.com/Flowers-for-Tuesday/Flowers-for-Tuesday.github.io">在 GitHub 查看</a></dd></div>
+          <div><dt>网站字体</dt><dd>中文（汉仪明禅刻本），<span lang="en">English（Sondra）</span>，<span lang="ja">日本語（A1 明朝）</span>，<span lang="es">Español（Sondra）</span>，<span lang="fr">Français（Bodoni Moda）</span>，<span lang="de">Deutsch（Bodoni Moda）</span></dd></div>
+        </dl>
+      </div>
+      <section class="utility-layout site-log" aria-labelledby="log">
+        <h2 id="log" class="info-heading" lang="en">Log<span class="title-period" aria-hidden="true">.</span></h2>
+        {render_log_entries(releases)}
+      </section>''', "网站信息、字体说明与更新日志。", "Info | " + DATA["name"],
+      extra_head='<link rel="stylesheet" href="{root}/assets/css/utility.css"><link rel="stylesheet" href="{root}/assets/css/log.css">')
+    render("log", '<p><a href="../info/#log">查看更新日志</a></p>', "网站更新日志。", "Log | " + DATA["name"],
+           extra_head='<meta http-equiv="refresh" content="0; url=../info/#log">')
 
 
 def links():
@@ -81,21 +111,19 @@ def links():
       extra_head='<link rel="stylesheet" href="{root}/assets/css/utility.css">')
 
 
-def log():
+def render_log_entries(releases):
     items = json.loads((BASE / "content/log.json").read_text(encoding="utf-8"))
     entries = []
     for item in sorted(items, key=lambda item: date.fromisoformat(item["date"]), reverse=True):
         published = date.fromisoformat(item["date"]).isoformat()
+        version = item.get("version") or next((r["version"] for r in releases if r["date"] <= published), None)
+        version_line = f'<span class="log-version">{e(version)}</span>' if version else ""
         changes = "".join(f'<li>{e(change)}</li>' for change in item["changes"])
         entries.append(f'''<li class="log-entry"><article>
-          <time datetime="{published}">{published}</time>
-          <div class="log-entry-content"><h2>{e(item['title'])}</h2><ul>{changes}</ul></div>
+          <div class="log-meta"><time datetime="{published}">{published}</time>{version_line}</div>
+          <div class="log-entry-content"><h3>{e(item['title'])}</h3><ul>{changes}</ul></div>
         </article></li>''')
-    content = '<ol class="log-list" role="list">' + ''.join(entries) + '</ol>' if entries else '<p class="muted">还没有更新记录。</p>'
-    render("log", f'''<div class="utility-layout"><header class="page-heading"><h1 lang="en">Log<span class="title-period">.</span></h1></header>
-      <section class="site-log" aria-label="网站更新日志">{content}</section></div>''',
-      "网站更新日志，记录重要功能、内容与体验的变化。", "Log | " + DATA["name"],
-      extra_head='<link rel="stylesheet" href="{root}/assets/css/utility.css"><link rel="stylesheet" href="{root}/assets/css/log.css">')
+    return '<ol class="log-list" role="list">' + ''.join(entries) + '</ol>' if entries else '<p class="muted">还没有更新记录。</p>'
 
 
 def home():
@@ -195,7 +223,7 @@ if __name__ == "__main__":
     home()
     about()
     links()
-    log()
+    info()
     build_notes(BASE, render)
     build_music(BASE, render, DATA["name"])
     build_gallery(BASE, render, DATA["name"])
@@ -204,4 +232,4 @@ if __name__ == "__main__":
     # GitHub Pages serves 404.html at arbitrary paths, so its assets need absolute URLs.
     path = BASE / "404.html"
     path.write_text(path.read_text(encoding="utf-8").replace('href="./', 'href="/').replace('src="./', 'src="/'), encoding="utf-8")
-    print("Built home, About, Links, Color, Log, Note, Music, Gallery, Research and 404 pages.")
+    print("Built home, About, Links, Color, Log, Info, Note, Music, Gallery, Research and 404 pages.")

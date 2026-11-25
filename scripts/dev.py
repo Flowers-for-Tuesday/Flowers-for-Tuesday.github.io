@@ -9,7 +9,7 @@ import webbrowser
 
 from manage import BASE, build_lock, generate, say
 
-PUBLIC_DIRECTORIES = {"about", "links", "color", "log", "note", "music", "gallery", "research", "assets", "files"}
+PUBLIC_DIRECTORIES = {"about", "links", "color", "log", "info", "note", "music", "gallery", "research", "assets", "files"}
 PUBLIC_FILES = {"index.html", "404.html", "favicon.ico", "robots.txt", "sitemap.xml"}
 IGNORED = {"__pycache__", "code.css", "palettes.css", "palettes.js"}
 RELOAD_SCRIPT = r"""
@@ -47,7 +47,7 @@ RELOAD_SCRIPT = r"""
 
 def source_snapshot(base=BASE):
     """Ignore generated HTML, manifests and highlighted CSS to avoid build loops."""
-    paths = [base / "README.md", base / "favicon.ico", base / "requirements.txt"]
+    paths = [base / "README.md", base / "CNAME", base / "favicon.ico", base / "requirements.txt"]
     for folder in ("templates", "scripts", "content", "assets", "files"):
         root = base / folder
         if root.exists():

@@ -5,7 +5,7 @@ body[data-page="color"] > main { flex: 1; }
 .color-layout .page-heading p { margin-top: 16px; font-size: 1rem; }
 .color-current { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); align-items: center; gap: 32px; padding: 24px; margin-bottom: 40px; border: 1px solid var(--accent); background: var(--surface); }
 .color-current-sample { min-width: 0; }
-.color-current-image { width: 100%; height: auto; max-height: 360px; object-fit: contain; }
+.color-current-image { width: 90%; height: auto; max-height: 324px; margin-inline: auto; object-fit: contain; }
 .color-current-details { min-width: 0; }
 .color-current h2 { color: var(--muted); font-size: 1rem; }
 .color-current-name { margin-block: 8px 20px; font-size: 1.5rem; }

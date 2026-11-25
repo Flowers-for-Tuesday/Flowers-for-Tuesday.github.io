@@ -2,7 +2,7 @@
 title: "关于天文图像处理"
 date: 2026-11-14
 cover: cover.jpg
-summary: "Know thyself."
+summary: "金风玉露一相逢，便胜却，人间无数。"
 ---
 
 封图为The Church of the good shepherd, Lake Tekapo, New Zealand.

@@ -1,5 +1,11 @@
 {
   "name": "礼拜二的花束",
+  "releases": [
+    {"date": "2026-11-23", "version": "v1.0.0"}
+  ],
+  "ipv4_by_domain": {
+    "flowersfortuesday.com": ["185.199.108.153", "185.199.109.153"]
+  },
   "github": "https://github.com/Flowers-for-Tuesday",
   "email": "flowersfortuesday@gmail.com",
   "social_links": [
