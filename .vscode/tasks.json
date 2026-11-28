@@ -27,11 +27,10 @@
       "label": "网站：提交并部署",
       "type": "process",
       "command": "python",
-      "args": ["scripts/manage.py", "publish", "-m", "${input:commitMessage}"],
+      "args": ["scripts/manage.py", "publish"],
       "options": {"cwd": "${workspaceFolder}"},
       "problemMatcher": [],
       "presentation": {"reveal": "always", "panel": "dedicated"}
     }
-  ],
-  "inputs": [{"id": "commitMessage", "type": "promptString", "description": "本次网站更新说明（可留空）", "default": "Update website"}]
+  ]
 }

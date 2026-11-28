@@ -1,7 +1,6 @@
 """Local setup, preview, and one-command publishing. Uses only the standard library."""
 import argparse
 from contextlib import contextmanager
-from datetime import datetime
 import hashlib
 import json
 import os
@@ -209,7 +208,10 @@ def publish(python, message, wait=True, timeout=300):
         git("add", "--all")
         staged = git("diff", "--cached", "--quiet", check=False)
         if staged.returncode == 1:
-            result = git("commit", "-m", message or f"Update website {datetime.now():%Y-%m-%d %H:%M}")
+            if not message:
+                site = json.loads(git("show", ":content/site.json").stdout)
+                message = max(site["releases"], key=lambda release: release["date"])["version"]
+            result = git("commit", "-m", message)
             say(result.stdout.strip())
         elif staged.returncode:
             raise RuntimeError("无法读取暂存区状态。")
@@ -235,7 +237,7 @@ def main():
     preview.add_argument("--open", action="store_true", help="打开默认浏览器")
     preview.add_argument("--port", type=int, default=8000)
     publishing = commands.add_parser("publish", help="生成、检查、提交、推送并等待部署")
-    publishing.add_argument("-m", "--message", default="", help="本次 Git 提交说明")
+    publishing.add_argument("-m", "--message", default="", help="自定义 Git 提交说明，默认为当前网站版本号")
     publishing.add_argument("--no-wait", action="store_true", help="推送后立即结束，不等待部署")
     publishing.add_argument("--timeout", type=int, default=300, help="等待部署的最长秒数")
     status = commands.add_parser("status", help="检查当前提交的部署状态")

@@ -11,7 +11,7 @@ Music 栏目的分类笔记与原创专辑维护方式见 [MUSIC.md](MUSIC.md)�
 在 Windows 上，日常操作只需要项目根目录中的两个入口：
 
 1. 双击 **`preview.cmd`**：自动准备项目环境、生成页面并打开浏览器。保持命令窗口开启，修改 Markdown、JSON、模板、CSS 或 JavaScript 并保存，页面会自动刷新。生成失败时，浏览器右下角和终端会显示错误；修正并保存后自动重试。关闭窗口或按 Ctrl+C 停止预览。
-2. 确认本地效果后，双击 **`publish.cmd`**：检查远程分支、生成页面、运行检查，将项目中所有未被 `.gitignore` 排除的修改和删除一起提交并推送到 `origin/main`，随后等待 GitHub Pages 确认部署。显示“部署成功”后，再打开线上网站检查。
+2. 确认本地效果后，双击 **`publish.cmd`**。发布工具会检查远程分支、生成页面、运行检查，并将项目中所有未被 `.gitignore` 排除的修改和删除一起提交到 `origin/main`。提交说明使用 `content/site.json` 中的当前网站版本号，例如 `v1.1.0`。推送后，工具会等待 GitHub Pages 确认部署。
 
 本机需要已安装 Python、Node.js 和 Git，并具有该远程仓库的推送权限。第一次运行会联网安装 Python 依赖到项目内的 `.venv/`，以后自动复用；无需手动激活虚拟环境。发布失败时窗口会保留错误信息，已有文件和本地提交不会被撤销。
 
@@ -20,7 +20,7 @@ Music 栏目的分类笔记与原创专辑维护方式见 [MUSIC.md](MUSIC.md)�
 ```powershell
 python scripts/manage.py preview --open
 python scripts/manage.py build
-python scripts/manage.py publish -m "更新笔记与页面样式"
+python scripts/manage.py publish
 python scripts/manage.py status
 ```
 
@@ -34,7 +34,7 @@ python scripts/manage.py status
 
 - 按 **F5**：启动本地预览，并在 Edge 中打开网站，可在 `assets/js/` 内设置断点；前端样式可在浏览器开发者工具中查看。
 - 按 **Ctrl+Shift+B**：重新生成页面。
-- 通过 **终端 → 运行任务 → 网站：提交并部署**：输入本次更新说明并发布。
+- 运行 **终端 → 运行任务 → 网站：提交并部署**，自动以当前网站版本号作为提交说明发布。
 
 浏览器开发者工具中的临时样式调整不会自动保存到源文件；确认效果后，把改动写回 CSS。结束浏览器调试后，如需关闭预览，在 VS Code 中终止“网站：本地预览”任务。修改 `scripts/dev.py`、`scripts/manage.py` 或依赖配置后，需要重启预览。
 

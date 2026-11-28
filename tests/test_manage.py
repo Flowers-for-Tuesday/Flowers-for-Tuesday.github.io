@@ -92,6 +92,22 @@ class PublishTests(unittest.TestCase):
             self.assertTrue(any(call.args[0] == "push" for call in git.call_args_list))
             self.assertFalse(any(call.args[0] == "commit" for call in git.call_args_list))
 
+    def test_default_commit_message_uses_latest_staged_site_version(self):
+        def staged_git(*args, **kwargs):
+            if args == ("diff", "--cached", "--quiet"):
+                return CompletedProcess(args, 1, "", "")
+            if args == ("show", ":content/site.json"):
+                site = '{"releases":[{"date":"2026-01-01","version":"v1.0.0"},' \
+                       '{"date":"2026-02-01","version":"v1.2.0"},{"date":"2026-02-01","version":"v1.1.0"}]}'
+                return CompletedProcess(args, 0, site, "")
+            return self.fake_git(*args, **kwargs)
+
+        with patch.object(manage, "git", side_effect=staged_git) as git, \
+                patch.object(manage, "build_lock", return_value=nullcontext()), \
+                patch.object(manage, "generate"), patch.object(manage, "run"), patch.object(manage, "say"):
+            self.assertEqual(manage.publish("python", "", wait=False), 0)
+            git.assert_any_call("commit", "-m", "v1.2.0")
+
 
 class PreviewTests(unittest.TestCase):
     def test_snapshot_tracks_sources_and_ignores_generated_files(self):
