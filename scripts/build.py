@@ -4,13 +4,13 @@ from datetime import date
 from html import escape
 from pathlib import Path
 from string import Template
-from urllib.parse import urlsplit
+from urllib.parse import quote, unquote, urlsplit
 from notes import build_notes
 from projects import build_projects
 from gallery import build_gallery
 from about import load_about_entries
 from music import build_music
-from palettes import build_palettes, build_color_page
+from palettes import build_palettes, render_color_settings
 
 BASE = Path(__file__).resolve().parents[1]
 DATA = json.loads((BASE / "content/site.json").read_text(encoding="utf-8"))
@@ -19,6 +19,12 @@ INTRO_TEXT = (
     "刻まれた言葉が、心に浮かぶ",
     "「我が愛を、ここに棄てる」",
 )
+PRELUDE_IMAGES = [
+    quote(path.relative_to(BASE).as_posix())
+    for path in sorted((BASE / "assets/images/Prelude").glob("*"))
+    if path.is_file() and not path.name.startswith(".")
+    and path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif"}
+]
 NAV = [("about", "About"), ("note", "Note"), ("music", "Music"), ("gallery", "Gallery"), ("research", "Research")]
 
 
@@ -46,6 +52,7 @@ def render(page, main, description, title=None, *, output=None, extra_head=""):
         for slug, label in NAV
     )
     intro = ""
+    backgrounds = [f'<img class="site-background" src="{root}/{path}" alt="">' for path in PRELUDE_IMAGES]
     if page == "home":
         lines = "\n            ".join(f'<p class="intro-line">{e(line)}</p>' for line in INTRO_TEXT)
         intro = f'''<dialog class="intro" aria-label="入场文字" aria-describedby="intro-words">
@@ -57,14 +64,54 @@ def render(page, main, description, title=None, *, output=None, extra_head=""):
     html = TEMPLATE.substitute(
         root=root, page=page, title=e(title or DATA["name"]), description=e(description),
         navigation=navigation, main=main, intro=intro,
+        background_images="".join(backgrounds), default_background=next(iter(backgrounds), ""),
         extra_head=extra_head.replace("{root}", root),
         footer_text=e(DATA["home"]["footer_text"]),
         links_current=' aria-current="page"' if page == "links" else "",
-        color_current=' aria-current="page"' if page == "color" else "",
+        settings_current=' aria-current="page"' if page == "settings" else "",
         info_current=' aria-current="page"' if page == "info" else "",
     )
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(line.rstrip() for line in html.splitlines()) + "\n", encoding="utf-8")
+
+
+def settings():
+    authors = json.loads((BASE / "assets/images/Prelude/authors.json").read_text(encoding="utf-8"))
+    choices = []
+    for index, path in enumerate(PRELUDE_IMAGES):
+        name = path.rsplit("/", 1)[-1]
+        filename = unquote(name)
+        author = authors.get(filename, "").strip() or "..."
+        checked = " checked" if index == 0 else ""
+        choices.append(f'''<label class="background-option">
+          <img src="../{path}" alt="" loading="lazy" decoding="async">
+          <span><input type="radio" name="background" value="{e(name)}"{checked} disabled> {e(Path(filename).stem)}</span>
+          <small class="background-credit" lang="en">Illustrated by {e(author)}</small>
+        </label>''')
+    backgrounds = f'''<div class="background-opacity" hidden>
+        <label for="background-opacity">背景不透明度</label><output for="background-opacity"></output>
+        <input id="background-opacity" type="range" min="0" max="100" step="1">
+      </div>
+      <fieldset class="background-picker"><legend class="visually-hidden">选择网站背景</legend>
+      <div class="background-grid">{''.join(choices)}</div></fieldset>
+      <noscript><p>启用 JavaScript 后可选择背景图。</p></noscript>''' if choices else '<p>暂无背景图片。</p>'
+    sections = [("Background", "settings", backgrounds), ("Color", "settings/color", render_color_settings(BASE))]
+    for label, directory, main in sections:
+        root = "/".join([".."] * len(Path(directory).parts))
+        nav = "".join(
+            f'<a href="{root}/{target}/" lang="en"' + (' aria-current="page"' if name == label else '') + f'>{name}</a>'
+            for name, target, _ in sections
+        )
+        head = '<link rel="stylesheet" href="{root}/assets/css/settings.css">'
+        if label == "Color":
+            head += '<link rel="stylesheet" href="{root}/assets/css/color.css"><script src="{root}/assets/js/color.js" defer></script>'
+        render("settings", f'''<div class="settings-layout">
+          <header class="page-heading"><h1 lang="en">Settings<span class="title-period">.</span></h1></header>
+          <nav class="settings-nav" aria-label="设置栏目">{nav}</nav>
+          <section aria-label="{label}">{main}</section></div>''', "选择网站背景和配色。",
+          f"{label} | Settings | " + DATA["name"], output=f"{directory}/index.html", extra_head=head)
+    render("color", '<p><a href="../settings/color/">查看配色设置</a></p>', "网站配色设置。", "Color | " + DATA["name"],
+           extra_head='<meta http-equiv="refresh" content="0; url=../settings/color/">')
 
 
 def info():
@@ -219,7 +266,7 @@ def about():
 
 if __name__ == "__main__":
     build_palettes(BASE)
-    build_color_page(BASE, render, DATA['name'])
+    settings()
     home()
     about()
     links()
@@ -232,4 +279,4 @@ if __name__ == "__main__":
     # GitHub Pages serves 404.html at arbitrary paths, so its assets need absolute URLs.
     path = BASE / "404.html"
     path.write_text(path.read_text(encoding="utf-8").replace('href="./', 'href="/').replace('src="./', 'src="/'), encoding="utf-8")
-    print("Built home, About, Links, Color, Log, Info, Note, Music, Gallery, Research and 404 pages.")
+    print("Built home, About, Links, Settings, Info, Note, Music, Gallery, Research, redirects and 404 pages.")

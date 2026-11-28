@@ -1,7 +1,7 @@
 ---
-title: "论文笔记 / extend Hubbard model的临界性分析"
+title: "论文笔记 / Potts Chain Model"
 category: Research Notes
-date: 2026-10-24
+date: 2026-11-24
 cover: cover.jpg
 summary: "真正严肃的哲学问题只有一个。"
 ---

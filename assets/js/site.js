@@ -1,4 +1,74 @@
 (() => {
+  const candidates = Array.from(document.getElementById('prelude-images')?.content.children ?? []);
+  const preferredKey = 'flowers-for-tuesday:background-choice';
+  const opacityKey = 'flowers-for-tuesday:background-opacity';
+  const opacitySlider = document.getElementById('background-opacity');
+  const filename = image => image.getAttribute('src').split('/').pop();
+  const choices = document.querySelectorAll('.background-picker input');
+  let background;
+  function addBackground(container, className) {
+    if (!background) return;
+    const image = background.cloneNode();
+    image.className = className;
+    image.addEventListener('load', () => image.classList.add('is-loaded'), { once: true });
+    const previous = container.querySelector(':scope > .' + className);
+    if (previous) previous.replaceWith(image);
+    else container.prepend(image);
+  }
+  function selectBackground(name) {
+    const selected = candidates.find(image => filename(image) === name) || candidates[0];
+    if (background !== selected) {
+      background = selected;
+      addBackground(document.body, 'site-background');
+      const openIntro = document.querySelector('.intro[open]');
+      if (openIntro) addBackground(openIntro, 'intro-background');
+    }
+    const selectedName = selected && filename(selected);
+    choices.forEach(choice => { choice.checked = choice.value === selectedName; });
+  }
+  function applyOpacity(value) {
+    const root = document.documentElement;
+    const percent = /^(?:100|[1-9]?\d)$/.test(value) ? value + '%' : '';
+    root.style.setProperty('--site-image-opacity', percent);
+    if (opacitySlider) {
+      const display = percent || getComputedStyle(root).getPropertyValue('--site-image-opacity').trim();
+      opacitySlider.value = parseInt(display, 10);
+      opacitySlider.setAttribute('aria-valuetext', display);
+      document.querySelector('output[for="background-opacity"]').value = display;
+    }
+  }
+  function readBackground() {
+    let name;
+    let opacity;
+    try {
+      name = localStorage.getItem(preferredKey);
+      opacity = localStorage.getItem(opacityKey);
+    } catch { /* Use the default image and opacity. */ }
+    applyOpacity(opacity);
+    selectBackground(name);
+  }
+  readBackground();
+  if (opacitySlider) {
+    opacitySlider.closest('.background-opacity').hidden = false;
+    opacitySlider.addEventListener('input', () => {
+      applyOpacity(opacitySlider.value);
+      try { localStorage.setItem(opacityKey, opacitySlider.value); } catch { /* Applies on this page. */ }
+    });
+  }
+  choices.forEach(choice => {
+    choice.disabled = false;
+    choice.addEventListener('change', () => {
+      try {
+        localStorage.setItem(preferredKey, choice.value);
+      } catch { /* The choice still applies on this page. */ }
+      selectBackground(choice.value);
+    });
+  });
+  window.addEventListener('storage', event => {
+    if (event.key === preferredKey || event.key === opacityKey || event.key === null) readBackground();
+  });
+  window.addEventListener('pageshow', event => { if (event.persisted) readBackground(); });
+
   const menu = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.site-nav');
   const mobile = window.matchMedia('(max-width: 680px)');
@@ -154,6 +224,7 @@
   const show = async () => {
     if (intro.open || preparing) return;
     preparing = true;
+    addBackground(intro, 'intro-background');
     // Limit the wait: a slow font download must never prevent access to the site.
     try {
       await Promise.race([document.fonts.load('32px "Tokyo Romance"'), new Promise(resolve => setTimeout(resolve, 700))]);

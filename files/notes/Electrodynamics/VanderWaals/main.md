@@ -1,5 +1,5 @@
 ---
-title: "Classical Electrodynamics / Van der Waals force"
+title: "Van der Waals force"
 date: 2026-11-01
 cover: cover.jpeg
 summary: "天黑请闭眼"

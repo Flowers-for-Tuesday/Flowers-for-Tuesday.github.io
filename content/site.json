@@ -1,6 +1,7 @@
 {
   "name": "礼拜二的花束",
   "releases": [
+    {"date": "2026-11-27", "version": "v1.1.0"},
     {"date": "2026-11-23", "version": "v1.0.0"}
   ],
   "ipv4_by_domain": {

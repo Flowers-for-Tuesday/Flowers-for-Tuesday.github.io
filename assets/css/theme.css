@@ -1,4 +1,5 @@
 :root {
+  --site-image-opacity: 25%;
   --surface: #fffdfa;
   --surface-active: #e8efea;
   --surface-hover: #edf2ee;

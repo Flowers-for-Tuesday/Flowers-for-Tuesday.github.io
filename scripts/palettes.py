@@ -130,7 +130,7 @@ def build_palettes(base):
     return catalog
 
 
-def build_color_page(base, render, site_name):
+def render_color_settings(base):
     palettes = load_palettes(base)
     cards = []
     for palette in palettes:
@@ -145,9 +145,7 @@ def build_color_page(base, render, site_name):
           <span class="color-title" lang="ja">{title}</span><span class="color-selected" aria-hidden="true">使用中</span></span>
           <span class="color-swatches">{swatches}</span>
         </button></li>''')
-    render('color', f'''<div class="color-layout">
-      <header class="page-heading"><h1 lang="en">Color<span class="title-period">.</span></h1></header>
-      <section class="color-current" aria-labelledby="color-current-heading" data-palette-assets="../assets/color/" hidden>
+    return f'''<section class="color-current" aria-labelledby="color-current-heading" data-palette-assets="../../assets/color/" hidden>
         <figure class="color-current-sample"><img class="color-current-image" alt="" decoding="async"></figure>
         <div class="color-current-details">
           <h2 id="color-current-heading">当前配色</h2>
@@ -156,6 +154,4 @@ def build_color_page(base, render, site_name):
         </div>
       </section>
       <noscript><p>启用 JavaScript 后可以切换配色并查看当前方案。</p></noscript>
-      <section aria-label="全部配色方案"><ul class="color-grid" role="list">{''.join(cards)}</ul></section>
-    </div>''', '浏览全部配色方案，查看和切换当前网站配色。', 'Color | ' + site_name,
-           extra_head='<link rel="stylesheet" href="{root}/assets/css/color.css"><script src="{root}/assets/js/color.js" defer></script>')
+      <section aria-label="全部配色方案"><ul class="color-grid" role="list">{''.join(cards)}</ul></section>'''

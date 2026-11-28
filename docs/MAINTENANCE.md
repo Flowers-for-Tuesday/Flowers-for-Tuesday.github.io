@@ -86,7 +86,7 @@ favicon.ico            原有网站 logo
 
 主题初始化与切换在 `assets/js/theme.js`，配色和控件样式在 `assets/css/theme.css`。初始化脚本在页面内容渲染前执行，避免深色模式闪白。代码高亮的浅色／深色样式由 `scripts/notes.py` 生成到 `assets/css/code.css`；修改后需重新构建。
 
-点击页头的调色盘按钮切换到下一组配色，377 组按数组顺序依次循环。页脚的 Color 入口打开 `/color/`，列出每组的序号、标题、四色色块和 HEX 色值；顶部显示当前方案、`samples` 中的对应样图，以及四种颜色的英文名和 HEX 色值。列表中用“使用中”标记，点击任一方案即可应用，样图和色名同步更新。按钮也支持 Enter / 空格键。第 0001 组作为首次访问的默认配色；深浅模式独立切换。配色保存在 `flowers-for-tuesday:palette` 本地存储项中，页面跳转、刷新和同源标签页保持同步；清除本地存储或遇到失效的旧选项时恢复默认组。打印继续使用原来的浅色样式，照片与文档附件保留各自的颜色。
+点击页头的调色盘按钮切换到下一组配色，377 组按数组顺序依次循环。页脚 Settings 的 Color 子栏目位于 `/settings/color/`，旧地址 `/color/` 会跳转到这里。列表展示每组的序号、标题、四色色块和 HEX 色值，顶部显示当前方案、`samples` 中的对应样图，以及四种颜色的英文名和 HEX 色值。列表中用“使用中”标记，点击任一方案即可应用，样图和色名同步更新。按钮也支持 Enter / 空格键。第 0001 组作为首次访问的默认配色；深浅模式独立切换。配色保存在 `flowers-for-tuesday:palette` 本地存储项中，页面跳转、刷新和同源标签页保持同步；清除本地存储或遇到失效的旧选项时恢复默认组。打印继续使用原来的浅色样式，照片与文档附件保留各自的颜色。
 
 `assets/color/color-palettes.json` 是唯一的配色数据源，每组包含正整数序号 `id`、标题 `title`、四色数组 `colors` 和样图路径 `image`。每个颜色使用 `{"name": "Indigo Night", "hex": "#16202b"}` 的格式，样图路径如 `samples/0001.png`，相对于 `assets/color/`。构建校验四种颜色、英文名及图片文件，并直接读取仓库内这份 JSON，不依赖桌面目录或其他外部文件。数组首项为默认配色，数组顺序决定循环顺序；网页配色 ID 从序号生成（如 `1` 对应 `palette-0001`），修改标题或排列顺序不会改变已保存的选择。Color 页面仅加载当前方案的样图。
 
@@ -120,7 +120,7 @@ About 页的学习经历在 `content/site.json` 的 `about.background` 数组中
 
 学校标识保存在本地：北京大学校徽来自 https://www.pku.edu.cn/pku_logo_red.png ，Perimeter Institute 标识来自 https://landing.perimeterinstitute.ca/hubfs/Stacked_Perimeter%20English%20Logo%20Black-908x301.png 。
 
-首页个人区域的账号导航在 `social_links` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。首页链接竖向排列，末尾的 Email 读取顶层 `email` 字段，并显示 `assets/icons/email.svg` 邮箱图标。页脚显示 Links、Color 和 Info。收藏网址在 `content/links.json` 中维护。Info 页显示域名、托管平台、源码链接、字体说明和更新日志，其中域名读取自 `CNAME`。
+首页个人区域的账号导航在 `social_links` 中维护，每项包含 `label`（显示名称）与 `url`（账号链接）。首页链接竖向排列，末尾的 Email 读取顶层 `email` 字段，并显示 `assets/icons/email.svg` 邮箱图标。页脚显示 Links、Settings 和 Info。收藏网址在 `content/links.json` 中维护。Info 页显示域名、托管平台、源码链接、字体说明和更新日志，其中域名读取自 `CNAME`。
 Info 页的 IPv4 地址按域名保存在 `content/site.json` 的 `ipv4_by_domain` 中。域名的 DNS A 记录变更后，同步更新对应列表即可。
 可选的 `icon` 字段支持 `github`、`zhihu`、`bilibili`，对应 `assets/icons/` 下的 SVG 图标；生成时内嵌到 HTML，使用 `currentColor` 随链接文字变色，无需额外加载图标文件。不设置 `icon` 时只显示文字链接。
 
@@ -403,6 +403,10 @@ files/notes/Quantum Many Body/CQPT/
 将新记录加入数组即可。构建时自动按日期倒序排列，同一天的记录保留文件中的顺序。内容使用纯文本，不解析 HTML。日期填写更新实际发生的日期。没有记录时显示空状态，保存后本地预览会自动重新生成。
 
 ## 入场动画与字体
+
+将背景图放在 `assets/images/Prelude/` 下，在同目录的 `authors.json` 中用完整文件名作为键、作者名作为值。重新构建后，Background 会在预览图下方同一行显示图片名称和署名，左侧为省略扩展名的图片名称，右侧为 `Illustrated by 作者名`。作者留空或缺少条目时显示 `Illustrated by ...`。
+
+Settings 默认打开 Background 子栏目（`/settings/`）。默认使用列表中的第一张图，选择其他图片后，当前浏览器的标签页共用该选择。「背景不透明度」可在 0% 至 100% 之间调节，默认 25%。入场动画和正文、浅色和深色模式共用此设置，修改会实时生效并保存在当前浏览器中。禁用 JavaScript 时显示目录中的第一张图，打印时隐藏背景图。
 
 入场动画显示两行日语，文案定义在 `scripts/build.py` 的 `INTRO_TEXT`，每项对应一行。两行文字依次淡入并轻微上移，开场约 4.2 秒后淡出。动画在当前浏览器标签页首次访问主页时显示，可点击“进入主页”或按 Escape 跳过。系统开启“减少动态效果”时不会自动播放。无 JavaScript 时不会遮挡正文。
 

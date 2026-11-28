@@ -17,6 +17,8 @@
   <script src="$root/assets/js/site.js" defer></script>
 </head>
 <body data-page="$page">
+  <template id="prelude-images">$background_images</template>
+  <noscript>$default_background</noscript>
   <a class="skip-link" href="#main">跳至正文</a>
   <header class="site-header wrap">
     <a class="site-brand" href="$root/" aria-label="Flowers for Tuesday 主页">
@@ -37,7 +39,7 @@
   <main id="main" class="wrap" tabindex="-1">$main</main>
   <footer class="site-footer wrap">
     <p>$footer_text</p>
-    <div class="footer-links"><a href="$root/links/" lang="en"$links_current>Links <span aria-hidden="true">↗</span></a><a href="$root/color/" lang="en"$color_current>Color <span aria-hidden="true">↗</span></a><a href="$root/info/" lang="en"$info_current>Info <span aria-hidden="true">↗</span></a></div>
+    <div class="footer-links"><a href="$root/links/" lang="en"$links_current>Links <span aria-hidden="true">↗</span></a><a href="$root/settings/" lang="en"$settings_current>Settings <span aria-hidden="true">↗</span></a><a href="$root/info/" lang="en"$info_current>Info <span aria-hidden="true">↗</span></a></div>
   </footer>
   $intro
 </body>
